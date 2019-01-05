@@ -13,13 +13,23 @@
         android:id="@+id/view_invest"
         />
 
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText_stock"
+        android:hint="股票代码"
+        app:layout_constraintTop_toBottomOf="@id/view_invest"/>
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText_price"
+        android:hint="购买价格"
+        app:layout_constraintLeft_toRightOf="@id/editText_stock"/>
     <Button
         android:id="@+id/add_stock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="加一笔"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view_invest" />
+        app:layout_constraintLeft_toRightOf="@id/editText_price"/>
 
 </android.support.constraint.ConstraintLayout>
