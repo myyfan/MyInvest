@@ -22,9 +22,11 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Float> priceList = new ArrayList<>();
     private ArrayList<Integer> numberList = new ArrayList<>();
     private String[] stockArray ;
+    private Integer[] nowPriceArr;
     private Float[] priceArray ;
     private Integer[] numberArray ;
     private TableLayout tableLayout;
+
 
 
     @Override
@@ -98,46 +100,61 @@ public class MainActivity extends AppCompatActivity {
         tableLayout.setStretchAllColumns(true);
         //添加标题
         TableRow tableRow=new TableRow(this);
+
         TextView textView=new TextView(this);
         textView.setText("股票代码");
         tableRow.addView(textView);
+        //textView=new TextView(this);
+        //textView.setText("现价");
+        //tableRow.addView(textView);
         textView=new TextView(this);
         textView.setText("购买价格");
         tableRow.addView(textView);
         textView=new TextView(this);
         textView.setText("购买数量");
         tableRow.addView(textView);
+
         tableLayout.addView(tableRow);
         //tableLayout.setDividerDrawable(getResources().getDrawable(R.drawable.bonus_list_item_divider));
         for(int i=0;i<stockList.size();i++){
-
-            tableRow=new TableRow(this);
-            textView=new TextView(this);
-            textView.setText(stockArray[i]);
-            tableRow.addView(textView);
-            textView=new TextView(this);
-            textView.setText(priceArray[i].toString());
-            tableRow.addView(textView);
-            textView=new TextView(this);
-            textView.setText(numberArray[i].toString());
-            tableRow.addView(textView);
-            tableLayout.addView(tableRow);
+            addTabRow(stockArray[i],priceArray[i].toString(),numberArray[i].toString());
+            //addTabRow(stockArray[i],nowPriceArr[i].toString(),priceArray[i].toString(),numberArray[i].toString());
+            //tableRow=new TableRow(this);
+            //textView=new TextView(this);
+            //textView.setText(stockArray[i]);
+            //tableRow.addView(textView);
+            //textView=new TextView(this);
+            //textView.setText(priceArray[i].toString());
+            //tableRow.addView(textView);
+            //textView=new TextView(this);
+            //textView.setText(numberArray[i].toString());
+            //tableRow.addView(textView);
+            //tableLayout.addView(tableRow);
         }
 
     }
     protected void addTabRow(String stock,String price,String number){
+    //protected void addTabRow(String stock,String nowPrice,String price,String number){
         TableRow tableRow=new TableRow(this);
         TextView textView=new TextView(this);
         tableRow=new TableRow(this);
+
         textView=new TextView(this);
         textView.setText(stock);
         tableRow.addView(textView);
+
+        //textView=new TextView(this);
+        //textView.setText(nowPrice);
+        //tableRow.addView(textView);
+
         textView=new TextView(this);
         textView.setText(price);
         tableRow.addView(textView);
+
         textView=new TextView(this);
         textView.setText(number);
         tableRow.addView(textView);
+
         tableLayout.addView(tableRow);
     }
     protected void saveData(){
@@ -163,6 +180,10 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("buyedStockPrice",price);
         editor.putString("buyedStockNumber",num);
         editor.apply();
+    }
+
+    protected void pullNetworkData(){
+
     }
 
 }
