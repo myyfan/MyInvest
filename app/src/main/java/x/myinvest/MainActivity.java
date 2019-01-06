@@ -3,6 +3,7 @@ package x.myinvest;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,6 +12,13 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.EOFException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         addButton.setOnClickListener(this::addStock);
         tableLayout = (TableLayout)findViewById(R.id.table_layout_invest);
         loadSavedData();
-        //updateTabView();
+        pullNetworkData();
     }
 
     protected void loadSavedData(){
@@ -183,6 +191,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void pullNetworkData(){
+
+        String requestStockStr;
+        for(int i=0,i<stockArray.length,i++){
+            if(stockArray[i].startsWith("0")) requestStockStr +="s_sz"+stockArray[i];
+            else if(stockArray[i].startsWith("6")) requestStockStr+="s_sh"+stockArray[i];
+            else if(stockArray[i].startsWith("1")) requestStockStr+="sz"+stockArray[i];
+            else if(stockArray[i].startsWith("5")) requestStockStr+="sh"+stockArray[i];
+        }
+       try{
+            URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+            HttpURLConnection connection=(HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("get");
+            InputStream in= connection.getInputStream();
+           BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+
+       }
+       catch (Exception e){
+           Log.w("network", e.toString(),e );
+       }
+
+
 
     }
 
