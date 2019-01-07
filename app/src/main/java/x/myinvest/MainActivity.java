@@ -11,6 +11,14 @@ import android.widget.GridLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -19,7 +27,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Timer;
 
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences perf;
@@ -28,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Stock> stocksList=new ArrayList<>();
     private Stock[] stocksArr;
     private TableLayout tableLayout;
+    String test;
 
 
     //private ArrayList<String> stockList = new ArrayList<>();
@@ -49,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
         addButton.setOnClickListener(this::addStock);
         tableLayout = (TableLayout)findViewById(R.id.table_layout_invest);
         loadSavedData();
-        //pullNetworkData();
+        pullNetworkData();
+        Timer timer=new Timer();
     }
 
     protected void loadSavedData(){
@@ -91,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         //priceList.add(Float.parseFloat(newStockPrice));
         //numberList.add(Integer.parseInt(newStockNumber));
         //updatDataArray(stockList,priceList,numberList);
-        //saveData();
+        saveData();
         //updateTabView();
 
 
@@ -202,25 +215,73 @@ public class MainActivity extends AppCompatActivity {
 
     protected void pullNetworkData(){
 
-        String requestStockStr="";
-        for(int i=0;i<stocksList.size();i++){
-            Stock st=stocksList.get(i);
-            if(st.code.startsWith("0")) requestStockStr +="s_sz"+st.code;
-            else if(st.code.startsWith("6")) requestStockStr+="s_sh"+st.code;
-            else if(st.code.startsWith("1")) requestStockStr+="sz"+st.code;
-            else if(st.code.startsWith("5")) requestStockStr+="sh"+st.code;
-        }
-       try{
-            URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
-            HttpURLConnection connection=(HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("get");
-            InputStream in= connection.getInputStream();
-           BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+       // StringBuilder builder = new StringBuilder();
+       // String responce;
+       // String requestStockStr="";
+       // for(int i=0;i<stocksList.size();i++){
+       //     Stock st=stocksList.get(i);
+       //     if(st.code.startsWith("0")) requestStockStr +="s_sz"+st.code+",";
+       //     else if(st.code.startsWith("6")) requestStockStr+="s_sh"+st.code+",";
+       //     else if(st.code.startsWith("1")) requestStockStr+="sz"+st.code+",";
+       //     else if(st.code.startsWith("5")) requestStockStr+="sh"+st.code+",";
+       // }
+//
+       // RequestQueue queue = Volley.newRequestQueue(this);
+//
+       // //http://hq.sinajs.cn/list=sh600000,sh600536
+//
+       // // Request a string response from the provided URL.
+       // StringRequest stringRequest = new StringRequest(Request.Method.GET, requestStockStr,
+       //         new Response.Listener<String>() {
+       //             @Override
+       //             public void onResponse(String response) {
+       //                 test=response;
+//
+       //             }
+       //         },
+       //         new Response.ErrorListener() {
+       //             @Override
+       //             public void onErrorResponse(VolleyError error) {
+       //                 new Toast(getBaseContext());
+       //             }
+       //         });
+//
+       // queue.add(stringRequest);
 
-       }
-       catch (Exception e){
-           Log.w("network", e.toString(),e );
-       }
+
+        new Thread(()->{
+            StringBuilder builder = new StringBuilder();
+            String responce;
+            String requestStockStr="";
+            for(int i=0;i<stocksList.size();i++){
+                Stock st=stocksList.get(i);
+                if(st.code.startsWith("0")) requestStockStr +="s_sz"+st.code+",";
+                else if(st.code.startsWith("6")) requestStockStr+="s_sh"+st.code+",";
+                else if(st.code.startsWith("1")) requestStockStr+="sz"+st.code+",";
+                else if(st.code.startsWith("5")) requestStockStr+="sh"+st.code+",";
+            }
+            try{
+                //URL url=new URL("http://qt.gtimg.cn/");
+                URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                HttpURLConnection connection=(HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                //connection.connect();
+                InputStream in= connection.getInputStream();
+                Scanner scanner = new Scanner(in);
+
+                while (scanner.hasNext()){
+                    //responce =scanner.nextLine();
+                    builder.append(scanner.nextLine());
+                }
+                responce=builder.toString();
+
+                String[] div=responce.split(";");
+                test=responce;
+            }
+            catch (Exception e){
+                Log.w("network", e.toString(),e );
+            }
+        }).start();
 
 
 
