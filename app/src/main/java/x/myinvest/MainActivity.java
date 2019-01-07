@@ -25,15 +25,19 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences perf;
     //private SharedPreferences.Editor editor;
 
-
-    private ArrayList<String> stockList = new ArrayList<>();
-    private ArrayList<Float> priceList = new ArrayList<>();
-    private ArrayList<Integer> numberList = new ArrayList<>();
-    private String[] stockArray ;
-    private Integer[] nowPriceArr;
-    private Float[] priceArray ;
-    private Integer[] numberArray ;
+    private ArrayList<Stock> stocksList=new ArrayList<>();
+    private Stock[] stocksArr;
     private TableLayout tableLayout;
+
+
+    //private ArrayList<String> stockList = new ArrayList<>();
+    //private ArrayList<Float> priceList = new ArrayList<>();
+    //private ArrayList<Integer> numberList = new ArrayList<>();
+    //private String[] stockArray ;
+    //private Integer[] nowPriceArr;
+    //private Float[] priceArray ;
+    //private Integer[] numberArray ;
+    //
 
 
 
@@ -45,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         addButton.setOnClickListener(this::addStock);
         tableLayout = (TableLayout)findViewById(R.id.table_layout_invest);
         loadSavedData();
-        pullNetworkData();
+        //pullNetworkData();
     }
 
     protected void loadSavedData(){
@@ -60,13 +64,14 @@ public class MainActivity extends AppCompatActivity {
             //加载股票价格
             String[] priceArrayStr=perf.getString("buyedStockPrice","").split(",");
             //加载股票数量
-            String[] buyedNumberArrayStr=perf.getString("buyedStockNumber","").split(",");
-            for(String a: stockArrayStr){stockList.add(a);}
+            String[] numberArrayStr=perf.getString("buyedStockNumber","").split(",");
 
-            //float a=Float.parseFloat(priceArrayStr[0]);
-            for(String a: priceArrayStr){priceList.add(Float.parseFloat(a));}
-            for(String a: buyedNumberArrayStr){numberList.add(Integer.parseInt(a));}
-            updatDataArray(stockList,priceList,numberList);
+            for(int i=0;i<stockArrayStr.length;i++){
+                Stock savedStock = new Stock(stockArrayStr[i],priceArrayStr[i],numberArrayStr[i]);
+                stocksList.add(savedStock);
+            }
+
+            //updatDataArray(stockList,priceList,numberList);
             updateTabView();
         }
 
@@ -74,29 +79,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void addStock(View view){
-        EditText stockCodeEditText=(EditText) findViewById(R.id.editText_stock);
-        EditText StockPriceEditText=(EditText) findViewById(R.id.editText_price);
+
         String newStockCode=((EditText)findViewById(R.id.editText_stock)).getText().toString();
         String newStockPrice=((EditText) findViewById(R.id.editText_price)).getText().toString();
         String newStockNumber=((EditText) findViewById(R.id.editText_number)).getText().toString();
-        stockList.add(newStockCode);
-        priceList.add(Float.parseFloat(newStockPrice));
-        numberList.add(Integer.parseInt(newStockNumber));
-        updatDataArray(stockList,priceList,numberList);
-        saveData();
-        updateTabView();
+
+        if(newStockCode.length()==6){
+            stocksList.add(new Stock(newStockCode,newStockPrice ,newStockNumber ));
+        }
+        //stockList.add(newStockCode);
+        //priceList.add(Float.parseFloat(newStockPrice));
+        //numberList.add(Integer.parseInt(newStockNumber));
+        //updatDataArray(stockList,priceList,numberList);
+        //saveData();
+        //updateTabView();
 
 
     }
-    protected void updatDataArray(ArrayList<String> stock,ArrayList<Float> price,ArrayList<Integer> number){
+    protected void updatDataArray(){
 
-            stockArray =stock.toArray(new String[stock.size()]);
-            priceArray=price.toArray(new Float[price.size()]);
+            stocksArr =stocksList.toArray(new Stock[stocksList.size()]);
+            //priceArray=price.toArray(new Float[price.size()]);
             //for(int j=0;j<priceArrayFl.length;j++) {
             //    priceArray[j]=priceArrayFl[j].floatValue();
             //    if(1==1);
             //}
-            numberArray=number.toArray(new Integer[number.size()]);
+            //numberArray=number.toArray(new Integer[number.size()]);
             //for(int j=0;j<numberArrayInt.length;j++) {
             //    numberArray[j]=numberArrayInt[j];
             //}
@@ -124,8 +132,9 @@ public class MainActivity extends AppCompatActivity {
 
         tableLayout.addView(tableRow);
         //tableLayout.setDividerDrawable(getResources().getDrawable(R.drawable.bonus_list_item_divider));
-        for(int i=0;i<stockList.size();i++){
-            addTabRow(stockArray[i],priceArray[i].toString(),numberArray[i].toString());
+        for(int i=0;i<stocksList.size();i++){
+            Stock st = stocksList.get(i);
+            addTabRow(st.code, st.price,st.number);
             //addTabRow(stockArray[i],nowPriceArr[i].toString(),priceArray[i].toString(),numberArray[i].toString());
             //tableRow=new TableRow(this);
             //textView=new TextView(this);
@@ -171,16 +180,17 @@ public class MainActivity extends AppCompatActivity {
         String price="";
         String num="";
 
-        for (int i=0;i<stockList.size();i++) {
+        for (int i=0;i<stocksList.size();i++) {
+             Stock st=stocksList.get(i);
              if(i==0){
-                 stock+=stockArray[i];
-                 price+=priceArray[i];
-                 num+=numberArray[i];
+                 stock+=st.code;
+                 price+=st.price;
+                 num+=st.number;
              }
              else {
-                 stock=stock+","+stockArray[i];
-                 price=price+","+priceArray[i];
-                 num=num+","+numberArray[i];
+                 stock=stock+","+st.code;
+                 price=price+","+st.price;
+                 num=num+","+st.number;
              }
         }
         editor=perf.edit();
@@ -192,12 +202,13 @@ public class MainActivity extends AppCompatActivity {
 
     protected void pullNetworkData(){
 
-        String requestStockStr;
-        for(int i=0,i<stockArray.length,i++){
-            if(stockArray[i].startsWith("0")) requestStockStr +="s_sz"+stockArray[i];
-            else if(stockArray[i].startsWith("6")) requestStockStr+="s_sh"+stockArray[i];
-            else if(stockArray[i].startsWith("1")) requestStockStr+="sz"+stockArray[i];
-            else if(stockArray[i].startsWith("5")) requestStockStr+="sh"+stockArray[i];
+        String requestStockStr="";
+        for(int i=0;i<stocksList.size();i++){
+            Stock st=stocksList.get(i);
+            if(st.code.startsWith("0")) requestStockStr +="s_sz"+st.code;
+            else if(st.code.startsWith("6")) requestStockStr+="s_sh"+st.code;
+            else if(st.code.startsWith("1")) requestStockStr+="sz"+st.code;
+            else if(st.code.startsWith("5")) requestStockStr+="sh"+st.code;
         }
        try{
             URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
