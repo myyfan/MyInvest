@@ -93,7 +93,10 @@ public class MainActivity extends AppCompatActivity {
         String newStockNumber=((EditText) findViewById(R.id.editText_number)).getText().toString();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");
         String date = dateFormat.format(new Date());
-        if(newStockCode.length()==6){
+        if(newStockCode.length()!=6||newStockPrice.isEmpty()||newStockNumber.isEmpty()){
+            Toast.makeText(this, "输入数据错误", Toast.LENGTH_LONG).show();
+        }
+        else{
             stocksList.add(new Stock(newStockCode,newStockPrice ,newStockNumber ,date));
         }
         //stockList.add(newStockCode);
@@ -108,9 +111,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void delStock(View view ) {
-        int delRow = Integer.parseInt(   (   (EditText)findViewById(R.id.text_del)   ).getText().toString()   );
-        if(delRow<=stocksList.size()) stocksList.remove(delRow-1);
-        else Toast.makeText(MainActivity.this,"超出范围",Toast.LENGTH_LONG).show();
+        String delRow=(   (EditText)findViewById(R.id.text_del)   ).getText().toString();
+        if(delRow.isEmpty()){
+            Toast.makeText(MainActivity.this,"行号为空",Toast.LENGTH_LONG).show();
+        }
+        else{
+            int dr=Integer.parseInt(delRow);
+            if(dr>stocksList.size()){
+                Toast.makeText(MainActivity.this,"超出范围",Toast.LENGTH_LONG).show();
+            }
+            else {
+                stocksList.remove(dr-1);
+            }
+        }
+
+
     }
   //  protected void updatDataArray(){
 //
