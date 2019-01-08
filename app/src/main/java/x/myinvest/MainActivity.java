@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private double gain;
     private double gained=10000;
     private TextView textView;
+    Timer timer;
 
 
 
@@ -50,14 +51,27 @@ public class MainActivity extends AppCompatActivity {
         delButton.setOnClickListener(this::delStock);
         tableLayout = (TableLayout)findViewById(R.id.table_layout_invest);
         loadSavedData();
+        updateTabView();
         pullNetworkData();
-        Timer timer=new Timer();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        timer=new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 pullNetworkData();
             }
         }, 5000, 1000);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        timer.cancel();
     }
 
     protected void loadSavedData(){
