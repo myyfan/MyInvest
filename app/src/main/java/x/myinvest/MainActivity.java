@@ -1,33 +1,26 @@
 package x.myinvest;
 
 import android.content.SharedPreferences;
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.EOFException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Stock> stocksList=new ArrayList<>();
     private TableLayout tableLayout;
+    private double gain;
+    private double gained=10000;
+    private TextView textView;
 
 
 
@@ -46,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        textView=(TextView)findViewById(R.id.textView_gain);
+
         Button addButton=(Button) findViewById(R.id.btn_addstock);
         Button delButton=(Button) findViewById(R.id.btn_delstock) ;
         addButton.setOnClickListener(this::addStock);
@@ -75,9 +73,9 @@ public class MainActivity extends AppCompatActivity {
             String[] priceArrayStr=perf.getString("buyedStockPrice","").split(",");
             //加载股票数量
             String[] numberArrayStr=perf.getString("buyedStockNumber","").split(",");
-            String[] buyDate=perf.getString("buyedDate","").split(",");
+            String[] buyDate=perf.getString("buyDate","").split(",");
             for(int i=0;i<stockArrayStr.length;i++){
-                Stock savedStock = new Stock(stockArrayStr[i],priceArrayStr[i],numberArrayStr[i],"");
+                Stock savedStock = new Stock(stockArrayStr[i],priceArrayStr[i],numberArrayStr[i],buyDate[i]);
                 stocksList.add(savedStock);
             }
 
@@ -110,8 +108,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void delStock(View view ) {
-        String delRow = ((EditText)findViewById(R.id.text_del)).getText().toString();
-        stocksList.remove(Integer.parseInt(delRow));
+        int delRow = Integer.parseInt(   (   (EditText)findViewById(R.id.text_del)   ).getText().toString()   );
+        if(delRow<=stocksList.size()) stocksList.remove(delRow-1);
+        else Toast.makeText(MainActivity.this,"超出范围",Toast.LENGTH_LONG).show();
     }
   //  protected void updatDataArray(){
 //
@@ -120,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
 //
   //  }
     protected void updateTabView(){
+        textView.setText("浮盈："+String.format("%.2f", gain)+"    已实现盈利："+String.format("%.2f",gained)+"    总盈利："+String.format("%.2f",gain+gained));
         tableLayout.removeAllViews();
         tableLayout.setStretchAllColumns(true);
         //添加标题
@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
     }
     protected void addTabRow(Stock stock){
     //protected void addTabRow(String stock,String nowPrice,String price,String number){
+        DecimalFormat df = new DecimalFormat("#.00");
         TableRow tableRow=new TableRow(this);
         TextView textView=new TextView(this);
         tableRow=new TableRow(this);
@@ -163,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
         tableRow.addView(textView);
 
         textView=new TextView(this);
-        textView.setText(""+stock.earn);
+        textView.setText(""+String.format("%.2f",stock.earn));
         tableRow.addView(textView);
 
         textView=new TextView(this);
@@ -174,9 +175,7 @@ public class MainActivity extends AppCompatActivity {
     }
     protected void saveData(){
         SharedPreferences.Editor editor;
-        String stock="";
-        String price="";
-        String num="";
+
         StringBuilder stockBuilder =new StringBuilder("");
         StringBuilder priceBuilder =new StringBuilder("");
         StringBuilder numBuilder =new StringBuilder("");
@@ -188,39 +187,21 @@ public class MainActivity extends AppCompatActivity {
                 priceBuilder.append(stocksList.get(i).price + ",");
                 numBuilder.append(stocksList.get(i).number + ",");
                 dateBuilder.append(stocksList.get(i).buyDate + ",");
-          //  }
-          //  else {
-          //      stock=stock+","+st.code;
-          //      price=price+","+st.price;
-          //      num=num+","+st.number;
-          //  }
+
         }
 
-       // for (int i=0;i<stocksList.size();i++) {
-       //      Stock st=stocksList.get(i);
-       //      if(i==0){
-       //          stock+=st.code;
-       //          price+=st.price;
-       //          num+=st.number;
-       //      }
-       //      else {
-       //          stock=stock+","+st.code;
-       //          price=price+","+st.price;
-       //          num=num+","+st.number;
-       //      }
-       // }
-        stock =stockBuilder.toString();
         editor=perf.edit();
-        editor.putString("buyedStockCode",stock);
-        editor.putString("buyedStockPrice",price);
-        editor.putString("buyedStockNumber",num);
-        editor.putString("buyDate",dateBuilder.toString() );
+        editor.putString("buyedStockCode",stockBuilder.toString());
+        editor.putString("buyedStockPrice",priceBuilder.toString());
+        editor.putString("buyedStockNumber",numBuilder.toString());
+        editor.putString("buyDate",dateBuilder.toString());
         editor.apply();
     }
 
     protected void pullNetworkData(){
 
         new Thread(()->{
+            gain =0;
             StringBuilder builder = new StringBuilder();
             String responce;
             String requestStockStr="";
@@ -246,20 +227,25 @@ public class MainActivity extends AppCompatActivity {
                     builder.append(line);
                 }
 
-            //    Scanner scanner = new Scanner(in);
-            //
-            //    while (scanner.hasNext()){
-            //        //responce =scanner.nextLine();
-            //        builder.append(scanner.nextLine());
-            //    }
                 responce=builder.toString();
 
                 String[] div=responce.split(";");
                 String[] stockData;
                 for (int i = 0; i < stocksList.size(); i++) {
+                    Stock st =stocksList.get(i);
                     stockData=div[i].split("~");
-                    stocksList.get(i).name=stockData[1];
-                    stocksList.get(i).nowPrice=stockData[3];
+                    st.name=stockData[1];
+                    st.nowPrice=stockData[3];
+                    int numInt = Integer.parseInt(st.number);
+                    double nowValue=Double.parseDouble(st.nowPrice)*numInt;
+                    double cost=Double.parseDouble(st.price)*numInt;
+                    if(st.code.startsWith("0")||st.code.startsWith("3")||st.code.startsWith("6")) {
+                        st.earn = nowValue - (nowValue > 16666.67 ? nowValue * 0.0003 : 5) - cost - (cost > 16666.67 ? cost * 0.0003 : 5);
+                    }
+                    else {
+                        st.earn = nowValue - nowValue * 0.0003 - cost -  cost * 0.0003;
+                    }
+                    gain +=st.earn;
                 }
                 runOnUiThread(()->updateTabView());
                 //updateTabView();

@@ -8,7 +8,7 @@ public class Stock {
      String price;
      String number;
      String nowPrice="";
-     float earn=0;
+     double earn=0;
      String buyDate="-";
 
     public Stock(String code,String price,String number,String date) {
