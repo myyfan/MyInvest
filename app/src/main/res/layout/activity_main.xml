@@ -10,7 +10,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
+    <Button
+            android:id="@+id/btn_addstock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="增加"/>
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,22 +26,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/editText_price"
-        android:hint="购买价格"/>
+        android:hint="价 格"/>
         //app:layout_constraintLeft_toRightOf="@id/editText_stock"/>
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/editText_number"
-        android:hint="购买数量"/>
+        android:hint="数 量"/>
         //app:layout_constraintLeft_toRightOf="@id/editText_price"/>
 
-    <Button
-        android:id="@+id/add_stock"
+
+
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="加一笔"/>
-        //app:layout_constraintLeft_toRightOf="@id/editText_number"/>
+        android:id = "@+id/text_del"
+        android:hint="删除行"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_delstock"
+        android:text="删除"/>
     </LinearLayout>
 
         <TableLayout
