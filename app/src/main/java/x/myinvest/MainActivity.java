@@ -3,6 +3,7 @@ package x.myinvest;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Stock> stocksList=new ArrayList<>();
     private TableLayout tableLayout;
     private double gain;
-    private double gained=10000;
+    private double gained=6731;
     private TextView textView;
     Timer timer;
 
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 pullNetworkData();
             }
-        }, 5000, 1000);
+        }, 5000, 5000);
     }
 
     @Override
@@ -112,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else{
             stocksList.add(new Stock(newStockCode,newStockPrice ,newStockNumber ,date));
+            Toast.makeText(this, "添加成功", Toast.LENGTH_LONG).show();
         }
         //stockList.add(newStockCode);
         //priceList.add(Float.parseFloat(newStockPrice));
@@ -165,11 +167,11 @@ public class MainActivity extends AppCompatActivity {
         //tableLayout.setDividerDrawable(getResources().getDrawable(R.drawable.bonus_list_item_divider));
         for(int i=0;i<stocksList.size();i++){
             Stock st = stocksList.get(i);
-            addTabRow(st);
+            addTabRow(st,i+1);
         }
 
     }
-    protected void addTabRow(Stock stock){
+    protected void addTabRow(Stock stock,int num){
     //protected void addTabRow(String stock,String nowPrice,String price,String number){
         DecimalFormat df = new DecimalFormat("#.00");
         TableRow tableRow=new TableRow(this);
@@ -177,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
         tableRow=new TableRow(this);
 
         textView=new TextView(this);
-        textView.setText(stock.name+"\n"+stock.code);
+        textView.setText(num+"."+stock.name+"\n"+stock.code);
         tableRow.addView(textView);
 
         textView=new TextView(this);
@@ -261,20 +263,28 @@ public class MainActivity extends AppCompatActivity {
                 String[] div=responce.split(";");
                 String[] stockData;
                 for (int i = 0; i < stocksList.size(); i++) {
-                    Stock st =stocksList.get(i);
-                    stockData=div[i].split("~");
-                    st.name=stockData[1];
-                    st.nowPrice=stockData[3];
-                    int numInt = Integer.parseInt(st.number);
-                    double nowValue=Double.parseDouble(st.nowPrice)*numInt;
-                    double cost=Double.parseDouble(st.price)*numInt;
-                    if(st.code.startsWith("0")||st.code.startsWith("3")||st.code.startsWith("6")) {
-                        st.earn = nowValue - (nowValue > 16666.67 ? nowValue * 0.0003 : 5) - cost - (cost > 16666.67 ? cost * 0.0003 : 5);
-                    }
+
+                        Stock st =stocksList.get(i);
+                        stockData=div[i].split("~");
+                    if(stockData[2].equals(st.code)){
+                        st.name=stockData[1];
+                        st.nowPrice=stockData[3];
+                        int numInt = Integer.parseInt(st.number);
+                        double nowValue=Double.parseDouble(st.nowPrice)*numInt;
+                        double cost=Double.parseDouble(st.price)*numInt;
+                        if(st.code.startsWith("0")||st.code.startsWith("3")||st.code.startsWith("6")) {
+                            st.earn = nowValue - (nowValue > 16666.67 ? nowValue * 0.0003 : 5) - cost - (cost > 16666.67 ? cost * 0.0003 : 5);
+                        }
+                        else {
+                            st.earn = nowValue - nowValue * 0.0003 - cost -  cost * 0.0003;
+                        }
+                        gain +=st.earn; }
                     else {
-                        st.earn = nowValue - nowValue * 0.0003 - cost -  cost * 0.0003;
+                        st.name="返回数据不匹配";
+                        runOnUiThread(()->updateTabView());
+                        return;
                     }
-                    gain +=st.earn;
+
                 }
                 runOnUiThread(()->updateTabView());
                 //updateTabView();

@@ -26,7 +26,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/editText_stock"
         android:hint="股票代码"
-        android:inputType="number"/>
+        android:inputType="number"
+        android:selectAllOnFocus="true"/>
         //app:layout_constraintTop_toBottomOf="@id/view_invest"/>
 
     <EditText
@@ -34,7 +35,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/editText_price"
         android:hint="价 格"
-        android:inputType="number|numberDecimal"/>
+        android:inputType="number|numberDecimal"
+        android:selectAllOnFocus="true"/>
         //app:layout_constraintLeft_toRightOf="@id/editText_stock"/>
 
     <EditText
@@ -42,7 +44,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/editText_number"
         android:hint="数 量"
-        android:inputType="number"/>
+        android:inputType="number"
+        android:selectAllOnFocus="true"/>
         //app:layout_constraintLeft_toRightOf="@id/editText_price"/>
 
 
@@ -51,7 +54,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id = "@+id/text_del"
-        android:hint="删除行"/>
+        android:inputType="number"
+        android:hint="删除行"
+        android:selectAllOnFocus="true"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
