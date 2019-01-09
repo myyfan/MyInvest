@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 //
   //  }
     protected void updateTabView(){
-        textView.setText("浮盈："+String.format("%.2f", gain)+"    已实现盈利："+String.format("%.2f",gained)+"    总盈利："+String.format("%.2f",gain+gained));
+        textView.setText("浮盈："+String.format("%.2f", gain)+" 已实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained));
         tableLayout.removeAllViews();
         tableLayout.setStretchAllColumns(true);
         //添加标题
