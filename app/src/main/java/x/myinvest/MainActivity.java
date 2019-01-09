@@ -178,6 +178,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshText() {
+        textView.setText("浮盈："+String.format("%.2f", gain)+" 已实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained));
+
         for (int i = 0; i < stocksList.size(); i++) {
             DecimalFormat df = new DecimalFormat("#.00");
             Stock stock = stocksList.get(i);
@@ -296,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
                         Stock st =stocksList.get(i);
                     if (i == div.length ) {
                         st.name = "无返回数据";
-                        runOnUiThread(()->updateTabView());
+                        runOnUiThread(()->refreshText());
                         return;
                     }
                         stockData=div[i].split("~");
@@ -322,13 +324,13 @@ public class MainActivity extends AppCompatActivity {
                         gain +=st.earn; }
                     else {
                         st.name="返回数据不匹配";
-                        runOnUiThread(()->updateTabView());
+                        runOnUiThread(()->refreshText());
                         return;
                     }
 
                 }
                 orderTheList();
-                runOnUiThread(()->updateTabView());
+                runOnUiThread(()->refreshText());
                 //updateTabView();
             }
             catch (Exception e){
