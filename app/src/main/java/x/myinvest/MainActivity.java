@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 stocksList.remove(dr-1);
             }
         }
-
+        saveData();
 
     }
   //  protected void updatDataArray(){
@@ -158,10 +158,10 @@ public class MainActivity extends AppCompatActivity {
 
         TextView textView=new TextView(this); textView.setText("股票代码"); tableRow.addView(textView);
         textView=new TextView(this);          textView.setText("现价");      tableRow.addView(textView);
-        textView=new TextView(this);          textView.setText("购买价格");  tableRow.addView(textView);
-        textView=new TextView(this);          textView.setText("购买数量");  tableRow.addView(textView);
-        textView=new TextView(this);          textView.setText("盈亏");       tableRow.addView(textView);
-        textView=new TextView(this);          textView.setText("购买时间");   tableRow.addView(textView);
+        textView=new TextView(this);          textView.setText("购价成本");  tableRow.addView(textView);
+        textView=new TextView(this);          textView.setText("数量");  tableRow.addView(textView);
+        textView=new TextView(this);          textView.setText("盈亏现值");       tableRow.addView(textView);
+        textView=new TextView(this);          textView.setText("购入日");   tableRow.addView(textView);
 
         tableLayout.addView(tableRow);
         //tableLayout.setDividerDrawable(getResources().getDrawable(R.drawable.bonus_list_item_divider));
@@ -177,29 +177,29 @@ public class MainActivity extends AppCompatActivity {
         TableRow tableRow=new TableRow(this);
         TextView textView=new TextView(this);
         tableRow=new TableRow(this);
-
+        //股票名称/代码
         textView=new TextView(this);
         textView.setText(num+"."+stock.name+"\n"+stock.code);
         tableRow.addView(textView);
-
+        //股票现价/涨幅
         textView=new TextView(this);
-        textView.setText(stock.nowPrice);
+        textView.setText(stock.nowPrice+"\n"+stock.increase+"%");
         tableRow.addView(textView);
-
+        //购买价格/金额
         textView=new TextView(this);
-        textView.setText(stock.price);
+        textView.setText(stock.price+"\n"+String.format("%.2f",stock.cost));
         tableRow.addView(textView);
-
+        //股票数量
         textView=new TextView(this);
         textView.setText(stock.number);
         tableRow.addView(textView);
-
+        //盈利及百分比
         textView=new TextView(this);
-        textView.setText(""+String.format("%.2f",stock.earn));
+        textView.setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent)+"%");
         tableRow.addView(textView);
-
+        //购买日期
         textView=new TextView(this);
-        textView.setText(""+stock.buyDate);
+        textView.setText(stock.buyDate);
         tableRow.addView(textView);
 
         tableLayout.addView(tableRow);
@@ -257,7 +257,6 @@ public class MainActivity extends AppCompatActivity {
                     //responce =scanner.nextLine();
                     builder.append(line);
                 }
-
                 responce=builder.toString();
 
                 String[] div=responce.split(";");
@@ -269,14 +268,19 @@ public class MainActivity extends AppCompatActivity {
                     if(stockData[2].equals(st.code)){
                         st.name=stockData[1];
                         st.nowPrice=stockData[3];
+                        st.increase = stockData[5];
                         int numInt = Integer.parseInt(st.number);
-                        double nowValue=Double.parseDouble(st.nowPrice)*numInt;
-                        double cost=Double.parseDouble(st.price)*numInt;
+
                         if(st.code.startsWith("0")||st.code.startsWith("3")||st.code.startsWith("6")) {
-                            st.earn = nowValue - (nowValue > 16666.67 ? nowValue * 0.0003 : 5) - cost - (cost > 16666.67 ? cost * 0.0003 : 5);
+                            st.nowValue=Double.parseDouble(st.nowPrice)*numInt - (st.nowValue > 16666.67 ? st.nowValue * 0.0003 : 5);
+                            st.cost=Double.parseDouble(st.price)*numInt - (st.cost > 16666.67 ? st.cost * 0.0003 : 5);
+                            st.earn = st.nowValue - st.cost;
+                            st.earnPercent=st.earn/(st.cost - (st.cost > 16666.67 ? st.cost * 0.0003 : 5))*100;
                         }
                         else {
-                            st.earn = nowValue - nowValue * 0.0003 - cost -  cost * 0.0003;
+                            st.nowValue=Double.parseDouble(st.nowPrice)*numInt * (1 - 0.0003);
+                            st.cost=Double.parseDouble(st.price)*numInt * (1 - 0.0003);
+                            st.earn = st.nowValue - st.cost;
                         }
                         gain +=st.earn; }
                     else {

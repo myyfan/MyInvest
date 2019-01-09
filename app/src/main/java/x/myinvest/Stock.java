@@ -7,7 +7,11 @@ public class Stock {
      String code;
      String price;
      String number;
+     double cost;
      String nowPrice="";
+     double nowValue=0;
+     String increase="";
+     double earnPercent=0;
      double earn=0;
      String buyDate="-";
 
