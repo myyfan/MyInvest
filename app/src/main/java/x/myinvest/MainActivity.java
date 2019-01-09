@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Stock> stocksList=new ArrayList<>();
     private TableLayout tableLayout;
     private double gain;
-    private double gained=6731;
+    private double gained=-6731;
     private TextView textView;
     Timer timer;
 
