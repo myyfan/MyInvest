@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private double gained=-6731;
     private TextView textView;
     private Timer timer;
+    private TextView[][] textViewHandler;
 
 
 
@@ -152,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
 //
   //  }
     protected void updateTabView(){
+
+        textViewHandler = new TextView[ stocksList.size() ][6];
         textView.setText("浮盈："+String.format("%.2f", gain)+" 已实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained));
         tableLayout.removeAllViews();
         tableLayout.setStretchAllColumns(true);
@@ -169,10 +172,30 @@ public class MainActivity extends AppCompatActivity {
         //tableLayout.setDividerDrawable(getResources().getDrawable(R.drawable.bonus_list_item_divider));
         for(int i=0;i<stocksList.size();i++){
             Stock st = stocksList.get(i);
-            addTabRow(st,i+1);
+            addTabRow(st,i);
         }
 
     }
+
+    public void refreshText() {
+        for (int i = 0; i < stocksList.size(); i++) {
+            DecimalFormat df = new DecimalFormat("#.00");
+            Stock stock = stocksList.get(i);
+            //股票名称/代码
+            textViewHandler[i][0].setText((i+1)+"."+stock.name+"\n"+stock.code);
+            //股票现价/涨幅
+            textViewHandler[i][1].setText(stock.nowPrice+"\n"+stock.increase+"%");
+            //购买价格/金额
+            textViewHandler[i][2].setText(stock.price+"\n"+String.format("%.2f",stock.cost));
+            //股票数量
+            textViewHandler[i][3].setText(stock.number);
+            //盈利及百分比
+            textViewHandler[i][4].setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent)+"%");
+            //购买日期
+            textViewHandler[i][5].setText(stock.buyDate);
+        }
+    }
+
     protected void addTabRow(Stock stock,int num){
     //protected void addTabRow(String stock,String nowPrice,String price,String number){
         DecimalFormat df = new DecimalFormat("#.00");
@@ -181,27 +204,33 @@ public class MainActivity extends AppCompatActivity {
         tableRow=new TableRow(this);
         //股票名称/代码
         textView=new TextView(this);
-        textView.setText(num+"."+stock.name+"\n"+stock.code);
+        textView.setText((num+1)+"."+stock.name+"\n"+stock.code);
+        textViewHandler[num][0]=textView;
         tableRow.addView(textView);
         //股票现价/涨幅
         textView=new TextView(this);
         textView.setText(stock.nowPrice+"\n"+stock.increase+"%");
+        textViewHandler[num][1]=textView;
         tableRow.addView(textView);
         //购买价格/金额
         textView=new TextView(this);
         textView.setText(stock.price+"\n"+String.format("%.2f",stock.cost));
+        textViewHandler[num][2]=textView;
         tableRow.addView(textView);
         //股票数量
         textView=new TextView(this);
         textView.setText(stock.number);
+        textViewHandler[num][3]=textView;
         tableRow.addView(textView);
         //盈利及百分比
         textView=new TextView(this);
         textView.setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent)+"%");
+        textViewHandler[num][4]=textView;
         tableRow.addView(textView);
         //购买日期
         textView=new TextView(this);
         textView.setText(stock.buyDate);
+        textViewHandler[num][5]=textView;
         tableRow.addView(textView);
 
         tableLayout.addView(tableRow);
