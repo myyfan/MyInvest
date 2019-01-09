@@ -34,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private double gain;
     private double gained=-6731;
     private TextView textView;
-    Timer timer;
+    private ForOrder[] forOrder;
+    private Timer timer;
 
 
 
@@ -262,10 +263,13 @@ public class MainActivity extends AppCompatActivity {
                 String[] div=responce.split(";");
                 String[] stockData;
                 for (int i = 0; i < stocksList.size(); i++) {
-
+                    if (forOrder == null || forOrder.length != stocksList.size()) {
+                        forOrder = new ForOrder[stocksList.size()];
+                    }
                         Stock st =stocksList.get(i);
                         stockData=div[i].split("~");
                     if(stockData[2].equals(st.code)){
+
                         st.name=stockData[1];
                         st.nowPrice=stockData[3];
                         st.increase = stockData[5];
@@ -275,13 +279,16 @@ public class MainActivity extends AppCompatActivity {
                             st.nowValue=Double.parseDouble(st.nowPrice)*numInt - (st.nowValue > 16666.67 ? st.nowValue * 0.0003 : 5);
                             st.cost=Double.parseDouble(st.price)*numInt - (st.cost > 16666.67 ? st.cost * 0.0003 : 5);
                             st.earn = st.nowValue - st.cost;
-                            st.earnPercent=st.earn/(st.cost - (st.cost > 16666.67 ? st.cost * 0.0003 : 5))*100;
+                            st.earnPercent=st.earn/st.cost*100;
                         }
                         else {
                             st.nowValue=Double.parseDouble(st.nowPrice)*numInt * (1 - 0.0003);
                             st.cost=Double.parseDouble(st.price)*numInt * (1 - 0.0003);
                             st.earn = st.nowValue - st.cost;
+                            st.earnPercent=st.earn/st.cost*100;
                         }
+                        forOrder[i].order=i;
+                        forOrder[i].earnPerCopy=st.earnPercent;
                         gain +=st.earn; }
                     else {
                         st.name="返回数据不匹配";
