@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private double gain;
     private double gained=-6731;
     private TextView textView;
-    private ForOrder[] forOrder;
     private Timer timer;
 
 
@@ -122,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         //updatDataArray(stockList,priceList,numberList);
 
         saveData();
-        //updateTabView();
+        updateTabView();
 
 
     }
@@ -139,9 +138,11 @@ public class MainActivity extends AppCompatActivity {
             }
             else {
                 stocksList.remove(dr-1);
+                Toast.makeText(MainActivity.this,"删除成功",Toast.LENGTH_LONG).show();
             }
         }
         saveData();
+        updateTabView();
 
     }
   //  protected void updatDataArray(){
@@ -263,10 +264,12 @@ public class MainActivity extends AppCompatActivity {
                 String[] div=responce.split(";");
                 String[] stockData;
                 for (int i = 0; i < stocksList.size(); i++) {
-                    if (forOrder == null || forOrder.length != stocksList.size()) {
-                        forOrder = new ForOrder[stocksList.size()];
-                    }
                         Stock st =stocksList.get(i);
+                    if (i == div.length ) {
+                        st.name = "无返回数据";
+                        runOnUiThread(()->updateTabView());
+                        return;
+                    }
                         stockData=div[i].split("~");
                     if(stockData[2].equals(st.code)){
 
@@ -287,8 +290,6 @@ public class MainActivity extends AppCompatActivity {
                             st.earn = st.nowValue - st.cost;
                             st.earnPercent=st.earn/st.cost*100;
                         }
-                        forOrder[i].order=i;
-                        forOrder[i].earnPerCopy=st.earnPercent;
                         gain +=st.earn; }
                     else {
                         st.name="返回数据不匹配";
@@ -297,15 +298,32 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
+                orderTheList();
                 runOnUiThread(()->updateTabView());
                 //updateTabView();
             }
             catch (Exception e){
-                Log.w("network", e.toString(),e ); }
+                Log.w("network", e.toString(),e );
+            }
         }).start();
 
 
 
+    }
+
+    public void orderTheList() {
+        int j=stocksList.size();
+        Stock temp;
+        for (int i = 0; i < j - 1; i++) {
+            for (int k = 0; k < j - 1; k++) {
+                if (stocksList.get(k).earnPercent < stocksList.get(k + 1).earnPercent) {
+                    temp=stocksList.get(k);
+                    stocksList.set(k,stocksList.get(k + 1));
+                    stocksList.set(k+1,temp);
+                }
+            }
+            j--;
+        }
     }
 
 }
