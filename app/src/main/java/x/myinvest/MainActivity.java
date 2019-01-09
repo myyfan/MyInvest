@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         timer=new Timer();
+        refreshText();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
