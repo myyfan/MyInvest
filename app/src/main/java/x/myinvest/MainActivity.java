@@ -344,17 +344,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void orderTheList() {
-        int j=stocksList.size();
         Stock temp;
-        for (int i = 0; i < j - 1; i++) {
-            for (int k = 0; k < j - 1; k++) {
-                if (stocksList.get(k).earnPercent < stocksList.get(k + 1).earnPercent) {
-                    temp=stocksList.get(k);
-                    stocksList.set(k,stocksList.get(k + 1));
-                    stocksList.set(k+1,temp);
+        int j=stocksList.size()-1;
+        int haveOrderRow=j;
+        for (int i = 0; i <stocksList.size(); i++) {
+                for (int k = 0; k <j; k++) {
+                    if (stocksList.get(k).earnPercent < stocksList.get(k + 1).earnPercent) {
+                        temp = stocksList.get(k);
+                        stocksList.set(k, stocksList.get(k + 1));
+                        stocksList.set(k + 1, temp);
+                        haveOrderRow=j;
+                    }
                 }
-            }
-            j--;
+                j=haveOrderRow;
         }
     }
 
