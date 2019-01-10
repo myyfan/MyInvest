@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        pullNetworkData();
         timer=new Timer();
         refreshText();
         timer.schedule(new TimerTask() {
