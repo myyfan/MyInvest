@@ -64,7 +64,9 @@
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/table_layout_invest">
+            android:id="@+id/table_layout_invest"
+            android:divider="@drawable/line_h"
+            android:showDividers="middle">
         </TableLayout>
     </ScrollView>
 
