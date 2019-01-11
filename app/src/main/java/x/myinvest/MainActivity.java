@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView;
     private Timer timer;
     private TextView[][] textViewHandler;
+    private Double allValue=0.0;
 
 
 
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshText() {
-        textView.setText("浮盈："+String.format("%.2f", gain)+" 已实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained));
+        textView.setText("浮盈："+String.format("%.2f", gain)+" 已实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained)+"现值:"+String.format("%.0f",allValue));
 
         for (int i = 0; i < stocksList.size(); i++) {
             DecimalFormat df = new DecimalFormat("#.00");
@@ -327,7 +328,9 @@ public class MainActivity extends AppCompatActivity {
                             st.earn = st.nowValue - st.cost;
                             st.earnPercent=st.earn/st.cost*100;
                         }
-                        gain +=st.earn; }
+                        gain +=st.earn;
+                        allValue+=st.nowValue;
+                    }
                     else {
                         st.name="返回数据不匹配";
                         runOnUiThread(()->refreshText());
