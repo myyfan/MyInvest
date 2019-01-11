@@ -303,14 +303,18 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(()->refreshText());
                         return;
                     }
-                        stockData=div[i].split("~");
+                    stockData=div[i].split("~");
                     if(stockData[2].equals(st.code)){
 
                         st.name=stockData[1];
                         st.nowPrice=stockData[3];
-                        st.increase = stockData[5];
-                        int numInt = Integer.parseInt(st.number);
 
+                        if (st.code.startsWith("0") || st.code.startsWith("3") || st.code.startsWith("6")) {
+                            st.increase = stockData[32];
+                        } else {
+                            st.increase = stockData[5];
+                        }
+                        int numInt = Integer.parseInt(st.number);
                         if(st.code.startsWith("0")||st.code.startsWith("3")||st.code.startsWith("6")) {
                             st.nowValue=Double.parseDouble(st.nowPrice)*numInt - (st.nowValue > 16666.67 ? st.nowValue * 0.0003 : 5);
                             st.cost=Double.parseDouble(st.price)*numInt - (st.cost > 16666.67 ? st.cost * 0.0003 : 5);
