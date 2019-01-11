@@ -310,9 +310,9 @@ public class MainActivity extends AppCompatActivity {
                         st.nowPrice=stockData[3];
 
                         if (st.code.startsWith("0") || st.code.startsWith("3") || st.code.startsWith("6")) {
-                            st.increase = stockData[32];
-                        } else {
                             st.increase = stockData[5];
+                        } else {
+                            st.increase = stockData[32];
                         }
                         int numInt = Integer.parseInt(st.number);
                         if(st.code.startsWith("0")||st.code.startsWith("3")||st.code.startsWith("6")) {
