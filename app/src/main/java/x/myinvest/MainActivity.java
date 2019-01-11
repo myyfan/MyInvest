@@ -269,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
 
         new Thread(()->{
             gain =0;
+            allValue=0.0;
             StringBuilder builder = new StringBuilder();
             String responce;
             String requestStockStr="";
