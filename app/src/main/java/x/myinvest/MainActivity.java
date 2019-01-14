@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
             //购买价格/金额
             textViewHandler[i][2].setText(stock.price+"\n"+String.format("%.2f",stock.cost));
             //股票数量/现值
-            textViewHandler[i][3].setText(stock.number+"\n"+stock.nowValue);
+            textViewHandler[i][3].setText(stock.number+"\n"+String.format("%.0f",stock.nowValue));
             //盈利及百分比
             textViewHandler[i][4].setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent)+"%");
             //购买日期
