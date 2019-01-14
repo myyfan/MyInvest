@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private Timer timer;
     private TextView[][] textViewHandler;
     private Double allValue=0.0;
+    private Stock shangZheng;
 
 
 
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView=(TextView)findViewById(R.id.textView_gain);
+        shangZheng=new Stock();
 
         Button addButton=(Button) findViewById(R.id.btn_addstock);
         Button delButton=(Button) findViewById(R.id.btn_delstock) ;
@@ -158,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
     protected void updateTabView(){
 
         textViewHandler = new TextView[ stocksList.size() ][6];
-        textView.setText("浮盈："+String.format("%.2f", gain)+" 已实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained));
+        textView.setText("浮盈："+String.format("%.2f", gain)+" 实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained));
         tableLayout.removeAllViews();
         tableLayout.setStretchAllColumns(true);
         //添加标题
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         TextView textView=new TextView(this); textView.setText("股票代码"); tableRow.addView(textView);
         textView=new TextView(this);          textView.setText("现价");      tableRow.addView(textView);
         textView=new TextView(this);          textView.setText("购价成本");  tableRow.addView(textView);
-        textView=new TextView(this);          textView.setText("数量");  tableRow.addView(textView);
+        textView=new TextView(this);          textView.setText("数量现值");  tableRow.addView(textView);
         textView=new TextView(this);          textView.setText("盈亏现值");       tableRow.addView(textView);
         textView=new TextView(this);          textView.setText("购入日");   tableRow.addView(textView);
 
@@ -181,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshText() {
-        textView.setText("浮盈："+String.format("%.2f", gain)+" 已实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+        textView.setText("浮盈："+String.format("%.2f", gain)+" 实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained)+"现值:"+String.format("%.0f",allValue)+"上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase);
 
         for (int i = 0; i < stocksList.size(); i++) {
             DecimalFormat df = new DecimalFormat("#.00");
@@ -192,8 +194,8 @@ public class MainActivity extends AppCompatActivity {
             textViewHandler[i][1].setText(stock.nowPrice+"\n"+stock.increase+"%");
             //购买价格/金额
             textViewHandler[i][2].setText(stock.price+"\n"+String.format("%.2f",stock.cost));
-            //股票数量
-            textViewHandler[i][3].setText(stock.number);
+            //股票数量/现值
+            textViewHandler[i][3].setText(stock.number+"\n"+stock.nowValue);
             //盈利及百分比
             textViewHandler[i][4].setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent)+"%");
             //购买日期
@@ -271,18 +273,23 @@ public class MainActivity extends AppCompatActivity {
             gain =0;
             allValue=0.0;
             StringBuilder builder = new StringBuilder();
-            String responce;
-            String requestStockStr="";
+          //  String requestStockStr="";
+            builder.append("http://qt.gtimg.cn/q=");
             for(int i=0;i<stocksList.size();i++){
                 Stock st=stocksList.get(i);
-                if(st.code.startsWith("0")) requestStockStr +="s_sz"+st.code+",";
-                else if(st.code.startsWith("6")) requestStockStr+="s_sh"+st.code+",";
-                else if(st.code.startsWith("1")) requestStockStr+="sz"+st.code+",";
-                else if(st.code.startsWith("5")) requestStockStr+="sh"+st.code+",";
+                if(st.code.startsWith("0")) builder.append("s_sz"+st.code+",");
+                else if(st.code.startsWith("6")) builder.append("s_sh"+st.code+",");
+                else if(st.code.startsWith("1")) builder.append("sz"+st.code+",");
+                else if(st.code.startsWith("5")) builder.append("sh"+st.code+",");
+              //  if(st.code.startsWith("0")) requestStockStr +="s_sz"+st.code+",";
+              //  else if(st.code.startsWith("6")) requestStockStr+="s_sh"+st.code+",";
+              //  else if(st.code.startsWith("1")) requestStockStr+="sz"+st.code+",";
+              //  else if(st.code.startsWith("5")) requestStockStr+="sh"+st.code+",";
             }
+            builder.append("sh000001");
             try{
-                //URL url=new URL("http://qt.gtimg.cn/");
-                URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                URL url=new URL(builder.toString());
+                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
                 HttpURLConnection connection=(HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 //connection.connect();
@@ -294,6 +301,7 @@ public class MainActivity extends AppCompatActivity {
                     //responce =scanner.nextLine();
                     builder.append(line);
                 }
+                String responce;
                 responce=builder.toString();
 
                 String[] div=responce.split(";");
@@ -339,6 +347,9 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
+                stockData=div[stocksList.size()].split("~");
+                shangZheng.nowPrice = stockData[3];
+                shangZheng.increase = stockData[32];
                 orderTheList();
                 runOnUiThread(()->refreshText());
                 //updateTabView();
