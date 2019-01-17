@@ -1,5 +1,6 @@
 package x.myinvest;
 
+import android.arch.lifecycle.ViewModelProvider;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,12 +19,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences perf;
@@ -38,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView[][] textViewHandler;
     private Double allValue=0.0;
     private Stock shangZheng;
+    private String tenYears;
+
 
 
 
@@ -151,12 +157,11 @@ public class MainActivity extends AppCompatActivity {
         updateTabView();
 
     }
-  //  protected void updatDataArray(){
-//
-  //          stocksArr =stocksList.toArray(new Stock[stocksList.size()]);
-  //          updateTabView();
-//
-  //  }
+    //
+    //          stocksArr =stocksList.toArray(new Stock[stocksList.size()]);
+    //          updateTabView();
+    //
+    //  }
     protected void updateTabView(){
 
         textViewHandler = new TextView[ stocksList.size() ][6];
@@ -181,9 +186,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+    //  protected void updatDataArray(){
 
     public void refreshText() {
-        textView.setText("浮盈："+String.format("%.2f", gain)+" 实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained)+"现值:"+String.format("%.0f",allValue)+"上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase);
+        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+"浮盈："+String.format("%.2f", gain)+" \n实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained)+"现值:"+String.format("%.0f",allValue));
 
         for (int i = 0; i < stocksList.size(); i++) {
             DecimalFormat df = new DecimalFormat("#.00");
@@ -290,9 +296,9 @@ public class MainActivity extends AppCompatActivity {
             try{
                 URL url=new URL(builder.toString());
                 //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
-                HttpURLConnection connection=(HttpURLConnection) url.openConnection();
+                HttpURLConnection connection= (HttpURLConnection)url.openConnection();
                 connection.setRequestMethod("GET");
-                //connection.connect();
+                connection.connect();
                 InputStream in= connection.getInputStream();
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in,"gbk"));
@@ -341,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
                         allValue+=st.nowValue;
                     }
                     else {
-                        st.name="返回数据不匹配";
+                        st.name="不匹配";
                         runOnUiThread(()->refreshText());
                         return;
                     }
@@ -350,6 +356,29 @@ public class MainActivity extends AppCompatActivity {
                 stockData=div[stocksList.size()].split("~");
                 shangZheng.nowPrice = stockData[3];
                 shangZheng.increase = stockData[32];
+                //connection.disconnect();
+
+                //获取十年国债利率
+
+                //in.close();
+                url=new URL("https://forexdata.wallstreetcn.com/real?en_prod_code=CHINA10YEAR&fields=prod_name,last_px,px_change,px_change_rate,high_px,low_px,open_px,preclose_px,business_amount,business_balance,market_value,turnover_ratio,dyn_pb_rate,amplitude,pe_rate,bps,hq_type_code,trade_status,bid_grp,offer_grp,business_amount_in,business_amount_out,circulation_value,securities_type,update_time,price_precision,week_52_high,week_52_low");
+                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                HttpsURLConnection conn=(HttpsURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Referer","https://wallstreetcn.com/markets/bonds/CHINA10YEAR");
+                conn.setRequestProperty("Host","forexdata.wallstreetcn.com");
+                conn.setRequestProperty("Connection","keep-alive");
+                conn.connect();
+                builder.setLength(0);
+                InputStream  inx= conn.getInputStream();
+                BufferedReader read = new BufferedReader(new InputStreamReader(inx,"utf-8"));
+                while ((line=read.readLine())!=null){
+                    //responce =scanner.nextLine();
+                    builder.append(line);
+                }
+                responce=builder.toString();
+                div=responce.split(",");
+                tenYears=div[2];
                 orderTheList();
                 runOnUiThread(()->refreshText());
                 //updateTabView();
