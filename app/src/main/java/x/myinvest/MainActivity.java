@@ -189,10 +189,10 @@ public class MainActivity extends AppCompatActivity {
     //  protected void updatDataArray(){
 
     public void refreshText() {
-        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+"浮盈："+String.format("%.2f", gain)+" \n实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.2f",gained)+"\n浮盈："+String.format("%.2f", gain)+" 总盈利："+String.format("%.2f",gain+gained)+"现值:"+String.format("%.0f",allValue));
 
         for (int i = 0; i < stocksList.size(); i++) {
-            DecimalFormat df = new DecimalFormat("#.00");
+          //  DecimalFormat df = new DecimalFormat("#.00");
             Stock stock = stocksList.get(i);
             //股票名称/代码
             textViewHandler[i][0].setText((i+1)+"."+stock.name+"\n"+stock.code);
