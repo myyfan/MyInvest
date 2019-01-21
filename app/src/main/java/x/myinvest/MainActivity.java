@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
     protected void updateTabView(){
 
         textViewHandler = new TextView[ stocksList.size() ][6];
-        textView.setText("浮盈："+String.format("%.2f", gain)+" 实现盈利："+String.format("%.2f",gained)+" 总盈利："+String.format("%.2f",gain+gained));
+        textView.setText("浮盈："+String.format("%.0f", gain)+" 实现盈利："+String.format("%.0f",gained)+" 总盈利："+String.format("%.0f",gain+gained));
         tableLayout.removeAllViews();
         tableLayout.setStretchAllColumns(true);
         //添加标题
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
     //  protected void updatDataArray(){
 
     public void refreshText() {
-        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.2f",gained)+"\n浮盈："+String.format("%.2f", gain)+" 总盈利："+String.format("%.2f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
 
         for (int i = 0; i < stocksList.size(); i++) {
           //  DecimalFormat df = new DecimalFormat("#.00");
