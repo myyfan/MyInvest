@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         TableRow tableRow=new TableRow(this);
 
         TextView textView=new TextView(this); textView.setText("股票代码"); tableRow.addView(textView);
-        textView=new TextView(this);          textView.setText("现价");      tableRow.addView(textView);
+        textView=new TextView(this);          textView.setText("现价涨幅");      tableRow.addView(textView);
         textView=new TextView(this);          textView.setText("购价成本");  tableRow.addView(textView);
         textView=new TextView(this);          textView.setText("数量现值");  tableRow.addView(textView);
         textView=new TextView(this);          textView.setText("盈亏现值");       tableRow.addView(textView);
