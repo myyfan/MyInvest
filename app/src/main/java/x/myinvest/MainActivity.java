@@ -1,6 +1,7 @@
 package x.myinvest;
 
 import android.arch.lifecycle.ViewModelProvider;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,9 +9,11 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -31,6 +34,9 @@ import java.util.TimerTask;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import x.myinvest.popup.PopUpAddStock;
+import x.myinvest.popup.PopupDelStock;
+
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences perf;
     //private SharedPreferences.Editor editor;
@@ -45,10 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private Double allValue=0.0;
     private Stock shangZheng;
     private String tenYears;
-
-
-
-
+    private FrameLayout mainFrameLayout;
+    private View popUp;
 
 
     @Override
@@ -57,7 +61,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         textView=(TextView)findViewById(R.id.textView_gain);
         shangZheng=new Stock();
-
+        mainFrameLayout = (FrameLayout) findViewById(R.id.mainView);
+        mainFrameLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainFrameLayout.removeView(popUp);
+            }
+        });
         Button addButton=(Button) findViewById(R.id.btn_addstock);
         Button delButton=(Button) findViewById(R.id.btn_delstock) ;
         addButton.setOnClickListener(this::addStock);
@@ -74,6 +84,30 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater menuInflater = new MenuInflater(this);
         menuInflater.inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mainFrameLayout.removeView(popUp);
+        switch (item.getItemId()) {
+            case R.id.mainMenu_addStock:
+                showPopUpAddStock();
+                //PopUpAddStock popAddStock = new PopUpAddStock(this);
+                break;
+            case R.id.mainMenu_delStock:
+                showPopUpDelStock();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    void showPopUpAddStock() {
+        popUp = new PopUpAddStock(this);
+        mainFrameLayout.addView(popUp);
+    }
+
+    void showPopUpDelStock() {
+        popUp = new PopupDelStock(this);
+        mainFrameLayout.addView(popUp);
     }
 
     @Override
@@ -122,6 +156,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void addStock(String newStockCode,String newStockPrice,String newStockNumber) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");
+        String date = dateFormat.format(new Date());
+        if(newStockCode.length()!=6||newStockPrice.isEmpty()||newStockNumber.isEmpty()){
+            Toast.makeText(this, "输入数据错误", Toast.LENGTH_LONG).show();
+        }
+        else{
+            stocksList.add(new Stock(newStockCode,newStockPrice ,newStockNumber ,date));
+            Toast.makeText(this, "添加成功", Toast.LENGTH_LONG).show();
+        }
+        saveData();
+        updateTabView();
+    }
+
     protected void addStock(View view){
 
         String newStockCode=((EditText)findViewById(R.id.editText_stock)).getText().toString();
@@ -145,6 +193,24 @@ public class MainActivity extends AppCompatActivity {
         updateTabView();
 
 
+    }
+
+    public void delStock(String delRow) {
+        if(delRow.isEmpty()){
+            Toast.makeText(MainActivity.this,"行号为空",Toast.LENGTH_LONG).show();
+        }
+        else{
+            int dr=Integer.parseInt(delRow);
+            if(dr>stocksList.size()){
+                Toast.makeText(MainActivity.this,"超出范围",Toast.LENGTH_LONG).show();
+            }
+            else {
+                stocksList.remove(dr-1);
+                Toast.makeText(MainActivity.this,"删除成功",Toast.LENGTH_LONG).show();
+            }
+        }
+        saveData();
+        updateTabView();
     }
 
     protected void delStock(View view ) {

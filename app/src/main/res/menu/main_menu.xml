@@ -3,13 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
             <item android:title="调整历史盈亏"
-                android:id="@+id/menu_option"
+                android:id="@+id/mainMenu_option"
                 />
-            <item android:title="买入"
-                android:id="@+id/menu_addStock"
+            <item android:title="买入股票"
+                android:id="@+id/mainMenu_addStock"
                 />
-            <item android:title="卖出"
-                android:id="@+id/menu_saleStock"
+            <item android:title="卖出股票"
+                android:id="@+id/mainMenu_saleStock"
                 />
+    <item android:title="删除股票"
+        android:id="@+id/mainMenu_delStock"/>
 
 </menu>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/layout_delStock">
+    <LinearLayout
+        android:id="@+id/layout_delStock_LinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
+        <EditText
+            android:id="@+id/layout_delStock_editText_rowNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:hint="输入要删除的行号"
+            android:layout_margin="@dimen/layout_addstock_margin">
+        </EditText>
+        <Button
+            android:id="@+id/layout_delStock_button_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="删除确认"
+            android:layout_margin="@dimen/layout_addstock_margin"/>
+    </LinearLayout>
+
+
+</RelativeLayout>
