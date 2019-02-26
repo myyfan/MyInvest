@@ -57,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
     private Double allValue=0.0;
     private Stock shangZheng;
     private String tenYears;
-    private FrameLayout mainFrameLayout;
-    private View popUp;
 
 
     @Override
@@ -67,13 +65,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         textView=(TextView)findViewById(R.id.textView_gain);
         shangZheng=new Stock();
-        mainFrameLayout = (FrameLayout) findViewById(R.id.mainView);
-        mainFrameLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mainFrameLayout.removeView(popUp);
-            }
-        });
         Button addButton=(Button) findViewById(R.id.btn_addstock);
         Button delButton=(Button) findViewById(R.id.btn_delstock) ;
         addButton.setOnClickListener(this::addStock);
@@ -94,8 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mainFrameLayout.removeView(popUp);
-        switch (item.getItemId()) {
+                switch (item.getItemId()) {
             case R.id.mainMenu_addStock:
                 showPopUpAddStock();
                 //PopUpAddStock popAddStock = new PopUpAddStock(this);
@@ -106,27 +96,26 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
     void showPopUpAddStock() {
-        popUp = new PopUpAddStock(this);
+        View popUp = new PopUpAddStock(this);
         //mainFrameLayout.addView(popUp);
+        showPopupWindows(popUp);
+    }
+
+    void showPopUpDelStock() {
+        View popUp = new PopupDelStock(this);
+        showPopupWindows(popUp);
+    }
+
+    void showPopupWindows(View popUp) {
         PopupWindow popupWindow=new PopupWindow(popUp, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setOutsideTouchable(true);
         popupWindow.setFocusable(true);
         popupWindow.setTouchable(true);
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.showAtLocation(popUp, Gravity.CENTER, 0, 0);
-        popUp.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                //mainFrameLayout.removeView(popUp);
-
-            }
-        });
-    }
-
-    void showPopUpDelStock() {
-        popUp = new PopupDelStock(this);
-        mainFrameLayout.addView(popUp);
     }
 
     @Override
