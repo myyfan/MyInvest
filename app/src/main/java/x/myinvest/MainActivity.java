@@ -1,19 +1,25 @@
 package x.myinvest;
 
+import android.app.ActionBar;
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.PopupWindow;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -102,7 +108,20 @@ public class MainActivity extends AppCompatActivity {
     }
     void showPopUpAddStock() {
         popUp = new PopUpAddStock(this);
-        mainFrameLayout.addView(popUp);
+        //mainFrameLayout.addView(popUp);
+        PopupWindow popupWindow=new PopupWindow(popUp, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+        popupWindow.setTouchable(true);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popupWindow.showAtLocation(popUp, Gravity.CENTER, 0, 0);
+        popUp.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                //mainFrameLayout.removeView(popUp);
+
+            }
+        });
     }
 
     void showPopUpDelStock() {
