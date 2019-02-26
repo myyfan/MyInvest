@@ -65,10 +65,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         textView=(TextView)findViewById(R.id.textView_gain);
         shangZheng=new Stock();
-        Button addButton=(Button) findViewById(R.id.btn_addstock);
-        Button delButton=(Button) findViewById(R.id.btn_delstock) ;
-        addButton.setOnClickListener(this::addStock);
-        delButton.setOnClickListener(this::delStock);
         tableLayout = (TableLayout)findViewById(R.id.table_layout_invest);
         loadSavedData();
         updateTabView();
@@ -178,30 +174,6 @@ public class MainActivity extends AppCompatActivity {
         updateTabView();
     }
 
-    protected void addStock(View view){
-
-        String newStockCode=((EditText)findViewById(R.id.editText_stock)).getText().toString();
-        String newStockPrice=((EditText) findViewById(R.id.editText_price)).getText().toString();
-        String newStockNumber=((EditText) findViewById(R.id.editText_number)).getText().toString();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");
-        String date = dateFormat.format(new Date());
-        if(newStockCode.length()!=6||newStockPrice.isEmpty()||newStockNumber.isEmpty()){
-            Toast.makeText(this, "输入数据错误", Toast.LENGTH_LONG).show();
-        }
-        else{
-            stocksList.add(new Stock(newStockCode,newStockPrice ,newStockNumber ,date));
-            Toast.makeText(this, "添加成功", Toast.LENGTH_LONG).show();
-        }
-        //stockList.add(newStockCode);
-        //priceList.add(Float.parseFloat(newStockPrice));
-        //numberList.add(Integer.parseInt(newStockNumber));
-        //updatDataArray(stockList,priceList,numberList);
-
-        saveData();
-        updateTabView();
-
-
-    }
 
     public void delStock(String delRow) {
         if(delRow.isEmpty()){
@@ -221,30 +193,6 @@ public class MainActivity extends AppCompatActivity {
         updateTabView();
     }
 
-    protected void delStock(View view ) {
-        String delRow=(   (EditText)findViewById(R.id.text_del)   ).getText().toString();
-        if(delRow.isEmpty()){
-            Toast.makeText(MainActivity.this,"行号为空",Toast.LENGTH_LONG).show();
-        }
-        else{
-            int dr=Integer.parseInt(delRow);
-            if(dr>stocksList.size()){
-                Toast.makeText(MainActivity.this,"超出范围",Toast.LENGTH_LONG).show();
-            }
-            else {
-                stocksList.remove(dr-1);
-                Toast.makeText(MainActivity.this,"删除成功",Toast.LENGTH_LONG).show();
-            }
-        }
-        saveData();
-        updateTabView();
-
-    }
-    //
-    //          stocksArr =stocksList.toArray(new Stock[stocksList.size()]);
-    //          updateTabView();
-    //
-    //  }
     protected void updateTabView(){
 
         textViewHandler = new TextView[ stocksList.size() ][6];

@@ -20,51 +20,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textView_gain"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <Button
-                android:layout_width="55dp"
-                android:layout_height="40dp"
-                android:id="@+id/btn_delstock"
-                android:text="删除"/>
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id = "@+id/text_del"
-                android:inputType="number"
-                android:hint="删除行"
-                android:selectAllOnFocus="true"/>
-
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/editText_stock"
-                android:hint="股票代码"
-                android:inputType="number"
-                android:selectAllOnFocus="true"/>
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/editText_price"
-                android:hint="价 格"
-                android:inputType="number|numberDecimal"
-                android:selectAllOnFocus="true"/>
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/editText_number"
-                android:hint="数 量"
-                android:inputType="number"
-                android:selectAllOnFocus="true"/>
-            <Button
-                android:id="@+id/btn_addstock"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="增加"/>
-
-        </LinearLayout>
+            android:id="@+id/textView_gain"
+            />
 
         <ScrollView
             android:layout_width="match_parent"
