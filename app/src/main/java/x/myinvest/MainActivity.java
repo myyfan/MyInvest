@@ -363,14 +363,16 @@ public class MainActivity extends AppCompatActivity {
                         }
                         int numInt = Integer.parseInt(st.number);
                         if(st.code.startsWith("0")||st.code.startsWith("3")||st.code.startsWith("6")) {
-                            st.nowValue=Double.parseDouble(st.nowPrice)*numInt - (st.nowValue > 16666.67 ? st.nowValue * 0.0003 : 5);
-                            st.cost=Double.parseDouble(st.price)*numInt - (st.cost > 16666.67 ? st.cost * 0.0003 : 5);
+                            st.nowValue=Double.parseDouble(st.nowPrice)*numInt;
+                            st.nowValue=st.nowValue*(1-0.001) - (st.nowValue > 16666.67 ? st.nowValue * 0.0003 : 5);
+                            st.cost=Double.parseDouble(st.price)*numInt;
+                            st.cost=st.cost + (st.cost > 16666.67 ? st.cost * 0.0003 : 5);
                             st.earn = st.nowValue - st.cost;
                             st.earnPercent=st.earn/st.cost*100;
                         }
                         else {
                             st.nowValue=Double.parseDouble(st.nowPrice)*numInt * (1 - 0.0003);
-                            st.cost=Double.parseDouble(st.price)*numInt * (1 - 0.0003);
+                            st.cost=Double.parseDouble(st.price)*numInt * (1 + 0.0003);
                             st.earn = st.nowValue - st.cost;
                             st.earnPercent=st.earn/st.cost*100;
                         }
