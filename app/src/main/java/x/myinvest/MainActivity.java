@@ -58,21 +58,25 @@ public class MainActivity extends AppCompatActivity {
     private double gain;
     private double gained=-6731;
     private Double allValue=0.0;
+    private int reflashCount=0;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textView=(TextView)findViewById(R.id.textView_gain);
-        mainView = (LinearLayout) findViewById(R.id.mainview);
-        shangZheng=new Stock();
-        //
-        holdingStock = new HoldingStock(this,stocksList);
-        mainView.addView(holdingStock);
         loadSavedData();
-        //holdingStock = (HoldingStock) findViewById(R.id.view_holdingstock);
+        textView=(TextView)findViewById(R.id.textView_gain);
+        shangZheng=new Stock();
+
+        holdingStock = new HoldingStock(this,stocksList);
         holdingStock.updateTabView();
+
+        mainView = (LinearLayout) findViewById(R.id.mainview);
+        mainView.addView(holdingStock);
+
+        //holdingStock = (HoldingStock) findViewById(R.id.view_holdingstock);
+        //holdingStock.updateTabView();
         pullNetworkData();
 
     }
@@ -225,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
                 //  else if(st.code.startsWith("1")) requestStockStr+="sz"+st.code+",";
                 //  else if(st.code.startsWith("5")) requestStockStr+="sh"+st.code+",";
             }
+            //尾部增加查询上证指数
             builder.append("sh000001");
             try{
                 URL url=new URL(builder.toString());
@@ -245,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
 
                 String[] div=responce.split(";");
                 String[] stockData;
+                //循环填充数据
                 for (int i = 0; i < stocksList.size(); i++) {
                     Stock st =stocksList.get(i);
                     if (i == div.length ) {
@@ -263,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             st.increase = stockData[32];
                         }
+                        //计算盈利数据
                         int numInt = Integer.parseInt(st.number);
                         if(st.code.startsWith("0")||st.code.startsWith("3")||st.code.startsWith("6")) {
                             st.nowValue=Double.parseDouble(st.nowPrice)*numInt;
@@ -288,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
+                //填入上证指数数据
                 stockData=div[stocksList.size()].split("~");
                 shangZheng.nowPrice = stockData[3];
                 shangZheng.increase = stockData[32];
@@ -320,6 +328,7 @@ public class MainActivity extends AppCompatActivity {
             }
             catch (Exception e){
                 Log.w("network", e.toString(),e );
+
             }
         }).start();
 

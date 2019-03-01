@@ -33,6 +33,7 @@ public class HoldingStock extends ScrollView {
         this.stocksList=stockList;
         this.context.getLayoutInflater().inflate(R.layout.view_holding_stock, null);
         tableLayout = new TableLayout(context);
+        updateTabView();
         addView(tableLayout);
         //tableLayout = (TableLayout)findViewById(R.id.table_layout_invest);
         //
@@ -122,6 +123,7 @@ public class HoldingStock extends ScrollView {
             Stock st = stocksList.get(i);
             addTabRow(st,i);
         }
+        refreshText();
 
     }
 
