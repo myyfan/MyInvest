@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         //holdingStock = (HoldingStock) findViewById(R.id.view_holdingstock);
         //holdingStock.updateTabView();
-        pullNetworkData();
+        //pullNetworkData();
 
     }
 
@@ -123,11 +123,17 @@ public class MainActivity extends AppCompatActivity {
         popupWindow.showAtLocation(popUp, Gravity.CENTER, 0, 0);
     }
 
+    protected void updataTextView() {
+        ++reflashCount;
+        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+"reflash:"+reflashCount+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         pullNetworkData();
-        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+        //textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+        updataTextView();
         holdingStock.refreshText();
         timer=new Timer();
         timer.schedule(new TimerTask() {
@@ -135,7 +141,8 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 pullNetworkData();
                 runOnUiThread(()->{
-                    textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+                    //textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+                    updataTextView();
                     holdingStock.refreshText();
                 });
             }
@@ -210,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void pullNetworkData(){
 
-        new Thread(()->{
+        //new Thread(()->{
             gain =0;
             allValue=0.0;
             StringBuilder builder = new StringBuilder();
@@ -328,10 +335,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.w("network", e.toString(),e );
 
             }
-        }).start();
-
-
-
+        //}).start();
     }
 
     public void orderTheList() {
