@@ -19,7 +19,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -46,17 +48,16 @@ import x.myinvest.popup.PopupDelStock;
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences perf;
     //private SharedPreferences.Editor editor;
-
-    private ArrayList<Stock> stocksList=new ArrayList<>();
-    private TableLayout tableLayout;
-    private double gain;
-    private double gained=-6731;
     private TextView textView;
+    private ArrayList<Stock> stocksList=new ArrayList<>();
     private Timer timer;
-    private TextView[][] textViewHandler;
-    private Double allValue=0.0;
+    private HoldingStock holdingStock;
+    private LinearLayout mainView;
     private Stock shangZheng;
     private String tenYears;
+    private double gain;
+    private double gained=-6731;
+    private Double allValue=0.0;
 
 
     @Override
@@ -64,10 +65,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView=(TextView)findViewById(R.id.textView_gain);
+        mainView = (LinearLayout) findViewById(R.id.mainview);
         shangZheng=new Stock();
-        tableLayout = (TableLayout)findViewById(R.id.table_layout_invest);
+        //
+        holdingStock = new HoldingStock(this,stocksList);
+        mainView.addView(holdingStock);
         loadSavedData();
-        updateTabView();
+        //holdingStock = (HoldingStock) findViewById(R.id.view_holdingstock);
+        holdingStock.updateTabView();
         pullNetworkData();
 
     }
@@ -118,12 +123,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         pullNetworkData();
+        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+        holdingStock.refreshText();
         timer=new Timer();
-        refreshText();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 pullNetworkData();
+                runOnUiThread(()->{
+                    textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+                    holdingStock.refreshText();
+                });
             }
         }, 5000, 5000);
     }
@@ -171,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "添加成功", Toast.LENGTH_LONG).show();
         }
         saveData();
-        updateTabView();
+        holdingStock.updateTabView();
     }
 
 
@@ -190,119 +200,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         saveData();
-        updateTabView();
+        holdingStock.updateTabView();
     }
 
-    protected void updateTabView(){
 
-        textViewHandler = new TextView[ stocksList.size() ][6];
-        textView.setText("浮盈："+String.format("%.0f", gain)+" 实现盈利："+String.format("%.0f",gained)+" 总盈利："+String.format("%.0f",gain+gained));
-        tableLayout.removeAllViews();
-        tableLayout.setStretchAllColumns(true);
-        //添加标题
-        TableRow tableRow=new TableRow(this);
-
-        TextView textView=new TextView(this); textView.setText("股票代码"); tableRow.addView(textView);
-        textView=new TextView(this);          textView.setText("现价涨幅");      tableRow.addView(textView);
-        textView=new TextView(this);          textView.setText("购价成本");  tableRow.addView(textView);
-        textView=new TextView(this);          textView.setText("数量现值");  tableRow.addView(textView);
-        textView=new TextView(this);          textView.setText("盈亏现值");       tableRow.addView(textView);
-        textView=new TextView(this);          textView.setText("购入日");   tableRow.addView(textView);
-
-        tableLayout.addView(tableRow);
-        //tableLayout.setDividerDrawable(getResources().getDrawable(R.drawable.bonus_list_item_divider));
-        for(int i=0;i<stocksList.size();i++){
-            Stock st = stocksList.get(i);
-            addTabRow(st,i);
-        }
-
-    }
     //  protected void updatDataArray(){
-
-    public void refreshText() {
-        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
-
-        for (int i = 0; i < stocksList.size(); i++) {
-          //  DecimalFormat df = new DecimalFormat("#.00");
-            Stock stock = stocksList.get(i);
-            //股票名称/代码
-            textViewHandler[i][0].setText((i+1)+"."+stock.name+"\n"+stock.code);
-            //股票现价/涨幅
-            textViewHandler[i][1].setText(stock.nowPrice+"\n"+stock.increase+"%");
-            //购买价格/金额
-            textViewHandler[i][2].setText(stock.price+"\n"+String.format("%.2f",stock.cost));
-            //股票数量/现值
-            textViewHandler[i][3].setText(stock.number+"\n"+String.format("%.0f",stock.nowValue));
-            //盈利及百分比
-            textViewHandler[i][4].setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent)+"%");
-            //购买日期
-            textViewHandler[i][5].setText(stock.buyDate);
-        }
-    }
-
-    protected void addTabRow(Stock stock,int num){
-    //protected void addTabRow(String stock,String nowPrice,String price,String number){
-        DecimalFormat df = new DecimalFormat("#.00");
-        TableRow tableRow=new TableRow(this);
-        TextView textView=new TextView(this);
-        tableRow=new TableRow(this);
-        //股票名称/代码
-        textView=new TextView(this);
-        textView.setText((num+1)+"."+stock.name+"\n"+stock.code);
-        textViewHandler[num][0]=textView;
-        tableRow.addView(textView);
-        //股票现价/涨幅
-        textView=new TextView(this);
-        textView.setText(stock.nowPrice+"\n"+stock.increase+"%");
-        textViewHandler[num][1]=textView;
-        tableRow.addView(textView);
-        //购买价格/金额
-        textView=new TextView(this);
-        textView.setText(stock.price+"\n"+String.format("%.2f",stock.cost));
-        textViewHandler[num][2]=textView;
-        tableRow.addView(textView);
-        //股票数量
-        textView=new TextView(this);
-        textView.setText(stock.number);
-        textViewHandler[num][3]=textView;
-        tableRow.addView(textView);
-        //盈利及百分比
-        textView=new TextView(this);
-        textView.setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent)+"%");
-        textViewHandler[num][4]=textView;
-        tableRow.addView(textView);
-        //购买日期
-        textView=new TextView(this);
-        textView.setText(stock.buyDate);
-        textViewHandler[num][5]=textView;
-        tableRow.addView(textView);
-
-        tableLayout.addView(tableRow);
-    }
-    protected void saveData(){
-        SharedPreferences.Editor editor;
-
-        StringBuilder stockBuilder =new StringBuilder("");
-        StringBuilder priceBuilder =new StringBuilder("");
-        StringBuilder numBuilder =new StringBuilder("");
-        StringBuilder dateBuilder =new StringBuilder("");
-        for (int i=0;i<stocksList.size();i++) {
-            Stock st=stocksList.get(i);
-           // if(i==0){
-                stockBuilder.append(stocksList.get(i).code + ",");
-                priceBuilder.append(stocksList.get(i).price + ",");
-                numBuilder.append(stocksList.get(i).number + ",");
-                dateBuilder.append(stocksList.get(i).buyDate + ",");
-
-        }
-
-        editor=perf.edit();
-        editor.putString("buyedStockCode",stockBuilder.toString());
-        editor.putString("buyedStockPrice",priceBuilder.toString());
-        editor.putString("buyedStockNumber",numBuilder.toString());
-        editor.putString("buyDate",dateBuilder.toString());
-        editor.apply();
-    }
 
     protected void pullNetworkData(){
 
@@ -310,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
             gain =0;
             allValue=0.0;
             StringBuilder builder = new StringBuilder();
-          //  String requestStockStr="";
+            //  String requestStockStr="";
             builder.append("http://qt.gtimg.cn/q=");
             for(int i=0;i<stocksList.size();i++){
                 Stock st=stocksList.get(i);
@@ -318,10 +220,10 @@ public class MainActivity extends AppCompatActivity {
                 else if(st.code.startsWith("6")) builder.append("s_sh"+st.code+",");
                 else if(st.code.startsWith("1")) builder.append("sz"+st.code+",");
                 else if(st.code.startsWith("5")) builder.append("sh"+st.code+",");
-              //  if(st.code.startsWith("0")) requestStockStr +="s_sz"+st.code+",";
-              //  else if(st.code.startsWith("6")) requestStockStr+="s_sh"+st.code+",";
-              //  else if(st.code.startsWith("1")) requestStockStr+="sz"+st.code+",";
-              //  else if(st.code.startsWith("5")) requestStockStr+="sh"+st.code+",";
+                //  if(st.code.startsWith("0")) requestStockStr +="s_sz"+st.code+",";
+                //  else if(st.code.startsWith("6")) requestStockStr+="s_sh"+st.code+",";
+                //  else if(st.code.startsWith("1")) requestStockStr+="sz"+st.code+",";
+                //  else if(st.code.startsWith("5")) requestStockStr+="sh"+st.code+",";
             }
             builder.append("sh000001");
             try{
@@ -344,10 +246,10 @@ public class MainActivity extends AppCompatActivity {
                 String[] div=responce.split(";");
                 String[] stockData;
                 for (int i = 0; i < stocksList.size(); i++) {
-                        Stock st =stocksList.get(i);
+                    Stock st =stocksList.get(i);
                     if (i == div.length ) {
                         st.name = "无返回数据";
-                        runOnUiThread(()->refreshText());
+                        runOnUiThread(()->holdingStock.refreshText());
                         return;
                     }
                     stockData=div[i].split("~");
@@ -381,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else {
                         st.name="不匹配";
-                        runOnUiThread(()->refreshText());
+                        runOnUiThread(()->holdingStock.refreshText());
                         return;
                     }
 
@@ -413,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
                 div=responce.split(",");
                 tenYears=div[2];
                 orderTheList();
-                runOnUiThread(()->refreshText());
+
                 //updateTabView();
             }
             catch (Exception e){
@@ -430,16 +332,46 @@ public class MainActivity extends AppCompatActivity {
         int j=stocksList.size()-1;
         int haveOrderRow=j;
         for (int i = 0; i <stocksList.size(); i++) {
-                for (int k = 0; k <j; k++) {
-                    if (stocksList.get(k).earnPercent < stocksList.get(k + 1).earnPercent) {
-                        temp = stocksList.get(k);
-                        stocksList.set(k, stocksList.get(k + 1));
-                        stocksList.set(k + 1, temp);
-                        haveOrderRow=j;
-                    }
+            for (int k = 0; k <j; k++) {
+                if (stocksList.get(k).earnPercent < stocksList.get(k + 1).earnPercent) {
+                    temp = stocksList.get(k);
+                    stocksList.set(k, stocksList.get(k + 1));
+                    stocksList.set(k + 1, temp);
+                    haveOrderRow=j;
                 }
-                j=haveOrderRow;
+            }
+            j=haveOrderRow;
         }
     }
+
+
+    protected void saveData(){
+        SharedPreferences.Editor editor;
+
+        StringBuilder stockBuilder =new StringBuilder("");
+        StringBuilder priceBuilder =new StringBuilder("");
+        StringBuilder numBuilder =new StringBuilder("");
+        StringBuilder dateBuilder =new StringBuilder("");
+        for (int i=0;i<stocksList.size();i++) {
+            Stock st=stocksList.get(i);
+           // if(i==0){
+                stockBuilder.append(stocksList.get(i).code + ",");
+                priceBuilder.append(stocksList.get(i).price + ",");
+                numBuilder.append(stocksList.get(i).number + ",");
+                dateBuilder.append(stocksList.get(i).buyDate + ",");
+
+        }
+
+        editor=perf.edit();
+        editor.putString("buyedStockCode",stockBuilder.toString());
+        editor.putString("buyedStockPrice",priceBuilder.toString());
+        editor.putString("buyedStockNumber",numBuilder.toString());
+        editor.putString("buyDate",dateBuilder.toString());
+        editor.apply();
+    }
+
+
+
+
 
 }
