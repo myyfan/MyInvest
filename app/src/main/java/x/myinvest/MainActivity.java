@@ -53,11 +53,11 @@ public class MainActivity extends AppCompatActivity {
     private Timer timer;
     private HoldingStock holdingStock;
     private LinearLayout mainView;
-    private Stock shangZheng;
-    private String tenYears;
-    private double gain;
-    private double gained=-6731;
-    private Double allValue=0.0;
+    private Stock shangZheng;//上证指数
+    private String tenYears;//十年国债利率
+    private double gain;//浮盈
+    private double gained=-6731;//无法详细列出的历史盈利金额
+    private Double allValue=0.0;//总市值
     private int reflashCount=0;
 
 
@@ -166,10 +166,8 @@ public class MainActivity extends AppCompatActivity {
                 Stock savedStock = new Stock(stockArrayStr[i],priceArrayStr[i],numberArrayStr[i],buyDate[i]);
                 stocksList.add(savedStock);
             }
-
-            //updatDataArray();
-
         }
+        //gained
 
 
     }
