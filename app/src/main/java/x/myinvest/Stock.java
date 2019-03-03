@@ -14,6 +14,7 @@ public class Stock {
      double earnPercent=0;
      double earn=0;
      String buyDate="-";
+     String soldDate="";
 
     public Stock() { }
     public Stock(String code,String price,String number,String date) {

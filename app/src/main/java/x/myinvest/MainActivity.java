@@ -1,14 +1,10 @@
 package x.myinvest;
 
-import android.app.ActionBar;
-import android.arch.lifecycle.ViewModelProvider;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.method.HideReturnsTransformationMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -18,12 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.ScrollView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,8 +24,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,16 +33,18 @@ import java.util.TimerTask;
 import javax.net.ssl.HttpsURLConnection;
 
 import x.myinvest.popup.PopUpAddStock;
+import x.myinvest.popup.PopupChangeGained;
 import x.myinvest.popup.PopupDelStock;
 
 public class MainActivity extends AppCompatActivity {
     private SharedPreferences perf;
     //private SharedPreferences.Editor editor;
     private TextView textView;
-    private ArrayList<Stock> stocksList=new ArrayList<>();
+    private ArrayList<Stock> holdingStocksList =new ArrayList<>();
+    private ArrayList<Stock> soldStockList = new ArrayList<>();
     private Timer timer;
-    private HoldingStock holdingStock;
-    private LinearLayout mainView;
+    private HoldingStock holdingStock;//视图
+    private LinearLayout mainView;//主视图
     private Stock shangZheng;//上证指数
     private String tenYears;//十年国债利率
     private double gain;//浮盈
@@ -69,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         textView=(TextView)findViewById(R.id.textView_gain);
         shangZheng=new Stock();
 
-        holdingStock = new HoldingStock(this,stocksList);
+        holdingStock = new HoldingStock(this, holdingStocksList);
         holdingStock.updateTabView();
 
         mainView = (LinearLayout) findViewById(R.id.mainview);
@@ -91,6 +83,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.mainMenu_changGained:
+                        showPopupChangeGaiend();
+                        break;
+                    case R.id.mainMenu_saleStock:
+                        showPopupSaleStock();
+                        break;
             case R.id.mainMenu_addStock:
                 showPopUpAddStock();
                 //PopUpAddStock popAddStock = new PopUpAddStock(this);
@@ -102,11 +100,55 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    void showPopupChangeGaiend() {
+        View popUp=new PopupChangeGained(this);
+        showPopupWindows(popUp);
+
+    }
 
     void showPopUpAddStock() {
         View popUp = new PopUpAddStock(this);
         //mainFrameLayout.addView(popUp);
         showPopupWindows(popUp);
+    }
+
+    void showPopupSaleStock() {
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setBackgroundColor(0xffffffff);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(10, 30, 10, 30);
+        linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        EditText row = new EditText(this);
+        EditText price = new EditText(this);
+        row.setHint("输入要卖出的股票行号");
+        price.setHint("输入卖出的价格");
+
+        Button ok = new Button(this);
+        ok.setText("确定");
+
+        linearLayout.addView(row,layoutParams);
+        linearLayout.addView(price,layoutParams);
+        linearLayout.addView(ok,layoutParams);
+        showPopupWindows(linearLayout);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int rowNum=Integer.parseInt(row.getText().toString());
+
+                Stock stock = holdingStocksList.get(rowNum - 1);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");
+                stock.soldDate=dateFormat.format(new Date());
+                stock.nowPrice=row.getText().toString();
+
+                soldStockList.add(stock);
+                holdingStocksList.remove(rowNum - 1);
+                holdingStock.updateTabView();
+
+
+            }
+        });
     }
 
     void showPopUpDelStock() {
@@ -125,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void updataTextView() {
         ++reflashCount;
-        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+"reflash:"+reflashCount+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue)+"  reflash:"+reflashCount);
     }
 
     @Override
@@ -171,10 +213,11 @@ public class MainActivity extends AppCompatActivity {
             String[] buyDate=perf.getString("buyDate","").split(",");
             for(int i=0;i<stockArrayStr.length;i++){
                 Stock savedStock = new Stock(stockArrayStr[i],priceArrayStr[i],numberArrayStr[i],buyDate[i]);
-                stocksList.add(savedStock);
+                holdingStocksList.add(savedStock);
             }
         }
-        //gained
+
+        gained = Double.parseDouble(perf.getString("haveGained", "0"));
 
 
     }
@@ -186,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "输入数据错误", Toast.LENGTH_LONG).show();
         }
         else{
-            stocksList.add(new Stock(newStockCode,newStockPrice ,newStockNumber ,date));
+            holdingStocksList.add(new Stock(newStockCode,newStockPrice ,newStockNumber ,date));
             Toast.makeText(this, "添加成功", Toast.LENGTH_LONG).show();
         }
         saveData();
@@ -200,11 +243,11 @@ public class MainActivity extends AppCompatActivity {
         }
         else{
             int dr=Integer.parseInt(delRow);
-            if(dr>stocksList.size()){
+            if(dr> holdingStocksList.size()){
                 Toast.makeText(MainActivity.this,"超出范围",Toast.LENGTH_LONG).show();
             }
             else {
-                stocksList.remove(dr-1);
+                holdingStocksList.remove(dr-1);
                 Toast.makeText(MainActivity.this,"删除成功",Toast.LENGTH_LONG).show();
             }
         }
@@ -212,6 +255,10 @@ public class MainActivity extends AppCompatActivity {
         holdingStock.updateTabView();
     }
 
+    public void changeGained(double gained) {
+        this.gained=gained;
+        perf.edit().putString("haveGained", gained+"").apply();
+    }
 
     //  protected void updatDataArray(){
 
@@ -223,8 +270,8 @@ public class MainActivity extends AppCompatActivity {
             StringBuilder builder = new StringBuilder();
             //  String requestStockStr="";
             builder.append("http://qt.gtimg.cn/q=");
-            for(int i=0;i<stocksList.size();i++){
-                Stock st=stocksList.get(i);
+            for(int i = 0; i< holdingStocksList.size(); i++){
+                Stock st= holdingStocksList.get(i);
                 if(st.code.startsWith("0")) builder.append("s_sz"+st.code+",");
                 else if(st.code.startsWith("6")) builder.append("s_sh"+st.code+",");
                 else if(st.code.startsWith("1")) builder.append("sz"+st.code+",");
@@ -256,8 +303,8 @@ public class MainActivity extends AppCompatActivity {
                 String[] div=responce.split(";");
                 String[] stockData;
                 //循环填充数据
-                for (int i = 0; i < stocksList.size(); i++) {
-                    Stock st =stocksList.get(i);
+                for (int i = 0; i < holdingStocksList.size(); i++) {
+                    Stock st = holdingStocksList.get(i);
                     if (i == div.length ) {
                         st.name = "无返回数据";
                         runOnUiThread(()->holdingStock.refreshText());
@@ -301,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 //填入上证指数数据
-                stockData=div[stocksList.size()].split("~");
+                stockData=div[holdingStocksList.size()].split("~");
                 shangZheng.nowPrice = stockData[3];
                 shangZheng.increase = stockData[32];
                 //connection.disconnect();
@@ -340,14 +387,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void orderTheList() {
         Stock temp;
-        int j=stocksList.size()-1;
+        int j= holdingStocksList.size()-1;
         int haveOrderRow=j;
-        for (int i = 0; i <stocksList.size(); i++) {
+        for (int i = 0; i < holdingStocksList.size(); i++) {
             for (int k = 0; k <j; k++) {
-                if (stocksList.get(k).earnPercent < stocksList.get(k + 1).earnPercent) {
-                    temp = stocksList.get(k);
-                    stocksList.set(k, stocksList.get(k + 1));
-                    stocksList.set(k + 1, temp);
+                if (holdingStocksList.get(k).earnPercent < holdingStocksList.get(k + 1).earnPercent) {
+                    temp = holdingStocksList.get(k);
+                    holdingStocksList.set(k, holdingStocksList.get(k + 1));
+                    holdingStocksList.set(k + 1, temp);
                     haveOrderRow=j;
                 }
             }
@@ -363,13 +410,13 @@ public class MainActivity extends AppCompatActivity {
         StringBuilder priceBuilder =new StringBuilder("");
         StringBuilder numBuilder =new StringBuilder("");
         StringBuilder dateBuilder =new StringBuilder("");
-        for (int i=0;i<stocksList.size();i++) {
-            Stock st=stocksList.get(i);
+        for (int i = 0; i< holdingStocksList.size(); i++) {
+            Stock st= holdingStocksList.get(i);
            // if(i==0){
-                stockBuilder.append(stocksList.get(i).code + ",");
-                priceBuilder.append(stocksList.get(i).price + ",");
-                numBuilder.append(stocksList.get(i).number + ",");
-                dateBuilder.append(stocksList.get(i).buyDate + ",");
+                stockBuilder.append(holdingStocksList.get(i).code + ",");
+                priceBuilder.append(holdingStocksList.get(i).price + ",");
+                numBuilder.append(holdingStocksList.get(i).number + ",");
+                dateBuilder.append(holdingStocksList.get(i).buyDate + ",");
 
         }
 
