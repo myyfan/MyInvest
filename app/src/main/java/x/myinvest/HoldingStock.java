@@ -91,9 +91,9 @@ public class HoldingStock extends ScrollView {
             //股票现价/涨幅
             textViewHandler[i][1].setText(stock.nowPrice+"\n"+stock.increase+"%");
             //购买价格/金额
-            textViewHandler[i][2].setText(stock.price+"\n"+String.format("%.2f",stock.cost));
+            textViewHandler[i][2].setText(stock.price+"\n"+stock.number);
             //股票数量/现值
-            textViewHandler[i][3].setText(stock.number+"\n"+String.format("%.0f",stock.nowValue));
+            textViewHandler[i][3].setText(String.format("%.0f",stock.cost)+"\n"+String.format("%.0f",stock.nowValue));
             //盈利及百分比
             textViewHandler[i][4].setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent)+"%");
             //购买日期
@@ -112,9 +112,9 @@ public class HoldingStock extends ScrollView {
 
         TextView textView=new TextView(context); textView.setText("股票代码"); tableRow.addView(textView);
         textView=new TextView(context);          textView.setText("现价涨幅");      tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("购价成本");  tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("数量现值");  tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("盈亏现值");       tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("购价数量");  tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("成本现值");  tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("盈亏比例");       tableRow.addView(textView);
         textView=new TextView(context);          textView.setText("购入日");   tableRow.addView(textView);
 
         tableLayout.addView(tableRow);
