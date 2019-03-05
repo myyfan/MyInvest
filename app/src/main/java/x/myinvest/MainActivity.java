@@ -69,10 +69,10 @@ public class MainActivity extends AppCompatActivity {
         soldStocks = new SoldStocks(this,soldStockList);
         //soldStocks.updateTableView();
 
-
         mainView = (LinearLayout) findViewById(R.id.mainview);
         mainView.addView(holdingStock);
         mainView.addView(soldStocks);
+
 
         //holdingStock = (HoldingStock) findViewById(R.id.view_holdingstock);
         //holdingStock.updateTabView();

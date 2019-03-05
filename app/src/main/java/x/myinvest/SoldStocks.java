@@ -22,6 +22,7 @@ public class SoldStocks extends ScrollView {
         this.soldStocksList=soldStocksList;
         LayoutInflater.from(context).inflate(R.layout.view_saled_stock, this);
         mTableLayout = (TableLayout) findViewById(R.id.view_saledStock_tableLayout);
+        mTableLayout.setStretchAllColumns(true);
         updateTableView();
     }
 
@@ -41,7 +42,7 @@ public class SoldStocks extends ScrollView {
             textView = new TextView(context);  textView.setText(stock.name+"\n"+stock.code);  tableRow.addView(textView);
             textView = new TextView(context);  textView.setText(stock.price+"\n"+stock.nowPrice);tableRow.addView(textView);
             textView = new TextView(context);  textView.setText(stock.number);tableRow.addView(textView);
-            textView = new TextView(context);  textView.setText(stock.earn+"\n"+stock.earnPercent);tableRow.addView(textView);
+            textView = new TextView(context);  textView.setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent));tableRow.addView(textView);
             textView = new TextView(context);  textView.setText(stock.buyDate+"\n"+stock.soldDate);tableRow.addView(textView);
             mTableLayout.addView(tableRow);
         }
