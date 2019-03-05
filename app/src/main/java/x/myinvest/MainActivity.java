@@ -37,13 +37,15 @@ import x.myinvest.popup.PopupChangeGained;
 import x.myinvest.popup.PopupDelStock;
 
 public class MainActivity extends AppCompatActivity {
-    private SharedPreferences perf;
+    private SharedPreferences perfHoldingStocks;
+    private SharedPreferences perfSoldStocks;
     //private SharedPreferences.Editor editor;
     private TextView textView;
     private ArrayList<Stock> holdingStocksList =new ArrayList<>();
-    private ArrayList<Stock> soldStockList = new ArrayList<>();
+    private ArrayList<Stock> soldStockList =new ArrayList<>();
     private Timer timer;
     private HoldingStock holdingStock;//视图
+    private SoldStocks soldStocks;//视图
     private LinearLayout mainView;//主视图
     private Stock shangZheng;//上证指数
     private String tenYears;//十年国债利率
@@ -57,19 +59,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadSavedData();
+
         textView=(TextView)findViewById(R.id.textView_gain);
         shangZheng=new Stock();
+        loadSavedData();
 
         holdingStock = new HoldingStock(this, holdingStocksList);
-        holdingStock.updateTabView();
+        //holdingStock.updateTabView();
+        soldStocks = new SoldStocks(this,soldStockList);
+        //soldStocks.updateTableView();
+
 
         mainView = (LinearLayout) findViewById(R.id.mainview);
         mainView.addView(holdingStock);
+        mainView.addView(soldStocks);
 
         //holdingStock = (HoldingStock) findViewById(R.id.view_holdingstock);
         //holdingStock.updateTabView();
-        //pullNetworkData();
+        pullNetworkData();
 
     }
 
@@ -89,13 +96,16 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.mainMenu_saleStock:
                         showPopupSaleStock();
                         break;
-            case R.id.mainMenu_addStock:
-                showPopUpAddStock();
-                //PopUpAddStock popAddStock = new PopUpAddStock(this);
-                break;
-            case R.id.mainMenu_delStock:
-                showPopUpDelStock();
-                break;
+                    case R.id.mainMenu_addStock:
+                        showPopUpAddStock();
+                        //PopUpAddStock popAddStock = new PopUpAddStock(this);
+                        break;
+                    case R.id.mainMenu_delStock:
+                        showPopUpDelStock();
+                        break;
+                    case R.id.mainMenu_delSoldStock:
+                        showPopupDelSoldStock();
+                        break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -113,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showPopupSaleStock() {
+        //显示弹出窗口
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setBackgroundColor(0xffffffff);
@@ -135,17 +146,39 @@ public class MainActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int rowNum=Integer.parseInt(row.getText().toString());
+                int rowNum=Integer.parseInt(row.getText().toString());//攻取行号
 
-                Stock stock = holdingStocksList.get(rowNum - 1);
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");
-                stock.soldDate=dateFormat.format(new Date());
-                stock.nowPrice=row.getText().toString();
+                Stock st = holdingStocksList.get(rowNum - 1);//取得卖出的股票数据
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");//卖出日期
 
-                soldStockList.add(stock);
+                soldStockList.add(st);
                 holdingStocksList.remove(rowNum - 1);
-                holdingStock.updateTabView();
+                st.soldDate=dateFormat.format(new Date());
+                st.nowPrice=price.getText().toString();
 
+
+                //计算盈利数据
+                int numInt = Integer.parseInt(st.number);
+                if(st.code.startsWith("0")||st.code.startsWith("3")||st.code.startsWith("6")) {
+                    st.nowValue=Double.parseDouble(st.nowPrice)*numInt;
+                    st.nowValue=st.nowValue*(1-0.001) - (st.nowValue > 16666.67 ? st.nowValue * 0.0003 : 5);
+                    st.cost=Double.parseDouble(st.price)*numInt;
+                    st.cost=st.cost + (st.cost > 16666.67 ? st.cost * 0.0003 : 5);
+                    st.earn = st.nowValue - st.cost;
+                    st.earnPercent=st.earn/st.cost*100;
+                }
+                else {
+                    st.nowValue=Double.parseDouble(st.nowPrice)*numInt * (1 - 0.0003);
+                    st.cost=Double.parseDouble(st.price)*numInt * (1 + 0.0003);
+                    st.earn = st.nowValue - st.cost;
+                    st.earnPercent=st.earn/st.cost*100;
+                }
+
+                gained+=st.earn;
+                holdingStock.updateTabView();
+                soldStocks.updateTableView();
+                saveHoldingData();
+                saveSoldData();
 
             }
         });
@@ -154,6 +187,37 @@ public class MainActivity extends AppCompatActivity {
     void showPopUpDelStock() {
         View popUp = new PopupDelStock(this);
         showPopupWindows(popUp);
+    }
+
+    void showPopupDelSoldStock() {
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setBackgroundColor(0xffffffff);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(10, 30, 10, 30);
+        linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        EditText row = new EditText(this);
+        row.setHint("输入要删除的股票行号");
+
+        Button ok = new Button(this);
+        ok.setText("确定");
+
+        linearLayout.addView(row,layoutParams);
+        linearLayout.addView(ok,layoutParams);
+        showPopupWindows(linearLayout);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int rowNum=Integer.parseInt(row.getText().toString());//攻取行号
+                gained-=soldStockList.get(rowNum-1).earn;
+                soldStockList.remove(rowNum - 1);
+
+                soldStocks.updateTableView();
+                saveSoldData();
+
+            }
+        });
     }
 
     void showPopupWindows(View popUp) {
@@ -198,28 +262,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void loadSavedData(){
-
+        //加载持有中的股票数据
         String buyedStockCodeSaved =null;
         String buyedStockPriceSaved =null;
-        perf=getSharedPreferences("buyedStock",0);
-        //buyedStockCodeSaved =perf.getString("buyedStockCode","");
+        perfHoldingStocks =getSharedPreferences("buyedStock",0);
+        //buyedStockCodeSaved =perfHoldingStocks.getString("buyedStockCode","");
         //加载股票代码
-        String[] stockArrayStr =perf.getString("buyedStockCode","").split(",");
+
+        String[] stockArrayStr = perfHoldingStocks.getString("buyedStockCode","").split(",");
         if(!stockArrayStr[0].isEmpty()){
+            //perfHoldingStocks = new ArrayList<Stock>(stockArrayStr.length);
             //加载股票价格
-            String[] priceArrayStr=perf.getString("buyedStockPrice","").split(",");
+            String[] priceArrayStr= perfHoldingStocks.getString("buyedStockPrice","").split(",");
             //加载股票数量
-            String[] numberArrayStr=perf.getString("buyedStockNumber","").split(",");
-            String[] buyDate=perf.getString("buyDate","").split(",");
+            String[] numberArrayStr= perfHoldingStocks.getString("buyedStockNumber","").split(",");
+            String[] buyDate= perfHoldingStocks.getString("buyDate","").split(",");
             for(int i=0;i<stockArrayStr.length;i++){
                 Stock savedStock = new Stock(stockArrayStr[i],priceArrayStr[i],numberArrayStr[i],buyDate[i]);
                 holdingStocksList.add(savedStock);
             }
         }
 
-        gained = Double.parseDouble(perf.getString("haveGained", "0"));
+        //gained = Double.parseDouble(perfHoldingStocks.getString("haveGained", "0"));
 
+        //加载已出售的股票
+        String[] soldStocksStrArr = perfHoldingStocks.getString("soldStock", "").split(",");
+        int lenSoldArr = soldStocksStrArr.length;
+        //soldStockList = new ArrayList<Stock>(lenSoldArr);
+        if (soldStocksStrArr[0] == "") {
+            return;
+        }
 
+        for (int i=0;i<lenSoldArr;i+=9) {
+            Stock stock =new Stock();
+            stock.name = soldStocksStrArr[i];
+            stock.code = soldStocksStrArr[i + 1];
+            stock.price = soldStocksStrArr[i + 2];
+            stock.nowPrice = soldStocksStrArr[i + 3];
+            stock.number = soldStocksStrArr[i + 4];
+            stock.earn = Double.parseDouble(soldStocksStrArr[i + 5]);
+            stock.earnPercent = Double.parseDouble(soldStocksStrArr[i + 6]);
+            stock.buyDate = soldStocksStrArr[i + 7];
+            stock.soldDate = soldStocksStrArr[i + 8];
+            soldStockList.add(stock);
+            gained += stock.earn;
+        }
+        //soldStocks.updateTableView();
     }
 
     public void addStock(String newStockCode,String newStockPrice,String newStockNumber) {
@@ -232,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
             holdingStocksList.add(new Stock(newStockCode,newStockPrice ,newStockNumber ,date));
             Toast.makeText(this, "添加成功", Toast.LENGTH_LONG).show();
         }
-        saveData();
+        saveHoldingData();
         holdingStock.updateTabView();
     }
 
@@ -251,13 +339,13 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,"删除成功",Toast.LENGTH_LONG).show();
             }
         }
-        saveData();
+        saveHoldingData();
         holdingStock.updateTabView();
     }
 
     public void changeGained(double gained) {
         this.gained=gained;
-        perf.edit().putString("haveGained", gained+"").apply();
+        perfHoldingStocks.edit().putString("haveGained", gained+"").apply();
     }
 
     //  protected void updatDataArray(){
@@ -403,7 +491,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    protected void saveData(){
+    protected void saveHoldingData(){
         SharedPreferences.Editor editor;
 
         StringBuilder stockBuilder =new StringBuilder("");
@@ -420,12 +508,29 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        editor=perf.edit();
+        editor= perfHoldingStocks.edit();
         editor.putString("buyedStockCode",stockBuilder.toString());
         editor.putString("buyedStockPrice",priceBuilder.toString());
         editor.putString("buyedStockNumber",numBuilder.toString());
         editor.putString("buyDate",dateBuilder.toString());
         editor.apply();
+    }
+
+    protected void saveSoldData() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Stock stock1 : soldStockList) {
+            stringBuilder.append(stock1.name+",")
+                         .append(stock1.code+",")
+                         .append(stock1.price+",")
+                         .append(stock1.nowPrice+",")
+                         .append(stock1.number+",")
+                         .append(stock1.earn+",")
+                         .append(stock1.earnPercent+",")
+                         .append(stock1.buyDate+",")
+                         .append(stock1.soldDate+",");
+        }
+        perfHoldingStocks.edit().putString("soldStock", stringBuilder.toString()).apply();
+
     }
 
 
