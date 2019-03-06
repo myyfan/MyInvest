@@ -12,6 +12,9 @@
         android:title="卖出股票"
         android:id="@+id/mainMenu_saleStock" />
     <item
+        android:title="股票分红"
+        android:id="@+id/mainMenu_stockDividend" />
+    <item
         android:id="@+id/mainMenu_delItem"
         android:title="删除元素">
         <menu>

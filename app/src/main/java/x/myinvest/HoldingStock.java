@@ -3,6 +3,7 @@ package x.myinvest;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -31,10 +32,12 @@ public class HoldingStock extends ScrollView {
         super(context);
         this.context=(Activity)context;
         this.stocksList=stockList;
-        this.context.getLayoutInflater().inflate(R.layout.view_holding_stock, null);
-        tableLayout = new TableLayout(context);
+        this.context.getLayoutInflater().inflate(R.layout.view_holding_stock, this);
+        //LayoutInflater.from(context).inflate(R.layout.view_holding_stock, this);
+        //tableLayout = new TableLayout(context);
+        tableLayout=findViewById(R.id.table_layout_invest);
         updateTabView();
-        addView(tableLayout);
+        //addView(tableLayout);
         //tableLayout = (TableLayout)findViewById(R.id.table_layout_invest);
         //
 

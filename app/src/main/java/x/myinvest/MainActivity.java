@@ -69,8 +69,12 @@ public class MainActivity extends AppCompatActivity {
         soldStocks = new SoldStocks(this,soldStockList);
         //soldStocks.updateTableView();
 
+        TextView tvSpace = new TextView(this);
+        tvSpace.setHeight(100);//作为分隔符
+
         mainView = (LinearLayout) findViewById(R.id.mainview);
         mainView.addView(holdingStock);
+        mainView.addView(tvSpace);
         mainView.addView(soldStocks);
 
 
@@ -105,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.mainMenu_delSoldStock:
                         showPopupDelSoldStock();
+                        break;
+                    case R.id.mainMenu_stockDividend:
+                        showPopupDividend();
                         break;
         }
         return super.onOptionsItemSelected(item);
@@ -173,6 +180,54 @@ public class MainActivity extends AppCompatActivity {
                     st.earn = st.nowValue - st.cost;
                     st.earnPercent=st.earn/st.cost*100;
                 }
+
+                gained+=st.earn;
+                holdingStock.updateTabView();
+                soldStocks.updateTableView();
+                saveHoldingData();
+                saveSoldData();
+
+            }
+        });
+    }
+
+    void showPopupDividend() {
+        //显示弹出窗口
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setBackgroundColor(0xffffffff);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(10, 30, 10, 30);
+        linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        EditText name = new EditText(this);
+        EditText money = new EditText(this);
+        name.setHint("输入分红的股票");
+        money.setHint("输入分红金额");
+
+        Button ok = new Button(this);
+        ok.setText("确定");
+
+        linearLayout.addView(name,layoutParams);
+        linearLayout.addView(money,layoutParams);
+        linearLayout.addView(ok,layoutParams);
+        showPopupWindows(linearLayout);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                Stock st = new Stock();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");//卖出日期
+
+                st.name=name.getText().toString();
+                st.code = "分红";
+                st.soldDate=dateFormat.format(new Date());
+                st.earn=Double.parseDouble(money.getText().toString());
+                soldStockList.add(st);
+
+
+                //计算盈利数据
 
                 gained+=st.earn;
                 holdingStock.updateTabView();

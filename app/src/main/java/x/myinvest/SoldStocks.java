@@ -14,7 +14,6 @@ import java.util.ArrayList;
 public class SoldStocks extends ScrollView {
     private Context context;
     private TableLayout mTableLayout;
-    private SharedPreferences sharedPreferences;
     private ArrayList<Stock> soldStocksList;
     public SoldStocks(Context context, ArrayList<Stock> soldStocksList) {
         super(context);
@@ -36,7 +35,7 @@ public class SoldStocks extends ScrollView {
                  textView = new TextView(context);  textView.setText("购买日期\n"+"售出日期");tableRow.addView(textView);
         mTableLayout.addView(tableRow);
         int listLenth=soldStocksList.size();
-        for (int i = 0; i < listLenth; i++) {
+        for (int i = listLenth-1; i >=0; i--) {
             Stock stock = soldStocksList.get(i);
             tableRow = new TableRow(context);
             textView = new TextView(context);  textView.setText(stock.name+"\n"+stock.code);  tableRow.addView(textView);
