@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         //holdingStock = (HoldingStock) findViewById(R.id.view_holdingstock);
         //holdingStock.updateTabView();
         pullNetworkData();
+        updataTextView();
 
     }
 
@@ -408,8 +409,7 @@ public class MainActivity extends AppCompatActivity {
     protected void pullNetworkData(){
 
         //new Thread(()->{
-            gain =0;
-            allValue=0.0;
+
             StringBuilder builder = new StringBuilder();
             //  String requestStockStr="";
             builder.append("http://qt.gtimg.cn/q=");
@@ -446,6 +446,8 @@ public class MainActivity extends AppCompatActivity {
                 String[] div=responce.split(";");
                 String[] stockData;
                 //循环填充数据
+                gain =0;
+                allValue=0.0;
                 for (int i = 0; i < holdingStocksList.size(); i++) {
                     Stock st = holdingStocksList.get(i);
                     if (i == div.length ) {
