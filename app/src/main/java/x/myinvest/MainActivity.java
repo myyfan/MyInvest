@@ -49,10 +49,14 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout mainView;//主视图
     private Stock shangZheng;//上证指数
     private String tenYears;//十年国债利率
+    private String shangZhengSYL;//上证平均市盈率
+    private String shangZhengSY;//上证平均收益率
+    private String cangWei;
     private double gain;//浮盈
     private double gained=-6731;//无法详细列出的历史盈利金额
     private Double allValue=0.0;//总市值
     private int reflashCount=0;
+    private int getDataCount=0;
 
 
     @Override
@@ -80,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
 
         //holdingStock = (HoldingStock) findViewById(R.id.view_holdingstock);
         //holdingStock.updateTabView();
-        pullNetworkData();
-        updataTextView();
+       // pullNetworkData();
+        //updataTextView();
 
     }
 
@@ -287,26 +291,27 @@ public class MainActivity extends AppCompatActivity {
 
     protected void updataTextView() {
         ++reflashCount;
-        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue)+"  reflash:"+reflashCount);
+        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue)+"  reflash:"+reflashCount+"|"+getDataCount+"\n"+"上证市盈率:"+shangZhengSYL+" 上证收益:"+shangZhengSY+"% 仓位:"+cangWei+"%");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         pullNetworkData();
+        pullShangZhengSYL();
         //textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
-        updataTextView();
-        holdingStock.refreshText();
+     //   updataTextView();
+     //   holdingStock.refreshText();
         timer=new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 pullNetworkData();
-                runOnUiThread(()->{
-                    //textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
-                    updataTextView();
-                    holdingStock.refreshText();
-                });
+             //   runOnUiThread(()->{
+             //       //textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+             //       updataTextView();
+             //       holdingStock.refreshText();
+             //   });
             }
         }, 5000, 5000);
     }
@@ -446,8 +451,8 @@ public class MainActivity extends AppCompatActivity {
                 String[] div=responce.split(";");
                 String[] stockData;
                 //循环填充数据
-                gain =0;
-                allValue=0.0;
+                double gain =0;
+                double allValue=0.0;
                 for (int i = 0; i < holdingStocksList.size(); i++) {
                     Stock st = holdingStocksList.get(i);
                     if (i == div.length ) {
@@ -492,6 +497,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
+                this.gain=gain;
+                this.allValue=allValue;
                 //填入上证指数数据
                 stockData=div[holdingStocksList.size()].split("~");
                 shangZheng.nowPrice = stockData[3];
@@ -521,13 +528,62 @@ public class MainActivity extends AppCompatActivity {
                 tenYears=div[2];
                 orderTheList();
 
+                //计算理论仓位
+                double tenYears=Double.parseDouble(this.tenYears);
+                double shangZhengShouYiLv = 1/Double.parseDouble(shangZhengSYL);
+                shangZhengSY=String.format("%.2f",shangZhengShouYiLv*100);
+                double zuiDiShouYiLv=0.015*tenYears;
+                double zuiDaShouyiLv=0.028*tenYears;
+                cangWei = String.format("%.2f",(shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv)*100);
+                responce=cangWei;
+
                 //updateTabView();
             }
             catch (Exception e){
                 Log.w("network", e.toString(),e );
-
+                runOnUiThread(()->{
+                    updataTextView();
+                    holdingStock.refreshText();
+                });
             }
-        //}).start();
+            getDataCount++;
+        runOnUiThread(()->{
+                   updataTextView();
+                   holdingStock.refreshText();
+               });
+    }
+
+    protected void pullShangZhengSYL() {
+        new Thread(() -> {
+            StringBuilder builder = new StringBuilder();
+            try {
+                URL url = new URL("https://www.legulegu.com/stockdata/shanghaiPE");
+                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                InputStream in = connection.getInputStream();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in, "utf8"));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    //responce =scanner.nextLine();
+                    builder.append(line);
+                }
+                String responce = builder.toString();
+
+                String[] div = responce.split("平均市盈率：");
+                shangZhengSYL = div[1].substring(0,5) ;
+
+            } catch (Exception e) {
+                Log.w("network", e.toString(), e);
+                //   runOnUiThread(()->{
+                //       updataTextView();
+                //       holdingStock.refreshText();
+                //   });
+            }
+        }
+        ).start();
     }
 
     public void orderTheList() {
