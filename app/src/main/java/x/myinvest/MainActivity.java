@@ -51,10 +51,14 @@ public class MainActivity extends AppCompatActivity {
     private String tenYears;//十年国债利率
     private String shangZhengSYL;//上证平均市盈率
     private String shangZhengSY;//上证平均收益率
-    private String cangWei;
+    private float haveMoney = 0;//预期最大投入金额
+    private String cangWei;//仓位
+    private double moneyNeedInvest=0;//根据仓位及最大投入金额计算的需投入资金
+    private double moneyNeedAdd=0;//应投减已投入金额
     private double gain;//浮盈
     private double gained=-6731;//无法详细列出的历史盈利金额
     private Double allValue=0.0;//总市值
+
     private int reflashCount=0;
     private int getDataCount=0;
 
@@ -117,6 +121,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.mainMenu_stockDividend:
                         showPopupDividend();
+                        break;
+                    case R.id.mainMenu_haveMoney:
+                        showPopupHaveMoney();
                         break;
         }
         return super.onOptionsItemSelected(item);
@@ -280,6 +287,33 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    void showPopupHaveMoney() {
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setBackgroundColor(0xffffffff);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(10, 30, 10, 30);
+        linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        EditText textHaveMoney = new EditText(this);
+        textHaveMoney.setHint(Float.toString(haveMoney));
+
+        Button ok = new Button(this);
+        ok.setText("确定");
+
+        linearLayout.addView(textHaveMoney,layoutParams);
+        linearLayout.addView(ok,layoutParams);
+        showPopupWindows(linearLayout);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                haveMoney=Float.parseFloat(textHaveMoney.getText().toString());//攻取行号
+                perfHoldingStocks.edit().putFloat("haveMoney", haveMoney).apply();
+
+            }
+        });
+    }
+
     void showPopupWindows(View popUp) {
         PopupWindow popupWindow=new PopupWindow(popUp, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setOutsideTouchable(true);
@@ -291,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void updataTextView() {
         ++reflashCount;
-        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue)+"  reflash:"+reflashCount+"|"+getDataCount+"\n"+"上证市盈率:"+shangZhengSYL+" 上证收益:"+shangZhengSY+"% 仓位:"+cangWei+"%");
+        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"市盈率:"+shangZhengSYL+" 收益率:"+shangZhengSY+"%\n"+"国债:"+tenYears+" 仓位:"+cangWei+"%"+"应投："+String.format("%.0f",moneyNeedInvest)+" 追加"+String.format("%.0f",moneyNeedAdd)+" ref:"+reflashCount+"|"+getDataCount+"\n实现盈利："+String.format("%.0f",gained)+" 浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
     }
 
     @Override
@@ -327,12 +361,13 @@ public class MainActivity extends AppCompatActivity {
         String buyedStockCodeSaved =null;
         String buyedStockPriceSaved =null;
         perfHoldingStocks =getSharedPreferences("buyedStock",0);
-        //buyedStockCodeSaved =perfHoldingStocks.getString("buyedStockCode","");
+        //加载预期投入的最大资金量
+        haveMoney = perfHoldingStocks.getFloat("haveMoney", 0);
         //加载股票代码
-
         String[] stockArrayStr = perfHoldingStocks.getString("buyedStockCode","").split(",");
         if(!stockArrayStr[0].isEmpty()){
             //perfHoldingStocks = new ArrayList<Stock>(stockArrayStr.length);
+
             //加载股票价格
             String[] priceArrayStr= perfHoldingStocks.getString("buyedStockPrice","").split(",");
             //加载股票数量
@@ -530,12 +565,16 @@ public class MainActivity extends AppCompatActivity {
 
                 //计算理论仓位
                 double tenYears=Double.parseDouble(this.tenYears);
-                double shangZhengShouYiLv = 1/Double.parseDouble(shangZhengSYL);
+                double shangZhengShouYiLv = 1/(Double.parseDouble(shangZhengSYL)*(1+Double.parseDouble(shangZheng.increase)/100));
                 shangZhengSY=String.format("%.2f",shangZhengShouYiLv*100);
                 double zuiDiShouYiLv=0.015*tenYears;
-                double zuiDaShouyiLv=0.028*tenYears;
-                cangWei = String.format("%.2f",(shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv)*100);
-                responce=cangWei;
+                double zuiDaShouyiLv=0.03*tenYears;
+                double cangWei=(shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
+                moneyNeedInvest=haveMoney*cangWei;
+                moneyNeedAdd=moneyNeedInvest-(allValue-gain);
+                this.cangWei = String.format("%.2f",cangWei*100);
+
+                //responce=cangWei;
 
                 //updateTabView();
             }

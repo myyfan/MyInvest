@@ -15,6 +15,9 @@
         android:title="股票分红"
         android:id="@+id/mainMenu_stockDividend" />
     <item
+        android:title="最大投入金额"
+        android:id="@+id/mainMenu_haveMoney" />
+    <item
         android:id="@+id/mainMenu_delItem"
         android:title="删除元素">
         <menu>
