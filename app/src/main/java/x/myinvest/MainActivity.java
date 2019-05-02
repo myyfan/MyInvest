@@ -570,7 +570,7 @@ public class MainActivity extends AppCompatActivity {
                 double zuiDiShouYiLv=0.015*tenYears;
                 double zuiDaShouyiLv=0.03*tenYears;
                 double cangWei=(shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
-                moneyNeedInvest=haveMoney*cangWei;
+                moneyNeedInvest=(haveMoney+gained)*cangWei;
                 moneyNeedAdd=moneyNeedInvest-(allValue-gain);
                 this.cangWei = String.format("%.2f",cangWei*100);
 
