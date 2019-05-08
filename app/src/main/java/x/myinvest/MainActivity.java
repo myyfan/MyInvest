@@ -612,7 +612,11 @@ public class MainActivity extends AppCompatActivity {
                 String responce = builder.toString();
 
                 String[] div = responce.split("平均市盈率：");
-                shangZhengSYL = div[1].substring(0,5) ;
+                int a=div[1].charAt(4);
+                if ( a>47 && a<58 )
+                    shangZhengSYL = div[1].substring(0,5) ;
+                else
+                    shangZhengSYL = div[1].substring(0,4) ;
 
             } catch (Exception e) {
                 Log.w("network", e.toString(), e);
