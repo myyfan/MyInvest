@@ -540,6 +540,10 @@ public class MainActivity extends AppCompatActivity {
                 shangZheng.increase = stockData[32];
                 //connection.disconnect();
 
+                //计算上证收益率
+                double shangZhengShouYiLv = 1/(Double.parseDouble(shangZhengSYL)*(1+Double.parseDouble(shangZheng.increase)/100));
+                shangZhengSY=String.format("%.2f",shangZhengShouYiLv*100);
+
                 //获取十年国债利率
 
                 //in.close();
@@ -565,8 +569,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //计算理论仓位
                 double tenYears=Double.parseDouble(this.tenYears);
-                double shangZhengShouYiLv = 1/(Double.parseDouble(shangZhengSYL)*(1+Double.parseDouble(shangZheng.increase)/100));
-                shangZhengSY=String.format("%.2f",shangZhengShouYiLv*100);
+
                 double zuiDiShouYiLv=0.015*tenYears;
                 double zuiDaShouyiLv=0.03*tenYears;
                 double cangWei=(shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
