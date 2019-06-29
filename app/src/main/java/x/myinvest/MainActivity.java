@@ -355,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void updataTextView() {
         ++reflashCount;  //  +" ref:"+reflashCount+"|"+getDataCount
-        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"市盈率:"+shangZhengSYL+" 收益率:"+shangZhengSY+"%\n"+"国债:"+tenYears+"  仓位:"+cangWei+"%"+"  应投："+String.format("%.0f",moneyNeedInvest)+"  追加"+String.format("%.0f",moneyNeedAdd)+"\n实现盈利："+String.format("%.0f",gained)+" 浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"市盈率:"+shangZhengSYL+" 收益率:"+shangZhengSY+"%\n"+"国债:"+tenYears+"  仓位:"+cangWei+"%"+"  应投："+String.format("%.0f",moneyNeedInvest)+"  追加"+String.format("%.0f",moneyNeedAdd)+":"+getDataCount+"\n实现盈利："+String.format("%.0f",gained)+" 浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
     }
 
     @Override
@@ -371,6 +371,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 pullNetworkData();
+                runOnUiThread(()->{
+                                 updataTextView();
+                                 holdingStock.refreshText();
+                             });
              //   runOnUiThread(()->{
              //       //textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
              //       updataTextView();
@@ -593,24 +597,24 @@ public class MainActivity extends AppCompatActivity {
                 //获取十年国债利率
 
                 //in.close();
-                url=new URL("https://forexdata.wallstreetcn.com/real?en_prod_code=CHINA10YEAR&fields=prod_name,last_px,px_change,px_change_rate,high_px,low_px,open_px,preclose_px,business_amount,business_balance,market_value,turnover_ratio,dyn_pb_rate,amplitude,pe_rate,bps,hq_type_code,trade_status,bid_grp,offer_grp,business_amount_in,business_amount_out,circulation_value,securities_type,update_time,price_precision,week_52_high,week_52_low");
-                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
-                HttpsURLConnection conn=(HttpsURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("Referer","https://wallstreetcn.com/markets/bonds/CHINA10YEAR");
-                conn.setRequestProperty("Host","forexdata.wallstreetcn.com");
-                conn.setRequestProperty("Connection","keep-alive");
-                conn.connect();
-                builder.setLength(0);
-                InputStream  inx= conn.getInputStream();
-                BufferedReader read = new BufferedReader(new InputStreamReader(inx,"utf-8"));
-                while ((line=read.readLine())!=null){
-                    //responce =scanner.nextLine();
-                    builder.append(line);
-                }
-                responce=builder.toString();
-                div=responce.split(",");
-                this.tenYears=div[2];
+       //         url=new URL("https://forexdata.wallstreetcn.com/real?en_prod_code=CHINA10YEAR&fields=prod_name,last_px,px_change,px_change_rate,high_px,low_px,open_px,preclose_px,business_amount,business_balance,market_value,turnover_ratio,dyn_pb_rate,amplitude,pe_rate,bps,hq_type_code,trade_status,bid_grp,offer_grp,business_amount_in,business_amount_out,circulation_value,securities_type,update_time,price_precision,week_52_high,week_52_low");
+       //         //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+       //         HttpsURLConnection conn=(HttpsURLConnection) url.openConnection();
+       //         conn.setRequestMethod("GET");
+       //         conn.setRequestProperty("Referer","https://wallstreetcn.com/markets/bonds/CHINA10YEAR");
+       //         conn.setRequestProperty("Host","forexdata.wallstreetcn.com");
+       //         conn.setRequestProperty("Connection","keep-alive");
+       //         conn.connect();
+       //         builder.setLength(0);
+       //         InputStream  inx= conn.getInputStream();
+       //         BufferedReader read = new BufferedReader(new InputStreamReader(inx,"utf-8"));
+       //         while ((line=read.readLine())!=null){
+       //             //responce =scanner.nextLine();
+       //             builder.append(line);
+       //         }
+       //         responce=builder.toString();
+       //         div=responce.split(",");
+       //         this.tenYears=div[2];
 
 
                 //responce=cangWei;
@@ -619,16 +623,16 @@ public class MainActivity extends AppCompatActivity {
             }
             catch (Exception e){
                 Log.w("network", e.toString(),e );
-                runOnUiThread(()->{
-                    updataTextView();
-                    holdingStock.refreshText();
-                });
+              //  runOnUiThread(()->{
+              //      updataTextView();
+              //      holdingStock.refreshText();
+              //  });
             }
             getDataCount++;
-        runOnUiThread(()->{
-                   updataTextView();
-                   holdingStock.refreshText();
-               });
+      //  runOnUiThread(()->{
+      //             updataTextView();
+      //             holdingStock.refreshText();
+      //         });
     }
 
     protected void pullShangZhengSYL() {
