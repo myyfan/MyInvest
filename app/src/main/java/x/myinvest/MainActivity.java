@@ -124,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.mainMenu_haveMoney:
                         showPopupHaveMoney();
+                    case R.id.mainMenu_tenYearShouYiLv:
+                        showPopupSetTenYearShouYiLv();
                         break;
         }
         return super.onOptionsItemSelected(item);
@@ -314,6 +316,33 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    void showPopupSetTenYearShouYiLv() {
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setBackgroundColor(0xffffffff);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(10, 30, 10, 30);
+        linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        EditText textHaveMoney = new EditText(this);
+        textHaveMoney.setHint(tenYears);
+
+        Button ok = new Button(this);
+        ok.setText("确定");
+
+        linearLayout.addView(textHaveMoney,layoutParams);
+        linearLayout.addView(ok,layoutParams);
+        showPopupWindows(linearLayout);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tenYears=textHaveMoney.getText().toString();//获取收益率
+                perfHoldingStocks.edit().putString("tenYears", tenYears).apply();
+                updataTextView();
+            }
+        });
+    }
+
     void showPopupWindows(View popUp) {
         PopupWindow popupWindow=new PopupWindow(popUp, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setOutsideTouchable(true);
@@ -347,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
              //       holdingStock.refreshText();
              //   });
             }
-        }, 5000, 5000);
+        }, 0, 5000);
     }
 
     @Override
@@ -363,6 +392,8 @@ public class MainActivity extends AppCompatActivity {
         perfHoldingStocks =getSharedPreferences("buyedStock",0);
         //加载预期投入的最大资金量
         haveMoney = perfHoldingStocks.getFloat("haveMoney", 0);
+        // 加载10年国债收益率
+        tenYears = perfHoldingStocks.getString("tenYears", "0");
         //加载股票代码
         String[] stockArrayStr = perfHoldingStocks.getString("buyedStockCode","").split(",");
         if(!stockArrayStr[0].isEmpty()){
@@ -539,10 +570,24 @@ public class MainActivity extends AppCompatActivity {
                 shangZheng.nowPrice = stockData[3];
                 shangZheng.increase = stockData[32];
                 //connection.disconnect();
+                //排序
+                orderTheList();
+
+                //计算理论仓位
 
                 //计算上证收益率
                 double shangZhengShouYiLv = 1/(Double.parseDouble(shangZhengSYL)*(1+Double.parseDouble(shangZheng.increase)/100));
                 shangZhengSY=String.format("%.2f",shangZhengShouYiLv*100);
+
+                double tenYears=Double.parseDouble(this.tenYears);
+                double zuiDiShouYiLv=0.015*tenYears;
+                double zuiDaShouyiLv=0.03*tenYears;
+                double cangWei=(shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
+                moneyNeedInvest=(haveMoney+gained)*cangWei;
+                moneyNeedAdd=moneyNeedInvest-(allValue-gain);
+                this.cangWei = String.format("%.2f",cangWei*100);
+
+
 
                 //获取十年国债利率
 
@@ -564,18 +609,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 responce=builder.toString();
                 div=responce.split(",");
-                tenYears=div[2];
-                orderTheList();
+                this.tenYears=div[2];
 
-                //计算理论仓位
-                double tenYears=Double.parseDouble(this.tenYears);
-
-                double zuiDiShouYiLv=0.015*tenYears;
-                double zuiDaShouyiLv=0.03*tenYears;
-                double cangWei=(shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
-                moneyNeedInvest=(haveMoney+gained)*cangWei;
-                moneyNeedAdd=moneyNeedInvest-(allValue-gain);
-                this.cangWei = String.format("%.2f",cangWei*100);
 
                 //responce=cangWei;
 
