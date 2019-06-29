@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.mainMenu_haveMoney:
                         showPopupHaveMoney();
+                        break;
                     case R.id.mainMenu_tenYearShouYiLv:
                         showPopupSetTenYearShouYiLv();
                         break;
