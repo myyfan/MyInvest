@@ -355,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void updataTextView() {
         ++reflashCount;  //  +" ref:"+reflashCount+"|"+getDataCount
-        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"市盈率:"+shangZhengSYL+" 收益率:"+shangZhengSY+"%\n"+"国债:"+tenYears+"  仓位:"+cangWei+"%"+"  应投："+String.format("%.0f",moneyNeedInvest)+"  追加"+String.format("%.0f",moneyNeedAdd)+":"+getDataCount+"\n实现盈利："+String.format("%.0f",gained)+" 浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"市盈率:"+shangZhengSYL+" 收益率:"+shangZhengSY+"%\n"+"国债:"+tenYears+"  仓位:"+cangWei+"%"+"  应投："+String.format("%.0f",moneyNeedInvest)+"  追加"+String.format("%.0f",moneyNeedAdd)+"*"+getDataCount+"\n实现盈利："+String.format("%.0f",gained)+" 浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
     }
 
     @Override
