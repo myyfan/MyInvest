@@ -1,8 +1,10 @@
 package x.myinvest;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -127,6 +129,11 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.mainMenu_tenYearShouYiLv:
                         showPopupSetTenYearShouYiLv();
+                        break;
+                    case R.id.mainMenu_queryTenYearShouYiLv:
+                        Uri uri =Uri.parse("https://m.cn.investing.com/rates-bonds/china-10-year-bond-yield#");
+                        Intent it = new Intent(Intent.ACTION_VIEW,uri);
+                        startActivity(it);
                         break;
         }
         return super.onOptionsItemSelected(item);

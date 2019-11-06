@@ -21,6 +21,9 @@
         android:title="输入10年国债收益率"
         android:id="@+id/mainMenu_tenYearShouYiLv" />
     <item
+        android:title="查询10年国债收益率"
+        android:id="@+id/mainMenu_queryTenYearShouYiLv" />
+    <item
         android:id="@+id/mainMenu_delItem"
         android:title="删除元素">
         <menu>
