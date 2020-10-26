@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int rowNum=Integer.parseInt(row.getText().toString());//攻取行号
+                int rowNum=Integer.parseInt(row.getText().toString());//获取行号
                 gained-=soldStockList.get(rowNum-1).earn;
                 soldStockList.remove(rowNum - 1);
 
