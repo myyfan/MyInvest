@@ -287,9 +287,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int rowNum=Integer.parseInt(row.getText().toString());//获取行号
+                if(rowNum>soldStockList.size()) return;
+                if(rowNum<1) return;
                 gained-=soldStockList.get(rowNum-1).earn;
                 soldStockList.remove(rowNum - 1);
-
                 soldStocks.updateTableView();
                 saveSoldData();
 
