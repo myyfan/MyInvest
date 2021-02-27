@@ -28,11 +28,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import x.myinvest.popup.PopUpAddStock;
 import x.myinvest.popup.PopupChangeGained;
@@ -51,7 +50,10 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout mainView;//主视图
     private Stock shangZheng;//上证指数
     private String tenYears;//十年国债利率
-    private String shangZhengSYL;//上证平均市盈率
+    private String [] jingTaiShiYingLv=new String[6];//市场平均静态市盈率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
+    private String [] dongTaiShiYingLv=new String[6];//市场平均动态市盈率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
+    private String [] ShiJingLv=new String[6];//市场平均市净率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
+    private String [] guXiLv=new String[6];//市场平均股率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
     private String shangZhengSY;//上证平均收益率
     private float haveMoney = 0;//预期最大投入金额
     private String cangWei;//仓位
@@ -363,14 +365,14 @@ public class MainActivity extends AppCompatActivity {
 
     protected void updataTextView() {
         ++reflashCount;  //  +" ref:"+reflashCount+"|"+getDataCount
-        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"市盈率:"+shangZhengSYL+" 收益率:"+shangZhengSY+"%\n"+"国债:"+tenYears+"  仓位:"+cangWei+"%"+"  应投："+String.format("%.0f",moneyNeedInvest)+"  追加"+String.format("%.0f",moneyNeedAdd)+"*"+getDataCount+"\n实现盈利："+String.format("%.0f",gained)+" 浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
+        textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"市盈率:"+ jingTaiShiYingLv[0] +" 收益率:"+shangZhengSY+"%\n"+"国债:"+tenYears+"  仓位:"+cangWei+"%"+"  应投："+String.format("%.0f",moneyNeedInvest)+"  追加"+String.format("%.0f",moneyNeedAdd)+"*"+getDataCount+"\n实现盈利："+String.format("%.0f",gained)+" 浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        pullQuanShiChangShuJu();
         pullNetworkData();
-        pullShangZhengSYL();
         //textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
      //   updataTextView();
      //   holdingStock.refreshText();
@@ -589,7 +591,13 @@ public class MainActivity extends AppCompatActivity {
                 //计算理论仓位
 
                 //计算上证收益率
-                double shangZhengShouYiLv = 1/(Double.parseDouble(shangZhengSYL)*(1+Double.parseDouble(shangZheng.increase)/100));
+              //  Calendar cal=Calendar.getInstance();
+              //  int y=cal.get(Calendar.YEAR);
+              //  int m=cal.get(Calendar.MONTH);
+              //  int d=cal.get(Calendar.DATE);
+
+                float f1=Float.parseFloat(dongTaiShiYingLv[0]);
+                double shangZhengShouYiLv = 1/(f1*(1+Double.parseDouble(shangZheng.increase)/100));
                 shangZhengSY=String.format("%.2f",shangZhengShouYiLv*100);
 
                 double tenYears=Double.parseDouble(this.tenYears);
@@ -643,31 +651,183 @@ public class MainActivity extends AppCompatActivity {
       //         });
     }
 
-    protected void pullShangZhengSYL() {
+    protected void pullQuanShiChangShuJu() {
         new Thread(() -> {
-            StringBuilder builder = new StringBuilder();
-            try {
-                URL url = new URL("https://www.legulegu.com/stockdata/shanghaiPE");
+            try {//从中证指数公司获取市场平均静态市盈率
+                URL url = new URL("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zy1");
                 //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.connect();
                 InputStream in = connection.getInputStream();
-
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in, "utf8"));
+                StringBuilder builder = new StringBuilder();
                 String line;
+                int i1=0;
+                while ((line = reader.readLine()) != null) {
+                    //responce =scanner.nextLine();
+                    if(i1++>500)
+                    {
+                        builder.append(line);
+                        if(i1>600) break;
+                    }
+
+                }
+                String responce = builder.toString();
+                String[] div = responce.split("<tr>");
+                int a=div[1].charAt(4);
+                String[] div1;
+                int i2=3;
+                int i3=2;
+                int i4;
+                for(;i2<9;i2++)
+                {
+                    div1=div[i2].split("<td>");
+                    char c1=div1[2].charAt(0);
+                    for(i4=1;c1!=60;i4++)
+                    {
+                        c1=div1[2].charAt(i4);
+                    }
+                    jingTaiShiYingLv[i2-3]=div1[2].substring(0,i4-1);
+                 //   float f1=Float.parseFloat(jingTaiShiYingLv[i2-3]);
+                 //   jingTaiShiYingLv[i2-3]=div1[2].substring(0,i4-1);
+                }
+
+
+                //从中证指数公司获取市场平均动态市盈率
+                url = new URL("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zy2");
+                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                in = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(in, "utf8"));
+                builder = new StringBuilder();
+                i1=0;
+                while ((line = reader.readLine()) != null) {
+                    //responce =scanner.nextLine();
+                    if(i1++>500)
+                    {
+                        builder.append(line);
+                        if(i1>600) break;
+                    }
+
+                }
+                responce = builder.toString();
+                div = responce.split("<tr>");
+                a=div[1].charAt(4);
+                i2=3;
+                i3=2;
+                for(;i2<9;i2++)
+                {
+                    div1=div[i2].split("<td>");
+                    char c1=div1[2].charAt(0);
+                    for(i4=1;c1!=60;i4++)
+                    {
+                        c1=div1[2].charAt(i4);
+                    }
+                    dongTaiShiYingLv[i2-3]=div1[2].substring(0,i4-1);
+               //     float f1=Float.parseFloat(dongTaiShiYingLv[i2-3]);
+               //     dongTaiShiYingLv[i2-3]=div1[2].substring(0,i4-1);
+                }
+
+                //从中证指数公司获取市场平均市净率
+                url = new URL("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zy3");
+                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                in = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(in, "utf8"));
+                builder = new StringBuilder();
+                i1=0;
+                while ((line = reader.readLine()) != null) {
+                    //responce =scanner.nextLine();
+                    if(i1++>500)
+                    {
+                        builder.append(line);
+                        if(i1>600) break;
+                    }
+
+                }
+                responce = builder.toString();
+                div = responce.split("<tr>");
+                a=div[1].charAt(4);
+                i2=3;
+                i3=2;
+                for(;i2<9;i2++)
+                {
+                    div1=div[i2].split("<td>");
+                    char c1=div1[2].charAt(0);
+                    for(i4=1;c1!=60;i4++)
+                    {
+                        c1=div1[2].charAt(i4);
+                    }
+                    ShiJingLv[i2-3]=div1[2].substring(0,i4-1);
+                //    float f1=Float.parseFloat(ShiJingLv[i2-3]);
+                //    ShiJingLv[i2-3]=div1[2].substring(0,i4-1);
+                }
+
+
+                //从中证指数公司获取市场平均股息率
+                url = new URL("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zy4");
+                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                in = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(in, "utf8"));
+                builder = new StringBuilder();
+                i1=0;
+                while ((line = reader.readLine()) != null) {
+                    //responce =scanner.nextLine();
+                    if(i1++>500)
+                    {
+                        builder.append(line);
+                        if(i1>600) break;
+                    }
+
+                }
+                responce = builder.toString();
+                div = responce.split("<tr>");
+                a=div[1].charAt(4);
+                i2=3;
+                i3=2;
+                for(;i2<9;i2++)
+                {
+                    div1=div[i2].split("<td>");
+                    char c1=div1[2].charAt(0);
+                    for(i4=1;c1!=60;i4++)
+                    {
+                        c1=div1[2].charAt(i4);
+                    }
+                    guXiLv[i2-3]=div1[2].substring(0,i4-1);
+              //      float f1=Float.parseFloat(guXiLv[i2-3]);
+              //      guXiLv[i2-3]=div1[2].substring(0,i4-1);
+                }
+
+                if(jingTaiShiYingLv[0]==null){
+                url = new URL("https://www.legulegu.com/stockdata/shanghaiPE");
+                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                in = connection.getInputStream();
+
+                reader = new BufferedReader(new InputStreamReader(in, "utf8"));
                 while ((line = reader.readLine()) != null) {
                     //responce =scanner.nextLine();
                     builder.append(line);
                 }
-                String responce = builder.toString();
+                responce = builder.toString();
 
-                String[] div = responce.split("平均市盈率：");
-                int a=div[1].charAt(4);
+                div = responce.split("平均市盈率：");
+                a=div[1].charAt(4);
                 if ( a>47 && a<58 )
-                    shangZhengSYL = div[1].substring(0,5) ;
+                    jingTaiShiYingLv[0] = div[1].substring(0,5) ;
                 else
-                    shangZhengSYL = div[1].substring(0,4) ;
+                    jingTaiShiYingLv[0] = div[1].substring(0,4) ;
+            }
 
             } catch (Exception e) {
                 Log.w("network", e.toString(), e);
