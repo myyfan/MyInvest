@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private String [] ShiJingLv=new String[6];//市场平均市净率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
     private String [] guXiLv=new String[6];//市场平均股率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
     private String shangZhengSY;//上证平均收益率
+    private double shangZhengJingZiChanShouYiLv;//上证平均净资产收益率
     private float haveMoney = 0;//预期最大投入金额
     private String cangWei;//仓位
     private double moneyNeedInvest=0;//根据仓位及最大投入金额计算的需投入资金
@@ -591,13 +592,19 @@ public class MainActivity extends AppCompatActivity {
                 //计算理论仓位
 
                 //计算上证收益率
-              //  Calendar cal=Calendar.getInstance();
+                Calendar cal=Calendar.getInstance();
               //  int y=cal.get(Calendar.YEAR);
-              //  int m=cal.get(Calendar.MONTH);
+                int m=cal.get(Calendar.MONTH)+1;
               //  int d=cal.get(Calendar.DATE);
+                int rase =0;
+                if (m > 4) {
+                    if(m>10) rase=m-11;
+                    else if(m>8) rase=m-9;
+                    else if(m>4) rase=m-5;
+                }else rase=m+1;
 
-                float f1=Float.parseFloat(dongTaiShiYingLv[0]);
-                double shangZhengShouYiLv = 1/(f1*(1+Double.parseDouble(shangZheng.increase)/100));
+                float f1=Float.parseFloat(dongTaiShiYingLv[0]);//动态市盈率
+                double shangZhengShouYiLv = (1+shangZhengJingZiChanShouYiLv*rase/12)/(f1*(1+Double.parseDouble(shangZheng.increase)/100));
                 shangZhengSY=String.format("%.2f",shangZhengShouYiLv*100);
 
                 double tenYears=Double.parseDouble(this.tenYears);
@@ -805,6 +812,7 @@ public class MainActivity extends AppCompatActivity {
               //      float f1=Float.parseFloat(guXiLv[i2-3]);
               //      guXiLv[i2-3]=div1[2].substring(0,i4-1);
                 }
+                shangZhengJingZiChanShouYiLv=Double.parseDouble(ShiJingLv[0])/Double.parseDouble(dongTaiShiYingLv[0]);
 
                 if(jingTaiShiYingLv[0]==null){
                 url = new URL("https://www.legulegu.com/stockdata/shanghaiPE");
