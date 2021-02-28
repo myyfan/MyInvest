@@ -595,13 +595,14 @@ public class MainActivity extends AppCompatActivity {
                 Calendar cal=Calendar.getInstance();
               //  int y=cal.get(Calendar.YEAR);
                 int m=cal.get(Calendar.MONTH)+1;
-              //  int d=cal.get(Calendar.DATE);
-                int rase =0;
+                int d=cal.get(Calendar.DATE);
+                float rase =0;
                 if (m > 4) {
                     if(m>10) rase=m-11;
                     else if(m>8) rase=m-9;
                     else if(m>4) rase=m-5;
                 }else rase=m+1;
+                rase = rase+(float)d/30;
 
                 float f1=Float.parseFloat(dongTaiShiYingLv[0]);//动态市盈率
                 double shangZhengShouYiLv = (1+shangZhengJingZiChanShouYiLv*rase/12)/(f1*(1+Double.parseDouble(shangZheng.increase)/100));
@@ -813,6 +814,9 @@ public class MainActivity extends AppCompatActivity {
               //      guXiLv[i2-3]=div1[2].substring(0,i4-1);
                 }
                 shangZhengJingZiChanShouYiLv=Double.parseDouble(ShiJingLv[0])/Double.parseDouble(dongTaiShiYingLv[0]);
+
+
+
 
                 if(jingTaiShiYingLv[0]==null){
                 url = new URL("https://www.legulegu.com/stockdata/shanghaiPE");
