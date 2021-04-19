@@ -1,6 +1,5 @@
 package x.myinvest;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private String[] banKuaiMingCheng = {"上海A股", "深圳A股", "沪深A股", "深市主板", "中小板", "创业板"};
     private String[] jingTaiShiYingLv = new String[6];//市场平均静态市盈率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
     private String[] dongTaiShiYingLv = new String[6];//市场平均动态市盈率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
-    private String[] ShiJingLv = new String[6];//市场平均市净率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
+    private String[] shiJingLv = new String[6];//市场平均市净率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
     private String[] jingZiChanShouYiLv=new String[6];//市场平均净资产收益率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
     private String[] guXiLv = new String[6];//市场平均股息率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
     private String shangZhengSY;//上证平均收益率
@@ -120,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                     textView.setText(dongTaiShiYingLv[i]);
                     tableRow.addView(textView);
                     textView = new TextView(context);
-                    textView.setText(ShiJingLv[i]);
+                    textView.setText(shiJingLv[i]);
                     tableRow.addView(textView);
                     textView = new TextView(context);
                     textView.setText(jingZiChanShouYiLv[i]);
@@ -734,20 +733,23 @@ public class MainActivity extends AppCompatActivity {
                 }
                 String responce = builder.toString();
                 String[] div = responce.split("<tr>");
-                int a = div[1].charAt(4);
                 String[] div1;
                 int i2 = 3;
                 int i3 = 2;
                 int i4;
-                for (; i2 < 9; i2++) {
-                    div1 = div[i2].split("<td>");
-                    char c1 = div1[2].charAt(0);
-                    for (i4 = 1; c1 != 60; i4++) {
-                        c1 = div1[2].charAt(i4);
+                int a;
+                if(div.length>1) {
+                  //  a = div[1].charAt(4);
+                    for (; i2 < 9; i2++) {
+                        div1 = div[i2].split("<td>");
+                        char c1 = div1[2].charAt(0);
+                        for (i4 = 1; c1 != 60; i4++) {
+                            c1 = div1[2].charAt(i4);
+                        }
+                        jingTaiShiYingLv[i2 - 3] = div1[2].substring(0, i4 - 1);
+                        //   float f1=Float.parseFloat(jingTaiShiYingLv[i2-3]);
+                        //   jingTaiShiYingLv[i2-3]=div1[2].substring(0,i4-1);
                     }
-                    jingTaiShiYingLv[i2 - 3] = div1[2].substring(0, i4 - 1);
-                    //   float f1=Float.parseFloat(jingTaiShiYingLv[i2-3]);
-                    //   jingTaiShiYingLv[i2-3]=div1[2].substring(0,i4-1);
                 }
 
 
@@ -771,18 +773,20 @@ public class MainActivity extends AppCompatActivity {
                 }
                 responce = builder.toString();
                 div = responce.split("<tr>");
-                a = div[1].charAt(4);
-                i2 = 3;
-                i3 = 2;
-                for (; i2 < 9; i2++) {
-                    div1 = div[i2].split("<td>");
-                    char c1 = div1[2].charAt(0);
-                    for (i4 = 1; c1 != 60; i4++) {
-                        c1 = div1[2].charAt(i4);
+                if(div.length>1) {
+             //       a = div[1].charAt(4);
+                    i2 = 3;
+                    i3 = 2;
+                    for (; i2 < 9; i2++) {
+                        div1 = div[i2].split("<td>");
+                        char c1 = div1[2].charAt(0);
+                        for (i4 = 1; c1 != 60; i4++) {
+                            c1 = div1[2].charAt(i4);
+                        }
+                        dongTaiShiYingLv[i2 - 3] = div1[2].substring(0, i4 - 1);
+                        //     float f1=Float.parseFloat(dongTaiShiYingLv[i2-3]);
+                        //     dongTaiShiYingLv[i2-3]=div1[2].substring(0,i4-1);
                     }
-                    dongTaiShiYingLv[i2 - 3] = div1[2].substring(0, i4 - 1);
-                    //     float f1=Float.parseFloat(dongTaiShiYingLv[i2-3]);
-                    //     dongTaiShiYingLv[i2-3]=div1[2].substring(0,i4-1);
                 }
 
                 //从中证指数公司获取市场平均市净率
@@ -805,20 +809,22 @@ public class MainActivity extends AppCompatActivity {
                 }
                 responce = builder.toString();
                 div = responce.split("<tr>");
-                a = div[1].charAt(4);
-                i2 = 3;
-                i3 = 2;
-                for (; i2 < 9; i2++) {
-                    div1 = div[i2].split("<td>");
-                    char c1 = div1[2].charAt(0);
-                    for (i4 = 1; c1 != 60; i4++) {
-                        c1 = div1[2].charAt(i4);
+                if(div.length>1) {
+              //      a = div[1].charAt(4);
+                    i2 = 3;
+                    i3 = 2;
+                    for (; i2 < 9; i2++) {
+                        div1 = div[i2].split("<td>");
+                        char c1 = div1[2].charAt(0);
+                        for (i4 = 1; c1 != 60; i4++) {
+                            c1 = div1[2].charAt(i4);
+                        }
+                        int i5 = i2 - 3;
+                        shiJingLv[i5] = div1[2].substring(0, i4 - 1);
+                        jingZiChanShouYiLv[i5] = String.format("%.1f", Double.parseDouble(shiJingLv[i5]) / Double.parseDouble(dongTaiShiYingLv[i5]) * 100);
+                        //    float f1=Float.parseFloat(ShiJingLv[i2-3]);
+                        //    ShiJingLv[i2-3]=div1[2].substring(0,i4-1);
                     }
-                    int i5=i2-3;
-                    ShiJingLv[i5] = div1[2].substring(0, i4 - 1);
-                    jingZiChanShouYiLv[i5]=String.format("%.1f", Double.parseDouble(ShiJingLv[i5])/Double.parseDouble(dongTaiShiYingLv[i5])*100);
-                    //    float f1=Float.parseFloat(ShiJingLv[i2-3]);
-                    //    ShiJingLv[i2-3]=div1[2].substring(0,i4-1);
                 }
 
 
@@ -842,24 +848,26 @@ public class MainActivity extends AppCompatActivity {
                 }
                 responce = builder.toString();
                 div = responce.split("<tr>");
-                a = div[1].charAt(4);
-                i2 = 3;
-                i3 = 2;
-                for (; i2 < 9; i2++) {
-                    div1 = div[i2].split("<td>");
-                    char c1 = div1[2].charAt(0);
-                    for (i4 = 1; c1 != 60; i4++) {
-                        c1 = div1[2].charAt(i4);
+                if(div.length>1) {
+               //     a = div[1].charAt(4);
+                    i2 = 3;
+                    i3 = 2;
+                    for (; i2 < 9; i2++) {
+                        div1 = div[i2].split("<td>");
+                        char c1 = div1[2].charAt(0);
+                        for (i4 = 1; c1 != 60; i4++) {
+                            c1 = div1[2].charAt(i4);
+                        }
+                        guXiLv[i2 - 3] = div1[2].substring(0, i4 - 1);
+                        //      float f1=Float.parseFloat(guXiLv[i2-3]);
+                        //      guXiLv[i2-3]=div1[2].substring(0,i4-1);
                     }
-                    guXiLv[i2 - 3] = div1[2].substring(0, i4 - 1);
-                    //      float f1=Float.parseFloat(guXiLv[i2-3]);
-                    //      guXiLv[i2-3]=div1[2].substring(0,i4-1);
                 }
-                shangZhengJingZiChanShouYiLv = Double.parseDouble(ShiJingLv[0]) / Double.parseDouble(dongTaiShiYingLv[0]);
 
 
-                if (jingTaiShiYingLv[0] == null) {
-                    url = new URL("https://www.legulegu.com/stockdata/shanghaiPE");
+                if (true || jingTaiShiYingLv[0] == null) {
+                    //从乐估乐股获取静态市盈率
+                    url = new URL("https://www.legulegu.com/stockdata/market_pe");
                     //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
@@ -867,19 +875,112 @@ public class MainActivity extends AppCompatActivity {
                     in = connection.getInputStream();
 
                     reader = new BufferedReader(new InputStreamReader(in, "utf8"));
+                    builder = new StringBuilder();
+                    i1 = 0;
                     while ((line = reader.readLine()) != null) {
                         //responce =scanner.nextLine();
-                        builder.append(line);
+                        if (i1++ > 550) {
+                            builder.append(line);
+                            if (i1 > 650) break;
+                        }
+
                     }
                     responce = builder.toString();
 
-                    div = responce.split("平均市盈率：");
-                    a = div[1].charAt(4);
-                    if (a > 47 && a < 58)
-                        jingTaiShiYingLv[0] = div[1].substring(0, 5);
-                    else
-                        jingTaiShiYingLv[0] = div[1].substring(0, 4);
+                    div = responce.split("<td class=\"icon-font-red\">");
+                    if(div.length>1) {
+                        div1 = div[1].split("</td>");
+                        jingTaiShiYingLv[0]=div1[0];
+                        div1 = div[2].split("</td>");
+                        jingTaiShiYingLv[1]=div1[0];
+                        div1 = div[3].split("</td>");
+                        jingTaiShiYingLv[4]=div1[0];
+                        div1 = div[4].split("</td>");
+                        jingTaiShiYingLv[5]=div1[0];
+                    }
+                    //从乐估乐股获取市净率
+                    url = new URL("https://www.legulegu.com/stockdata/market_pb");
+                    //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.connect();
+                    in = connection.getInputStream();
+
+                    reader = new BufferedReader(new InputStreamReader(in, "utf8"));
+                    builder = new StringBuilder();
+                    i1 = 0;
+                    while ((line = reader.readLine()) != null) {
+                        //responce =scanner.nextLine();
+                        if (i1++ > 550) {
+                            builder.append(line);
+                            if (i1 > 650) break;
+                        }
+
+                    }
+                    responce = builder.toString();
+
+                    div = responce.split("<td class=\"icon-font-red\">");
+                    if(div.length>1) {
+                        div1 = div[1].split("</td>");
+                        shiJingLv[0]=div1[0];
+                        div1 = div[2].split("</td>");
+                        shiJingLv[1]=div1[0];
+                        div1 = div[3].split("</td>");
+                        shiJingLv[4]=div1[0];
+                        div1 = div[4].split("</td>");
+                        shiJingLv[5]=div1[0];
+                    }
+
+
+                    //从散记大家庭获取动态市盈率
+                    url = new URL("http://www.shdjt.com/pjsyl.asp");
+                    //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.connect();
+                    in = connection.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(in, "gb2312"));
+                    builder = new StringBuilder();
+                    i1 = 0;
+                    while ((line = reader.readLine()) != null) {
+                        //responce =scanner.nextLine();
+                        if (i1++ > 300) {
+                            builder.append(line);
+                            if (i1 > 400) break;
+                        }
+
+                    }
+                    responce = builder.toString();
+                    div = responce.split("<font color='#FF00FF'>");
+                    if(div.length>1) {
+                        char c1 = div[1].charAt(0);
+                        for (i4 = 1; c1 != 60; i4++) {
+                            c1 = div[1].charAt(i4);
+                        }
+                        dongTaiShiYingLv[0] = div[1].substring(0, i4 - 1);
+
+                        c1 = div[2].charAt(0);
+                        for (i4 = 1; c1 != 60; i4++) {
+                            c1 = div[2].charAt(i4);
+                        }
+                        dongTaiShiYingLv[1] = div[2].substring(0, i4 - 1);
+
+                        c1 = div[3].charAt(0);
+                        for (i4 = 1; c1 != 60; i4++) {
+                            c1 = div[3].charAt(i4);
+                        }
+                        dongTaiShiYingLv[5] = div[3].substring(0, i4 - 1);
+                    }
+
+
+
+
+                          //  jingZiChanShouYiLv[i5] = String.format("%.1f", Double.parseDouble(ShiJingLv[i5]) / Double.parseDouble(dongTaiShiYingLv[i5]) * 100);
+                            //    float f1=Float.parseFloat(ShiJingLv[i2-3]);
+                            //    ShiJingLv[i2-3]=div1[2].substring(0,i4-1);
+
                 }
+                shangZhengJingZiChanShouYiLv = Double.parseDouble(shiJingLv[0]) / Double.parseDouble(dongTaiShiYingLv[0]);
 
             } catch (Exception e) {
                 Log.w("network", e.toString(), e);
