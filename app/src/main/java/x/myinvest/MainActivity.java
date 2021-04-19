@@ -959,18 +959,21 @@ public class MainActivity extends AppCompatActivity {
                             c1 = div[1].charAt(i4);
                         }
                         dongTaiShiYingLv[0] = div[1].substring(0, i4 - 1);
+                        jingZiChanShouYiLv[0] = String.format("%.1f", Double.parseDouble(shiJingLv[0]) / Double.parseDouble(dongTaiShiYingLv[0]) * 100);
 
                         c1 = div[2].charAt(0);
                         for (i4 = 1; c1 != 60; i4++) {
                             c1 = div[2].charAt(i4);
                         }
                         dongTaiShiYingLv[1] = div[2].substring(0, i4 - 1);
+                        jingZiChanShouYiLv[1] = String.format("%.1f", Double.parseDouble(shiJingLv[1]) / Double.parseDouble(dongTaiShiYingLv[1]) * 100);
 
                         c1 = div[3].charAt(0);
                         for (i4 = 1; c1 != 60; i4++) {
                             c1 = div[3].charAt(i4);
                         }
                         dongTaiShiYingLv[5] = div[3].substring(0, i4 - 1);
+                        jingZiChanShouYiLv[5] = String.format("%.1f", Double.parseDouble(shiJingLv[5]) / Double.parseDouble(dongTaiShiYingLv[5]) * 100);
                     }
 
 
