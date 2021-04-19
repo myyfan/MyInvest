@@ -643,22 +643,23 @@ public class MainActivity extends AppCompatActivity {
             orderTheList();
 
             //计算理论仓位
-
-            //计算上证收益率
-            Calendar cal = Calendar.getInstance();
-            //  int y=cal.get(Calendar.YEAR);
-            int m = cal.get(Calendar.MONTH) + 1;
-            int d = cal.get(Calendar.DATE);
-            float rase = 0;
-            if (m > 4) {
-                if (m > 10) rase = m - 11;
-                else if (m > 8) rase = m - 9;
-                else if (m > 4) rase = m - 5;
-            } else rase = m + 1;
-            rase = rase + (float) d / 30;
-
             float f1 = Float.parseFloat(dongTaiShiYingLv[0]);//动态市盈率
-            double shangZhengShouYiLv = (1 + shangZhengJingZiChanShouYiLv * rase / 12) / (f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
+            //计算上证收益率
+            //考虑时间因素
+     //       Calendar cal = Calendar.getInstance();
+     //       //  int y=cal.get(Calendar.YEAR);
+     //       int m = cal.get(Calendar.MONTH) + 1;
+     //       int d = cal.get(Calendar.DATE);
+     //       float rase = 0;
+     //       if (m > 4) {
+     //           if (m > 10) rase = m - 11;
+     //           else if (m > 8) rase = m - 9;
+     //           else if (m > 4) rase = m - 5;
+     //       } else rase = m + 1;
+     //       rase = rase + (float) d / 30;
+     //       double shangZhengShouYiLv = (1 + shangZhengJingZiChanShouYiLv * rase / 12) / (f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
+            //不考虑时间因素
+            double shangZhengShouYiLv =1/f1;
             shangZhengSY = String.format("%.2f", shangZhengShouYiLv * 100);
 
             double tenYears = Double.parseDouble(this.tenYears);
