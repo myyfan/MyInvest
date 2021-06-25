@@ -424,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void updataTextView() {
         ++reflashCount;  //  +" ref:"+reflashCount+"|"+getDataCount
-        textView.setText("上证指数:" + shangZheng.nowPrice + "涨幅:" + shangZheng.increase + "市盈率:" + dongTaiShiYingLv[0] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投：" + String.format("%.0f", moneyNeedInvest) + "  追加" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利：" + String.format("%.0f", gained) + " 浮盈：" + String.format("%.0f", gain) + " 总盈利：" + String.format("%.0f", gain + gained) + "现值:" + String.format("%.0f", allValue));
+        textView.setText("上证指数:" + shangZheng.nowPrice + "涨幅:" + shangZheng.increase + "市盈率:" + jingTaiShiYingLv[0] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投：" + String.format("%.0f", moneyNeedInvest) + "  追加" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利：" + String.format("%.0f", gained) + " 浮盈：" + String.format("%.0f", gain) + " 总盈利：" + String.format("%.0f", gain + gained) + "现值:" + String.format("%.0f", allValue));
     }
 
     @Override
@@ -652,13 +652,21 @@ public class MainActivity extends AppCompatActivity {
             int m = cal.get(Calendar.MONTH) + 1;
             int d = cal.get(Calendar.DATE);
             float rase = 0;
-            if (m > 4) {
-                if (m > 10) rase = m - 11;
-                else if (m > 8) rase = m - 9;
-                else if (m > 4) rase = m - 5;
-            } else rase = m + 1;
+
+            //使用上证计算规则
+            if (m > 4)  rase = m - 5;
+             else rase = m + 7;
             rase = rase + (float) d / 30;
             double shangZhengShouYiLv = (1 + shangZhengJingZiChanShouYiLv * rase / 12) / (f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
+
+            //使用中证计算规则
+         //   if (m > 4) {
+         //       if (m > 10) rase = m - 11;
+         //       else if (m > 8) rase = m - 9;
+         //       else if (m > 4) rase = m - 5;
+         //   } else rase = m + 1;
+         //   rase = rase + (float) d / 30;
+         //   double shangZhengShouYiLv = (1 + shangZhengJingZiChanShouYiLv * rase / 12) / (f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
             //不考虑时间因素
             shangZhengSY = String.format("%.2f", shangZhengShouYiLv * 100);
 
@@ -984,6 +992,42 @@ public class MainActivity extends AppCompatActivity {
                             //    ShiJingLv[i2-3]=div1[2].substring(0,i4-1);
 
                 }
+
+                //从上证公司获取上证市场市盈率
+                url = new URL("http://www.sse.com.cn/market/stockdata/statistic/");
+                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                in = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(in, "utf8"));
+                builder = new StringBuilder();
+                i1 = 0;
+                while ((line = reader.readLine()) != null) {
+                    //responce =scanner.nextLine();
+                    if (i1++ > 470) {
+                        builder.append(line);
+                        if (i1 > 520) break;
+                    }
+
+                }
+                responce = builder.toString();
+                div = responce.split("home_sjtj_zb.ratioOfPe = '");
+                if(div.length>1) {
+                    //     a = div[1].charAt(4);
+                    i2 = 3;
+                    i3 = 2;
+                    char c1 = div[1].charAt(0);
+                    for (i4 = 1; c1 != 39; i4++) {
+                        c1 = div[1].charAt(i4);
+                    }
+                    jingTaiShiYingLv[0] = div[1].substring(0, i4 - 1);
+                   //           String test =div[1].substring(0, i4 - 1);
+                   // test =div[1].substring(0, i4 - 1);
+                        //      guXiLv[i2-3]=div1[2].substring(0,i4-1);
+
+                }
+
                 shangZhengJingZiChanShouYiLv = Double.parseDouble(shiJingLv[0]) / Double.parseDouble(dongTaiShiYingLv[0]);
 
             } catch (Exception e) {
