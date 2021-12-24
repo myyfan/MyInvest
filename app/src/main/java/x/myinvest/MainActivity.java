@@ -425,6 +425,12 @@ public class MainActivity extends AppCompatActivity {
     protected void updataTextView() {
         ++reflashCount;  //  +" ref:"+reflashCount+"|"+getDataCount
         textView.setText("上证指数:" + shangZheng.nowPrice + "涨幅:" + shangZheng.increase + "市盈率:" + jingTaiShiYingLv[0] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投：" + String.format("%.0f", moneyNeedInvest) + "  追加" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利：" + String.format("%.0f", gained) + " 浮盈：" + String.format("%.0f", gain) + " 总盈利：" + String.format("%.0f", gain + gained) + "现值:" + String.format("%.0f", allValue));
+        textView.setOnClickListener(( view) -> {
+            Intent intent=new Intent();//创建Intent对象
+            intent.setAction(Intent.ACTION_VIEW);//为Intent设置动作
+            intent.setData(Uri.parse("https://gu.qq.com/sh000001"));//为Intent设置数据
+            startActivity(intent);//将Intent传递给Activity
+        });
     }
 
     @Override
@@ -598,6 +604,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 stockData = div[i].split("~");
+                //读取返回数据并填充
                 if (stockData[2].equals(st.code)) {
 
                     st.name = stockData[1];
