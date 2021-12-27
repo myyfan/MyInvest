@@ -303,8 +303,8 @@ public class MainActivity extends AppCompatActivity {
                 Stock st = new Stock();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");//卖出日期
 
-                st.name = name.getText().toString();
-                st.code = "分红";
+                st.name = "分红";
+                st.code = name.getText().toString();
                 st.soldDate = dateFormat.format(new Date());
                 st.earn = Double.parseDouble(money.getText().toString());
                 soldStockList.add(st);
