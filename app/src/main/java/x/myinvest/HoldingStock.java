@@ -110,7 +110,10 @@ public class HoldingStock extends ScrollView {
             tableRowList[i].setOnClickListener(( view) -> {
                 Intent intent=new Intent();//创建Intent对象
                 intent.setAction(Intent.ACTION_VIEW);//为Intent设置动作
-                intent.setData(Uri.parse("https://gu.qq.com/"+stock.code));//为Intent设置数据
+                String st ="" ;
+                if (stock.code.startsWith("0")) st="sz";
+                else if (stock.code.startsWith("6")) st="sh";
+                intent.setData(Uri.parse("https://gu.qq.com/"+st+stock.code));//为Intent设置数据
                 getContext().startActivity(intent);//将Intent传递给Activity
             });
         }
