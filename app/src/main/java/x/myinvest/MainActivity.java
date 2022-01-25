@@ -424,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void updataTextView() {
         ++reflashCount;  //  +" ref:"+reflashCount+"|"+getDataCount
-        textView.setText("上证指数:" + shangZheng.nowPrice + "涨幅:" + shangZheng.increase + "市盈率:" + jingTaiShiYingLv[0] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投：" + String.format("%.0f", moneyNeedInvest) + "  追加" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利：" + String.format("%.0f", gained) + " 浮盈：" + String.format("%.0f", gain) + " 总盈利：" + String.format("%.0f", gain + gained) + "现值:" + String.format("%.0f", allValue));
+        textView.setText("上证指数:" + shangZheng.nowPrice + "涨幅:" + shangZheng.increase + "市盈率:" + dongTaiShiYingLv[0] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投：" + String.format("%.0f", moneyNeedInvest) + "  追加" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利：" + String.format("%.0f", gained) + " 浮盈：" + String.format("%.0f", gain) + " 总盈利：" + String.format("%.0f", gain + gained) + "现值:" + String.format("%.0f", allValue));
         textView.setOnClickListener(( view) -> {
             Intent intent=new Intent();//创建Intent对象
             intent.setAction(Intent.ACTION_VIEW);//为Intent设置动作
@@ -650,36 +650,36 @@ public class MainActivity extends AppCompatActivity {
             orderTheList();
 
             //计算理论仓位
-            float f1 = Float.parseFloat(jingTaiShiYingLv[0]);//静态市盈率
-         //   double shangZhengShouYiLv =1/f1;
-            //计算上证收益率
-            //考虑时间因素
-            Calendar cal = Calendar.getInstance();
-            //  int y=cal.get(Calendar.YEAR);
-            int m = cal.get(Calendar.MONTH) + 1;
-            int d = cal.get(Calendar.DATE);
-            float rase = 0;
-
-            //使用上证计算规则
-            if (m > 4)  rase = m - 5;
-             else rase = m + 7;
-            rase = rase + (float) d / 30;
-            double shangZhengShouYiLv = (1 + shangZhengJingZiChanShouYiLv * rase / 12) / (f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
-
-            //使用中证计算规则
-         //   if (m > 4) {
-         //       if (m > 10) rase = m - 11;
-         //       else if (m > 8) rase = m - 9;
-         //       else if (m > 4) rase = m - 5;
-         //   } else rase = m + 1;
-         //   rase = rase + (float) d / 30;
-         //   double shangZhengShouYiLv = (1 + shangZhengJingZiChanShouYiLv * rase / 12) / (f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
-            //不考虑时间因素
+            float f1 = Float.parseFloat(dongTaiShiYingLv[0]);//动态市盈率
+            double shangZhengShouYiLv =1/(f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
+            //     //计算上证收益率
+            //     //考虑时间因素
+            //     Calendar cal = Calendar.getInstance();
+            //     //  int y=cal.get(Calendar.YEAR);
+            //     int m = cal.get(Calendar.MONTH) + 1;
+            //     int d = cal.get(Calendar.DATE);
+            //     float rase = 0;
+//
+            //     //使用上证计算规则
+            //     if (m > 4)  rase = m - 5;
+            //      else rase = m + 7;
+            //     rase = rase + (float) d / 30;
+            //     double shangZhengShouYiLv = (1 + shangZhengJingZiChanShouYiLv * rase / 12) / (f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
+//
+            //     //使用中证计算规则
+            //  //   if (m > 4) {
+            //  //       if (m > 10) rase = m - 11;
+            //  //       else if (m > 8) rase = m - 9;
+            //  //       else if (m > 4) rase = m - 5;
+            //  //   } else rase = m + 1;
+            //  //   rase = rase + (float) d / 30;
+            //  //   double shangZhengShouYiLv = (1 + shangZhengJingZiChanShouYiLv * rase / 12) / (f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
+            //     //不考虑时间因素
             shangZhengSY = String.format("%.2f", shangZhengShouYiLv * 100);
 
             double tenYears = Double.parseDouble(this.tenYears);
-            double zuiDiShouYiLv = 0.015 * tenYears;
-            double zuiDaShouyiLv = 0.03 * tenYears;
+            double zuiDiShouYiLv = 0.017 * tenYears;
+            double zuiDaShouyiLv = 0.037 * tenYears;
             double cangWei = (shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
             moneyNeedInvest = (haveMoney + gained) * cangWei;
             moneyNeedAdd = moneyNeedInvest - (allValue - gain);
@@ -755,7 +755,7 @@ public class MainActivity extends AppCompatActivity {
                 int i4;
                 int a;
                 if(div.length>1) {
-                  //  a = div[1].charAt(4);
+                    //  a = div[1].charAt(4);
                     for (; i2 < 9; i2++) {
                         div1 = div[i2].split("<td>");
                         char c1 = div1[2].charAt(0);
@@ -790,7 +790,7 @@ public class MainActivity extends AppCompatActivity {
                 responce = builder.toString();
                 div = responce.split("<tr>");
                 if(div.length>1) {
-             //       a = div[1].charAt(4);
+                    //       a = div[1].charAt(4);
                     i2 = 3;
                     i3 = 2;
                     for (; i2 < 9; i2++) {
@@ -826,7 +826,7 @@ public class MainActivity extends AppCompatActivity {
                 responce = builder.toString();
                 div = responce.split("<tr>");
                 if(div.length>1) {
-              //      a = div[1].charAt(4);
+                    //      a = div[1].charAt(4);
                     i2 = 3;
                     i3 = 2;
                     for (; i2 < 9; i2++) {
@@ -865,7 +865,7 @@ public class MainActivity extends AppCompatActivity {
                 responce = builder.toString();
                 div = responce.split("<tr>");
                 if(div.length>1) {
-               //     a = div[1].charAt(4);
+                    //     a = div[1].charAt(4);
                     i2 = 3;
                     i3 = 2;
                     for (; i2 < 9; i2++) {
@@ -927,7 +927,7 @@ public class MainActivity extends AppCompatActivity {
                     i1 = 0;
                     while ((line = reader.readLine()) != null) {
                         //responce =scanner.nextLine();
-                        if (i1++ > 550) {
+                        if (i1++ > 500) {
                             builder.append(line);
                             if (i1 > 650) break;
                         }
@@ -948,55 +948,65 @@ public class MainActivity extends AppCompatActivity {
                     }
 
 
-                    //从散记大家庭获取动态市盈率
-                    url = new URL("http://www.shdjt.com/pjsyl.asp");
+                    //从乐估乐股获取动态市盈率
+                    url = new URL("https://legulegu.com/stockdata/weight-pe?marketId=000001.SH");
                     //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
                     connection.connect();
                     in = connection.getInputStream();
-                    reader = new BufferedReader(new InputStreamReader(in, "gb2312"));
+                    reader = new BufferedReader(new InputStreamReader(in, "utf8"));
                     builder = new StringBuilder();
                     i1 = 0;
+
                     while ((line = reader.readLine()) != null) {
                         //responce =scanner.nextLine();
-                        if (i1++ > 300) {
+                        if (i1++ > 400) {
                             builder.append(line);
-                            if (i1 > 400) break;
+                            if (i1 > 500) break;
                         }
 
                     }
                     responce = builder.toString();
-                    div = responce.split("<font color='#FF00FF'>");
+                    div = responce.split("style=\"color: #85BEDB; font-weight: bold; padding-left: 10px\">");
                     if(div.length>1) {
                         char c1 = div[1].charAt(0);
-                        for (i4 = 1; c1 != 60; i4++) {
-                            c1 = div[1].charAt(i4);
+                        for (i4 = 0; div[1].charAt(i4) != 62; i4++) {
+                            //       c1 = div[1].charAt(i4);
                         }
-                        dongTaiShiYingLv[0] = div[1].substring(0, i4 - 1);
+                        //  i4++;
+                        int i8;
+                        //       c1 = div[1].charAt(i4);
+                        for (i8 = i4+1; div[1].charAt(i8) != 9; i8++) {
+
+                            //           c1 = div[1].charAt(i8);
+                        }
+
+                        String i9 =shiJingLv[0];
+                        dongTaiShiYingLv[0] = div[1].substring(i4+1, i8);
                         jingZiChanShouYiLv[0] = String.format("%.1f", Double.parseDouble(shiJingLv[0]) / Double.parseDouble(dongTaiShiYingLv[0]) * 100);
 
-                        c1 = div[2].charAt(0);
-                        for (i4 = 1; c1 != 60; i4++) {
-                            c1 = div[2].charAt(i4);
-                        }
-                        dongTaiShiYingLv[1] = div[2].substring(0, i4 - 1);
-                        jingZiChanShouYiLv[1] = String.format("%.1f", Double.parseDouble(shiJingLv[1]) / Double.parseDouble(dongTaiShiYingLv[1]) * 100);
+                        //           c1 = div[1].charAt(0);
+                        //           for (i4 = 1; c1 != 62; i4++) {
+                        //               c1 = div[2].charAt(i4);
+                        //           }
+//
+                        //           jingZiChanShouYiLv[1] = String.format("%.1f", Double.parseDouble(shiJingLv[1]) / Double.parseDouble(dongTaiShiYingLv[1]) * 100);
 
-                        c1 = div[3].charAt(0);
-                        for (i4 = 1; c1 != 60; i4++) {
-                            c1 = div[3].charAt(i4);
-                        }
-                        dongTaiShiYingLv[5] = div[3].substring(0, i4 - 1);
-                        jingZiChanShouYiLv[5] = String.format("%.1f", Double.parseDouble(shiJingLv[5]) / Double.parseDouble(dongTaiShiYingLv[5]) * 100);
+                        //           c1 = div[3].charAt(0);
+                        //           for (i4 = 1; c1 != 60; i4++) {
+                        //               c1 = div[3].charAt(i4);
+                        //           }
+                        //           dongTaiShiYingLv[5] = div[3].substring(0, i4 - 1);
+                        //           jingZiChanShouYiLv[5] = String.format("%.1f", Double.parseDouble(shiJingLv[5]) / Double.parseDouble(dongTaiShiYingLv[5]) * 100);
                     }
 
 
 
 
-                          //  jingZiChanShouYiLv[i5] = String.format("%.1f", Double.parseDouble(ShiJingLv[i5]) / Double.parseDouble(dongTaiShiYingLv[i5]) * 100);
-                            //    float f1=Float.parseFloat(ShiJingLv[i2-3]);
-                            //    ShiJingLv[i2-3]=div1[2].substring(0,i4-1);
+                    //  jingZiChanShouYiLv[i5] = String.format("%.1f", Double.parseDouble(ShiJingLv[i5]) / Double.parseDouble(dongTaiShiYingLv[i5]) * 100);
+                    //    float f1=Float.parseFloat(ShiJingLv[i2-3]);
+                    //    ShiJingLv[i2-3]=div1[2].substring(0,i4-1);
 
                 }
 
@@ -1029,9 +1039,9 @@ public class MainActivity extends AppCompatActivity {
                         c1 = div[1].charAt(i4);
                     }
                     jingTaiShiYingLv[0] = div[1].substring(0, i4 - 1);
-                   //           String test =div[1].substring(0, i4 - 1);
-                   // test =div[1].substring(0, i4 - 1);
-                        //      guXiLv[i2-3]=div1[2].substring(0,i4-1);
+                    //           String test =div[1].substring(0, i4 - 1);
+                    // test =div[1].substring(0, i4 - 1);
+                    //      guXiLv[i2-3]=div1[2].substring(0,i4-1);
 
                 }
 
