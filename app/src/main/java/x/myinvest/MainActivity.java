@@ -679,7 +679,7 @@ public class MainActivity extends AppCompatActivity {
 
             double tenYears = Double.parseDouble(this.tenYears);
             double zuiDiShouYiLv = 0.017 * tenYears;
-            double zuiDaShouyiLv = 0.037 * tenYears;
+            double zuiDaShouyiLv = 0.033 * tenYears;
             double cangWei = (shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
             moneyNeedInvest = (haveMoney + gained) * cangWei;
             moneyNeedAdd = moneyNeedInvest - (allValue - gain);
