@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         //显示弹出窗口
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.setBackgroundColor(0xffffffff);
+        linearLayout.setBackgroundColor(0xddffffff);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(10, 30, 10, 30);
         linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
