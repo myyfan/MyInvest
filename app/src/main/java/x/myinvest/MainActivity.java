@@ -424,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void updataTextView() {
         ++reflashCount;  //  +" ref:"+reflashCount+"|"+getDataCount
-        textView.setText("上证指数:" + shangZheng.nowPrice + "涨幅:" + shangZheng.increase + "市盈率:" + dongTaiShiYingLv[0] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投：" + String.format("%.0f", moneyNeedInvest) + "  追加" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利：" + String.format("%.0f", gained) + " 浮盈：" + String.format("%.0f", gain) + " 总盈利：" + String.format("%.0f", gain + gained) + "现值:" + String.format("%.0f", allValue));
+        textView.setText("上证指数:" + shangZheng.nowPrice + "涨幅:" + shangZheng.increase + "动盈率:" + dongTaiShiYingLv[2] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投：" + String.format("%.0f", moneyNeedInvest) + "  追加" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利：" + String.format("%.0f", gained) + " 浮盈：" + String.format("%.0f", gain) + " 总盈利：" + String.format("%.0f", gain + gained) + "现值:" + String.format("%.0f", allValue));
         textView.setOnClickListener(( view) -> {
             Intent intent=new Intent();//创建Intent对象
             intent.setAction(Intent.ACTION_VIEW);//为Intent设置动作
@@ -650,8 +650,8 @@ public class MainActivity extends AppCompatActivity {
             orderTheList();
 
             //计算理论仓位
-            float f1 = Float.parseFloat(dongTaiShiYingLv[0]);//动态市盈率
-            double shangZhengShouYiLv =1/(f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
+      //      float f1 = Float.parseFloat(dongTaiShiYingLv[0]);//动态市盈率
+      //      double shangZhengShouYiLv =1/(f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
             //     //计算上证收益率
             //     //考虑时间因素
             //     Calendar cal = Calendar.getInstance();
@@ -675,15 +675,18 @@ public class MainActivity extends AppCompatActivity {
             //  //   rase = rase + (float) d / 30;
             //  //   double shangZhengShouYiLv = (1 + shangZhengJingZiChanShouYiLv * rase / 12) / (f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
             //     //不考虑时间因素
-            shangZhengSY = String.format("%.2f", shangZhengShouYiLv * 100);
+            float f1=Float.parseFloat(dongTaiShiYingLv[2]);
+            //    f1=(float)11.5;
+            double shangZhengShouYiLv = 1/(f1*(1+Double.parseDouble(shangZheng.increase)/100));
+            shangZhengSY=String.format("%.2f",shangZhengShouYiLv*100);
 
-            double tenYears = Double.parseDouble(this.tenYears);
-            double zuiDiShouYiLv = 0.017 * tenYears;
-            double zuiDaShouyiLv = 0.033 * tenYears;
-            double cangWei = (shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
-            moneyNeedInvest = (haveMoney + gained) * cangWei;
-            moneyNeedAdd = moneyNeedInvest - (allValue - gain);
-            this.cangWei = String.format("%.2f", cangWei * 100);
+            double tenYears=Double.parseDouble(this.tenYears);
+            double zuiDiShouYiLv=0.015*tenYears;
+            double zuiDaShouyiLv=0.029*tenYears;
+            double cangWei=(shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
+            moneyNeedInvest=(haveMoney+gained)*cangWei;
+            moneyNeedAdd=moneyNeedInvest-(allValue-gain);
+            this.cangWei = String.format("%.2f",cangWei*100);
 
 
             //获取十年国债利率
@@ -729,7 +732,7 @@ public class MainActivity extends AppCompatActivity {
     protected void pullQuanShiChangShuJu() {
         new Thread(() -> {
             try {//从中证指数公司获取市场平均静态市盈率
-                URL url = new URL("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zy1");
+                URL url = new URL("https://www.csindex.com.cn/csindex-home/dataServer/queryCsiPeIndustryBytradeDate?tradeDate=&classType=3");
                 //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
@@ -741,14 +744,56 @@ public class MainActivity extends AppCompatActivity {
                 int i1 = 0;
                 while ((line = reader.readLine()) != null) {
                     //responce =scanner.nextLine();
-                    if (i1++ > 500) {
+              //      if (i1++ > 500) {
                         builder.append(line);
-                        if (i1 > 600) break;
-                    }
+              //          if (i1 > 600) break;
+              //      }
 
                 }
                 String responce = builder.toString();
-                String[] div = responce.split("<tr>");
+
+                String[] div = responce.split("\"pe\":\"");
+                char a1;
+                String lkj;
+                for(int i=1;i<10;i++){
+                    a1=div[1].charAt(i);
+                    if (a1==34) {
+                        //              lkj = div[1].substring(0, i);
+                        jingTaiShiYingLv[2] = div[1].substring(0, i);
+                        break;
+                    }
+                }
+
+                for(int i=1;i<10;i++){
+                    a1=div[1].charAt(i);
+                    if (a1==34) {
+                        //        lkj = div[2].substring(0, i);
+                        dongTaiShiYingLv[2] = div[2].substring(0, i);
+                        break;
+                    }
+                }
+
+                for(int i=1;i<8;i++){
+                    a1=div[1].charAt(i);
+                    if (a1==34) {
+                        //               lkj = div[3].substring(0, i);
+                        shiJingLv[2] = div[3].substring(0, i);
+                        break;
+                    }
+                }
+
+                for(int i=1;i<8;i++){
+                    a1=div[1].charAt(i);
+                    if (a1==34) {
+                        //                lkj = div[4].substring(0, i);
+                        guXiLv[2] = div[4].substring(0, i);
+                        break;
+                    }
+                }
+
+
+
+             /*   String[] div = responce.split("<tr>");
                 String[] div1;
                 int i2 = 3;
                 int i3 = 2;
@@ -880,8 +925,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-
-                if (true || jingTaiShiYingLv[0] == null) {
+*/
+ /*               if (true || jingTaiShiYingLv[0] == null) {
                     //从乐估乐股获取静态市盈率
                     url = new URL("https://www.legulegu.com/stockdata/market_pe");
                     //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
@@ -1044,8 +1089,8 @@ public class MainActivity extends AppCompatActivity {
                     //      guXiLv[i2-3]=div1[2].substring(0,i4-1);
 
                 }
-
-                shangZhengJingZiChanShouYiLv = Double.parseDouble(shiJingLv[0]) / Double.parseDouble(dongTaiShiYingLv[0]);
+*/
+                shangZhengJingZiChanShouYiLv = Double.parseDouble(shiJingLv[2]) / Double.parseDouble(dongTaiShiYingLv[2]);
 
             } catch (Exception e) {
                 Log.w("network", e.toString(), e);
