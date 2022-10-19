@@ -2,7 +2,9 @@ package x.myinvest;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -43,6 +45,17 @@ public class SoldStocks extends ScrollView {
             textView = new TextView(context);  textView.setText(stock.number);tableRow.addView(textView);
             textView = new TextView(context);  textView.setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent));tableRow.addView(textView);
             textView = new TextView(context);  textView.setText(stock.buyDate+"\n"+stock.soldDate);tableRow.addView(textView);
+
+            tableRow.setOnClickListener(( view) -> {
+                Intent intent=new Intent();//创建Intent对象
+                intent.setAction(Intent.ACTION_VIEW);//为Intent设置动作
+                String st ="" ;
+                if (stock.code.startsWith("0")) st="sz";
+                else if (stock.code.startsWith("6")) st="sh";
+                intent.setData(Uri.parse("https://gu.qq.com/"+st+stock.code));//为Intent设置数据
+                getContext().startActivity(intent);//将Intent传递给Activity
+            });
+
             mTableLayout.addView(tableRow);
         }
 

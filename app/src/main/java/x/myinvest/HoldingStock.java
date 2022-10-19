@@ -2,6 +2,8 @@ package x.myinvest;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
@@ -25,6 +27,8 @@ public class HoldingStock extends ScrollView {
     private ArrayList<Stock> stocksList;
     private TableLayout tableLayout;
     private TextView[][] textViewHandler;
+    public TableRow[] tableRowList;
+
 
 
 
@@ -80,6 +84,7 @@ public class HoldingStock extends ScrollView {
         textViewHandler[num][5]=textView;
         tableRow.addView(textView);
 
+        tableRowList[num]=tableRow;
         tableLayout.addView(tableRow);
     }
 
@@ -101,12 +106,23 @@ public class HoldingStock extends ScrollView {
             textViewHandler[i][4].setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent)+"%");
             //购买日期
             textViewHandler[i][5].setText(stock.buyDate);
+
+            tableRowList[i].setOnClickListener(( view) -> {
+                Intent intent=new Intent();//创建Intent对象
+                intent.setAction(Intent.ACTION_VIEW);//为Intent设置动作
+                String st ="" ;
+                if (stock.code.startsWith("0")) st="sz";
+                else if (stock.code.startsWith("6")) st="sh";
+                intent.setData(Uri.parse("https://gu.qq.com/"+st+stock.code));//为Intent设置数据
+                getContext().startActivity(intent);//将Intent传递给Activity
+            });
         }
     }
 
     public void updateTabView(){
 
         textViewHandler = new TextView[ stocksList.size() ][6];
+        tableRowList = new TableRow[ stocksList.size() ];
         //textView.setText("浮盈："+String.format("%.0f", gain)+" 实现盈利："+String.format("%.0f",gained)+" 总盈利："+String.format("%.0f",gain+gained));
         tableLayout.removeAllViews();
         tableLayout.setStretchAllColumns(true);
