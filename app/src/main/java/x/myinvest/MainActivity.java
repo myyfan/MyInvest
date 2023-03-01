@@ -437,7 +437,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         pullQuanShiChangShuJu();
+
         pullNetworkData();
+      //  runOnUiThread(() -> {
+        //  updataTextView();
+
+        holdingStock.refreshText();
+//
+      //          }
+      //  );
         //textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
         //   updataTextView();
         //   holdingStock.refreshText();
