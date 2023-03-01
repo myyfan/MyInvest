@@ -129,12 +129,12 @@ public class HoldingStock extends ScrollView {
         //添加标题
         TableRow tableRow=new TableRow(context);
 
-        TextView textView=new TextView(context); textView.setText("股票代码"); tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("现价涨幅");      tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("购价数量");  tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("成本现值");  tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("盈亏比例");       tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("购入日");   tableRow.addView(textView);
+        TextView textView=new TextView(context); textView.setText("股票\n代码"); tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("现价\n涨幅");      tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("购价\n数量");  tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("成本\n现值");  tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("盈亏\n比例");       tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("购入日\n卖出日");   tableRow.addView(textView);
 
         tableLayout.addView(tableRow);
         //tableLayout.setDividerDrawable(getResources().getDrawable(R.drawable.bonus_list_item_divider));
