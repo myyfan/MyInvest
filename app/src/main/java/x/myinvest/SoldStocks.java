@@ -30,14 +30,14 @@ public class SoldStocks extends ScrollView {
     public void updateTableView() {
         mTableLayout.removeAllViews();
         TableRow tableRow = new TableRow(context);
-        TextView textView = new TextView(context);  textView.setText("股票"+"代码");  tableRow.addView(textView);
-                 textView = new TextView(context);  textView.setText("购价"+"卖价");tableRow.addView(textView);
+        TextView textView = new TextView(context);  textView.setText("股票\n"+"代码");  tableRow.addView(textView);
+                 textView = new TextView(context);  textView.setText("购价\n"+"卖价");tableRow.addView(textView);
                  textView = new TextView(context);  textView.setText("数量");tableRow.addView(textView);
                  textView = new TextView(context);  textView.setText("盈利\n"+"百分比");tableRow.addView(textView);
                  textView = new TextView(context);  textView.setText("购买日期\n"+"售出日期");tableRow.addView(textView);
         mTableLayout.addView(tableRow);
         int listLenth=soldStocksList.size();
-        for (int i = listLenth-1; i >=0; i--) {
+        for (int i = listLenth-1; i >=((listLenth-1-100)>=0?(listLenth-1-100):0); i--) {
             Stock stock = soldStocksList.get(i);
             tableRow = new TableRow(context);
             textView = new TextView(context);  textView.setText(i+1+"." +stock.name+"\n"+stock.code);  tableRow.addView(textView);
