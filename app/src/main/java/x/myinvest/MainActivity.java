@@ -32,7 +32,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences perfHoldingStocks;
     private SharedPreferences perfSoldStocks;
     //private SharedPreferences.Editor editor;
-    private TextView textView;
+    private TextView textView_gain;
     private ArrayList<Stock> holdingStocksList = new ArrayList<>();
     private ArrayList<Stock> soldStockList = new ArrayList<>();
     private Timer timer;
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private Double allValue = 0.0;//总市值
 
     private int reflashCount = 0;
-    private int getDataCount = 0;
+    private int getDataCount = 0;//数据更新次数计数
     private Context context;
 
 
@@ -80,10 +79,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = MainActivity.this;
-        textView = (TextView) findViewById(R.id.textView_gain);
-        textView.setOnClickListener(new View.OnClickListener() {
+        textView_gain = (TextView) findViewById(R.id.textView_gain);
+        //弹出显示各板块相关数据,已经被后面重新定义的点击功能所替代
+        textView_gain.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {//弹出显示各板块相关数据
+            public void onClick(View v) {
                 TableLayout popUp = new TableLayout(MainActivity.this);
                 popUp.setDividerDrawable(ContextCompat.getDrawable(context, R.drawable.line_h));
                 popUp.setBackgroundColor(0xeeeeeeee);
@@ -134,20 +134,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         shangZheng = new Stock();
+        //加载保存的数据到holdingStocksList和soldStockList
         loadSavedData();
-
+        //新建两个股票的视图类
         holdingStock = new HoldingStock(this, holdingStocksList);
         //holdingStock.updateTabView();
         soldStocks = new SoldStocks(this, soldStockList);
         //soldStocks.updateTableView();
-
+        // 两个股票视图之间的分隔符
         TextView tvSpace = new TextView(this);
-        tvSpace.setHeight(100);//作为分隔符
-
+        tvSpace.setHeight(100);
+        //把三个视图添加进去
         mainView = (LinearLayout) findViewById(R.id.mainview);
         mainView.addView(holdingStock);
         mainView.addView(tvSpace);
         mainView.addView(soldStocks);
+        pullQuanShiChangShuJu();
 
 
         //holdingStock = (HoldingStock) findViewById(R.id.view_holdingstock);
@@ -260,6 +262,18 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     st.nowValue = Double.parseDouble(st.nowPrice) * numInt * (1 - 0.0003);
                     st.cost = Double.parseDouble(st.price) * numInt * (1 + 0.0003);
+                    st.earn = st.nowValue - st.cost;
+                    st.earnPercent = st.earn / st.cost * 100;
+
+                    double shouXuFeiMai3,shouXuFeiMai4;
+                    shouXuFeiMai3=Double.parseDouble(st.price) * numInt * 0.0003;
+                    shouXuFeiMai3=shouXuFeiMai3>0.1?shouXuFeiMai3:0.1;
+                    shouXuFeiMai3=Double.parseDouble(String.format("%.2f",shouXuFeiMai3));
+                    shouXuFeiMai4=Double.parseDouble(st.nowPrice) * numInt * 0.0003;
+                    shouXuFeiMai4=shouXuFeiMai4>0.1?shouXuFeiMai4:0.1;
+                    shouXuFeiMai4=Double.parseDouble(String.format("%.2f",shouXuFeiMai4));
+                    st.nowValue = Double.parseDouble(st.nowPrice) * numInt -shouXuFeiMai4;
+                    st.cost = Double.parseDouble(st.price) * numInt +shouXuFeiMai3;
                     st.earn = st.nowValue - st.cost;
                     st.earnPercent = st.earn / st.cost * 100;
                 }
@@ -424,8 +438,8 @@ public class MainActivity extends AppCompatActivity {
 
     protected void updataTextView() {
         ++reflashCount;  //  +" ref:"+reflashCount+"|"+getDataCount
-        textView.setText("上证指数:" + shangZheng.nowPrice + "涨幅:" + shangZheng.increase + "动盈率:" + dongTaiShiYingLv[2] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投：" + String.format("%.0f", moneyNeedInvest) + "  追加" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利：" + String.format("%.0f", gained) + " 浮盈：" + String.format("%.0f", gain) + " 总盈利：" + String.format("%.0f", gain + gained) + "现值:" + String.format("%.0f", allValue));
-        textView.setOnClickListener(( view) -> {
+        textView_gain.setText("上证指数:" + shangZheng.nowPrice + "涨幅:" + shangZheng.increase + "动盈率:" + dongTaiShiYingLv[2] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投：" + String.format("%.0f", moneyNeedInvest) + "  追加" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利：" + String.format("%.0f", gained) + " 浮盈：" + String.format("%.0f", gain) + " 总盈利：" + String.format("%.0f", gain + gained) + "现值:" + String.format("%.0f", allValue));
+        textView_gain.setOnClickListener((view) -> {
             Intent intent=new Intent();//创建Intent对象
             intent.setAction(Intent.ACTION_VIEW);//为Intent设置动作
             intent.setData(Uri.parse("https://gu.qq.com/sh000001"));//为Intent设置数据
@@ -436,13 +450,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        pullQuanShiChangShuJu();
 
-        pullNetworkData();
+
+       // pullNetworkData();
       //  runOnUiThread(() -> {
         //  updataTextView();
 
-        holdingStock.refreshText();
+       // holdingStock.refreshText();
 //
       //          }
       //  );
@@ -565,7 +579,7 @@ public class MainActivity extends AppCompatActivity {
     protected void pullNetworkData() {
 
         //new Thread(()->{
-
+        //组建查询队列
         StringBuilder builder = new StringBuilder();
         //  String requestStockStr="";
         builder.append("http://qt.gtimg.cn/q=");
@@ -582,6 +596,7 @@ public class MainActivity extends AppCompatActivity {
         }
         //尾部增加查询上证指数
         builder.append("sh000001");
+        //网络查询及接收分析数据
         try {
             URL url = new URL(builder.toString());
             //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
@@ -604,6 +619,8 @@ public class MainActivity extends AppCompatActivity {
             //循环填充数据
             double gain = 0;
             double allValue = 0.0;
+            double shouXuFeiMai3;
+            double shouXuFeiMai4;
             for (int i = 0; i < holdingStocksList.size(); i++) {
                 Stock st = holdingStocksList.get(i);
                 if (i == div.length) {
@@ -625,6 +642,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     //计算盈利数据
                     int numInt = Integer.parseInt(st.number);
+                    //区分是股票还是基金
                     if (st.code.startsWith("0") || st.code.startsWith("3") || st.code.startsWith("6")) {
                         st.nowValue = Double.parseDouble(st.nowPrice) * numInt;
                         st.nowValue = st.nowValue * (1 - 0.001) - (st.nowValue > 16666.67 ? st.nowValue * 0.0003 : 5);
@@ -633,10 +651,18 @@ public class MainActivity extends AppCompatActivity {
                         st.earn = st.nowValue - st.cost;
                         st.earnPercent = st.earn / st.cost * 100;
                     } else {
-                        st.nowValue = Double.parseDouble(st.nowPrice) * numInt * (1 - 0.0003);
-                        st.cost = Double.parseDouble(st.price) * numInt * (1 + 0.0003);
+                        shouXuFeiMai3=Double.parseDouble(st.price) * numInt * 0.0003;
+                        shouXuFeiMai3=shouXuFeiMai3>0.1?shouXuFeiMai3:0.1;
+                        shouXuFeiMai3=Double.parseDouble(String.format("%.2f",shouXuFeiMai3));
+                        shouXuFeiMai4=Double.parseDouble(st.nowPrice) * numInt * 0.0003;
+                        shouXuFeiMai4=shouXuFeiMai4>0.1?shouXuFeiMai4:0.1;
+                        shouXuFeiMai4=Double.parseDouble(String.format("%.2f",shouXuFeiMai4));
+                        st.nowValue = Double.parseDouble(st.nowPrice) * numInt -shouXuFeiMai4;
+                        st.cost = Double.parseDouble(st.price) * numInt +shouXuFeiMai3;
                         st.earn = st.nowValue - st.cost;
                         st.earnPercent = st.earn / st.cost * 100;
+
+
                     }
                     gain += st.earn;
                     allValue += st.nowValue;
