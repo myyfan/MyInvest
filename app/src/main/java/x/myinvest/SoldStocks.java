@@ -43,7 +43,7 @@ public class SoldStocks extends ScrollView {
             textView = new TextView(context);  textView.setText(i+1+"." +stock.name+"\n"+stock.code);  tableRow.addView(textView);
             textView = new TextView(context);  textView.setText(stock.price+"\n"+stock.nowPrice);tableRow.addView(textView);
             textView = new TextView(context);  textView.setText(stock.number);tableRow.addView(textView);
-            textView = new TextView(context);  textView.setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent));tableRow.addView(textView);
+            textView = new TextView(context);  textView.setText(String.format("%.2f",stock.earn)+"\n"+String.format("%.2f",stock.earnPercent)+"%");tableRow.addView(textView);
             textView = new TextView(context);  textView.setText(stock.buyDate+"\n"+stock.soldDate);tableRow.addView(textView);
 
             tableRow.setOnClickListener(( view) -> {
