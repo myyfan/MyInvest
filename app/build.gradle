@@ -4,7 +4,7 @@ def gitCommits = Integer.parseInt('git rev-list --count HEAD'.execute([], projec
 def name = "MyInvest"
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 34
     buildToolsVersion "28.0.3"
     defaultConfig {
         applicationId "x.myinvest"
@@ -12,7 +12,7 @@ android {
         targetSdkVersion 28
         versionCode gitCommits
         versionName "1."+gitCommits
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+       // testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
         myConfig {

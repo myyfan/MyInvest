@@ -12,7 +12,7 @@ public class Stock {
      double nowValue=0;
      String increase="";
      double earnPercent=0;
-     double earn=0;
+     double earn=0;//浮盈
      String buyDate="";
      String soldDate="";
 
