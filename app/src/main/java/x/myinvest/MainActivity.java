@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private double gain;//浮盈
     private double gained = -6731;//无法详细列出的历史盈利金额
     private Double allValue = 0.0;//总市值
+    private Double dongTaiJinE=0.0;//参与动态控制的金额
 
     private int reflashCount = 0;
     private int getDataCount = 0;//数据更新次数计数
@@ -198,6 +199,9 @@ public class MainActivity extends AppCompatActivity {
                 Uri uri = Uri.parse("https://m.cn.investing.com/rates-bonds/china-10-year-bond-yield#");
                 Intent it = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(it);
+                break;
+            case R.id.mainMenu_dongTaiJinE:
+                showPopupSetDongTaiJinE();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -427,6 +431,33 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    void showPopupSetDongTaiJinE() {
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setBackgroundColor(0xffffffff);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(10, 30, 10, 30);
+        linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        EditText textDongTaiJinE = new EditText(this);
+        textDongTaiJinE.setHint(dongTaiJinE.toString());
+
+        Button ok = new Button(this);
+        ok.setText("确定");
+
+        linearLayout.addView(textDongTaiJinE, layoutParams);
+        linearLayout.addView(ok, layoutParams);
+        showPopupWindows(linearLayout);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dongTaiJinE = Double.parseDouble(textDongTaiJinE.getText().toString());//获取收益率
+                perfHoldingStocks.edit().putString("dongTaiJinE", dongTaiJinE.toString()).apply();
+                updataTextView();
+            }
+        });
+    }
+
     void showPopupWindows(View popUp) {
         PopupWindow popupWindow = new PopupWindow(popUp, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setOutsideTouchable(true);
@@ -451,27 +482,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-
-       // pullNetworkData();
-      //  runOnUiThread(() -> {
-        //  updataTextView();
-
-       // holdingStock.refreshText();
-//
-      //          }
-      //  );
-        //textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
-        //   updataTextView();
         //   holdingStock.refreshText();
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 pullNetworkData();
-                runOnUiThread(() -> {
-                    updataTextView();
-                    holdingStock.refreshText();
-                });
+          //      runOnUiThread(() -> {
+          //          updataTextView();
+          //          holdingStock.refreshText();
+          //      });
                 //   runOnUiThread(()->{
                 //       //textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
                 //       updataTextView();
@@ -497,6 +517,7 @@ public class MainActivity extends AppCompatActivity {
         // 加载10年国债收益率
         tenYears = perfHoldingStocks.getString("tenYears", "0");
         //加载股票代码
+        dongTaiJinE=Double.parseDouble(perfHoldingStocks.getString("dongTaiJinE", "0"));
         String[] stockArrayStr = perfHoldingStocks.getString("buyedStockCode", "").split(",");
         if (!stockArrayStr[0].isEmpty()) {
             //perfHoldingStocks = new ArrayList<Stock>(stockArrayStr.length);
@@ -617,7 +638,7 @@ public class MainActivity extends AppCompatActivity {
             String[] div = responce.split(";");
             String[] stockData;
             //循环填充数据
-            double gain = 0;
+            double gain = 0;//浮盈
             double allValue = 0.0;
             double shouXuFeiMai3;
             double shouXuFeiMai4;
@@ -673,7 +694,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
-            this.gain = gain;
+            this.gain = gain;//浮盈
             this.allValue = allValue;
             //填入上证指数数据
             stockData = div[holdingStocksList.size()].split("~");
@@ -718,8 +739,10 @@ public class MainActivity extends AppCompatActivity {
             double zuiDiShouYiLv=0.015*tenYears;
             double zuiDaShouyiLv=0.029*tenYears;
             double cangWei=(shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
-            moneyNeedInvest=(haveMoney+gained)*cangWei;
+            moneyNeedInvest=(haveMoney+gained)>=dongTaiJinE?(haveMoney+gained+dongTaiJinE*(cangWei-1)):(haveMoney+gained)*cangWei;//最大可投金额加上全部账面收益乘上仓位
+       //     moneyNeedInvest=(haveMoney+gained+this.gain)*cangWei;//最大可投金额加上全部账面收益乘上仓位
             moneyNeedAdd=moneyNeedInvest-(allValue-gain);
+      //      moneyNeedAdd=moneyNeedInvest-this.allValue;
             this.cangWei = String.format("%.2f",cangWei*100);
 
 
@@ -746,9 +769,8 @@ public class MainActivity extends AppCompatActivity {
             //         this.tenYears=div[2];
 
 
-            //responce=cangWei;
-
             //updateTabView();
+
         } catch (Exception e) {
             Log.w("network", e.toString(), e);
             //  runOnUiThread(()->{
@@ -757,10 +779,10 @@ public class MainActivity extends AppCompatActivity {
             //  });
         }
         getDataCount++;
-        //  runOnUiThread(()->{
-        //             updataTextView();
-        //             holdingStock.refreshText();
-        //         });
+              runOnUiThread(() -> {
+                  updataTextView();
+                  holdingStock.refreshText();
+              });
     }
 
     protected void pullQuanShiChangShuJu() {
