@@ -37,6 +37,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import x.myinvest.popup.PopUpAddStock;
+import x.myinvest.popup.PopUpModifyHoldingStock;
+import x.myinvest.popup.PopUpSaleStock;
 import x.myinvest.popup.PopupChangeGained;
 import x.myinvest.popup.PopupDelStock;
 
@@ -47,9 +49,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView_gain;
     private ArrayList<Stock> holdingStocksList = new ArrayList<>();
     private ArrayList<Stock> soldStockList = new ArrayList<>();
-    private Timer timer;
-    private HoldingStock holdingStock;//视图
-    private SoldStocks soldStocks;//视图
+    public Timer timer;
+    public TimerTask timerTask;
+    public HoldingStock holdingStock;//视图
+    public SoldStocks soldStocks;//视图
     private LinearLayout mainView;//主视图
     private Stock shangZheng;//上证指数
     private String tenYears;//十年国债利率
@@ -66,13 +69,14 @@ public class MainActivity extends AppCompatActivity {
     private double moneyNeedInvest = 0;//根据仓位及最大投入金额计算的需投入资金
     private double moneyNeedAdd = 0;//应投减已投入金额
     private double gain;//浮盈
-    private double gained = -6731;//无法详细列出的历史盈利金额
+    public double gained = -6731;//无法详细列出的历史盈利金额
     private Double allValue = 0.0;//总市值
     private Double dongTaiJinE=0.0;//参与动态控制的金额
 
     private int reflashCount = 0;
     private int getDataCount = 0;//数据更新次数计数
     private Context context;
+
 
 
     @Override
@@ -174,7 +178,8 @@ public class MainActivity extends AppCompatActivity {
                 showPopupChangeGaiend();
                 break;
             case R.id.mainMenu_saleStock:
-                showPopupSaleStock();
+                View popUp = new PopUpSaleStock(this,holdingStocksList,soldStockList);
+                showPopupWindows(popUp);
                 break;
             case R.id.mainMenu_addStock:
                 showPopUpAddStock();
@@ -182,6 +187,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.mainMenu_delStock:
                 showPopUpDelStock();
+                break;
+            case R.id.mainMenu_modifyStock:
+                showPopUpModifyStock();
                 break;
             case R.id.mainMenu_delSoldStock:
                 showPopupDelSoldStock();
@@ -219,6 +227,13 @@ public class MainActivity extends AppCompatActivity {
         showPopupWindows(popUp);
     }
 
+    void showPopUpModifyStock(){
+        View popUp = new PopUpModifyHoldingStock(this,holdingStocksList,holdingStock);
+        //mainFrameLayout.addView(popUp);
+        showPopupWindows(popUp);
+
+    }
+
     void showPopupSaleStock() {
         //显示弹出窗口
         LinearLayout linearLayout = new LinearLayout(this);
@@ -243,53 +258,76 @@ public class MainActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int rowNum = Integer.parseInt(row.getText().toString());//攻取行号
-
-                Stock st = holdingStocksList.get(rowNum - 1);//取得卖出的股票数据
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");//卖出日期
-
-                soldStockList.add(st);
-                holdingStocksList.remove(rowNum - 1);
-                st.soldDate = dateFormat.format(new Date());
-                st.nowPrice = price.getText().toString();
-
-
-                //计算盈利数据
-                int numInt = Integer.parseInt(st.number);
-                if (st.code.startsWith("0") || st.code.startsWith("3") || st.code.startsWith("6")) {
-                    st.nowValue = Double.parseDouble(st.nowPrice) * numInt;
-                    st.nowValue = st.nowValue * (1 - 0.001) - (st.nowValue > 16666.67 ? st.nowValue * 0.0003 : 5);
-                    st.cost = Double.parseDouble(st.price) * numInt;
-                    st.cost = st.cost + (st.cost > 16666.67 ? st.cost * 0.0003 : 5);
-                    st.earn = st.nowValue - st.cost;
-                    st.earnPercent = st.earn / st.cost * 100;
-                } else {
-                    st.nowValue = Double.parseDouble(st.nowPrice) * numInt * (1 - 0.0003);
-                    st.cost = Double.parseDouble(st.price) * numInt * (1 + 0.0003);
-                    st.earn = st.nowValue - st.cost;
-                    st.earnPercent = st.earn / st.cost * 100;
-
-                    double shouXuFeiMai3,shouXuFeiMai4;
-                    shouXuFeiMai3=Double.parseDouble(st.price) * numInt * 0.0003;
-                    shouXuFeiMai3=shouXuFeiMai3>0.1?shouXuFeiMai3:0.1;
-                    shouXuFeiMai3=Double.parseDouble(String.format("%.2f",shouXuFeiMai3));
-                    shouXuFeiMai4=Double.parseDouble(st.nowPrice) * numInt * 0.0003;
-                    shouXuFeiMai4=shouXuFeiMai4>0.1?shouXuFeiMai4:0.1;
-                    shouXuFeiMai4=Double.parseDouble(String.format("%.2f",shouXuFeiMai4));
-                    st.nowValue = Double.parseDouble(st.nowPrice) * numInt -shouXuFeiMai4;
-                    st.cost = Double.parseDouble(st.price) * numInt +shouXuFeiMai3;
-                    st.earn = st.nowValue - st.cost;
-                    st.earnPercent = st.earn / st.cost * 100;
+                String a =row.getText().toString();
+                String b =price.getText().toString();
+                if (holdingStocksList.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "没有持股", Toast.LENGTH_LONG).show();
                 }
+                else {
 
-                gained += st.earn;
-                holdingStock.updateTabView();
-                soldStocks.updateTableView();
-                saveHoldingData();
-                saveSoldData();
+                    if (a.isEmpty() || b.isEmpty()) {
+                        Toast.makeText(MainActivity.this, "输入为空", Toast.LENGTH_LONG).show();
+                    }
+                    else{
+                        int rowNum = Integer.parseInt(a);//攻取行号
+                        if (rowNum <= 0 || rowNum > holdingStocksList.size()) {
+                            Toast.makeText(MainActivity.this, "超出范围", Toast.LENGTH_LONG).show();
+                        }
+                        else {
 
+
+                            Stock st = holdingStocksList.get(rowNum - 1);//取得卖出的股票数据
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");//卖出日期
+
+                            soldStockList.add(st);
+                            holdingStocksList.remove(rowNum - 1);
+                            st.soldDate = dateFormat.format(new Date());
+                            st.nowPrice = price.getText().toString();
+
+
+                            //计算盈利数据
+                            int numInt = Integer.parseInt(st.number);
+                            if (st.code.startsWith("0") || st.code.startsWith("3") || st.code.startsWith("6")) {
+                                st.nowValue = Double.parseDouble(st.nowPrice) * numInt;
+                                st.nowValue = st.nowValue * (1 - 0.001) - (st.nowValue > 16666.67 ? st.nowValue * 0.0003 : 5);
+                                st.cost = Double.parseDouble(st.price) * numInt;
+                                st.cost = st.cost + (st.cost > 16666.67 ? st.cost * 0.0003 : 5);
+                                st.earn = st.nowValue - st.cost;
+                                st.earnPercent = st.earn / st.cost * 100;
+                            }
+                            else {
+                                st.nowValue = Double.parseDouble(st.nowPrice) * numInt * (1 - 0.0003);
+                                st.cost = Double.parseDouble(st.price) * numInt * (1 + 0.0003);
+                                st.earn = st.nowValue - st.cost;
+                                st.earnPercent = st.earn / st.cost * 100;
+
+                                double shouXuFeiMai3,shouXuFeiMai4;
+                                shouXuFeiMai3=Double.parseDouble(st.price) * numInt * 0.0003;
+                                shouXuFeiMai3=shouXuFeiMai3>0.1?shouXuFeiMai3:0.1;
+                                shouXuFeiMai3=Double.parseDouble(String.format("%.2f",shouXuFeiMai3));
+                                shouXuFeiMai4=Double.parseDouble(st.nowPrice) * numInt * 0.0003;
+                                shouXuFeiMai4=shouXuFeiMai4>0.1?shouXuFeiMai4:0.1;
+                                shouXuFeiMai4=Double.parseDouble(String.format("%.2f",shouXuFeiMai4));
+                                st.nowValue = Double.parseDouble(st.nowPrice) * numInt -shouXuFeiMai4;
+                                st.cost = Double.parseDouble(st.price) * numInt +shouXuFeiMai3;
+                                st.earn = st.nowValue - st.cost;
+                                st.earnPercent = st.earn / st.cost * 100;
+                            }
+
+                            gained += st.earn;
+                            holdingStock.updateTabView();
+                            soldStocks.updateTableView();
+                            saveHoldingData();
+                            saveSoldData();
+
+
+                        }
+                    }
+                }
             }
         });
+
+
     }
 
     void showPopupDividend() {
@@ -343,6 +381,7 @@ public class MainActivity extends AppCompatActivity {
     void showPopUpDelStock() {
         View popUp = new PopupDelStock(this);
         showPopupWindows(popUp);
+
     }
 
     void showPopupDelSoldStock() {
@@ -465,6 +504,7 @@ public class MainActivity extends AppCompatActivity {
         popupWindow.setTouchable(true);
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.showAtLocation(popUp, Gravity.CENTER, 0, 0);
+        popupWindow.isShowing();
     }
 
     protected void updataTextView() {
@@ -481,29 +521,33 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        //   holdingStock.refreshText();
+        if(timer!=null){timer.cancel();}
         timer = new Timer();
-        timer.schedule(new TimerTask() {
+        timerTask=new TimerTask() {
             @Override
             public void run() {
                 pullNetworkData();
-          //      runOnUiThread(() -> {
-          //          updataTextView();
-          //          holdingStock.refreshText();
-          //      });
+                //      runOnUiThread(() -> {
+                //          updataTextView();
+                //          holdingStock.refreshText();
+                //      });
                 //   runOnUiThread(()->{
                 //       //textView.setText("上证指数:"+shangZheng.nowPrice+"涨幅:"+shangZheng.increase+"国债:"+tenYears+" 实现盈利："+String.format("%.0f",gained)+"\n浮盈："+String.format("%.0f", gain)+" 总盈利："+String.format("%.0f",gain+gained)+"现值:"+String.format("%.0f",allValue));
                 //       updataTextView();
                 //       holdingStock.refreshText();
                 //   });
             }
-        }, 0, 5000);
+        };
+        //   holdingStock.refreshText();
+
+      //  timerTask.cancel();
+        timer.schedule(timerTask , 0, 5000);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        timerTask.cancel();
         timer.cancel();
     }
 
@@ -579,15 +623,17 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "行号为空", Toast.LENGTH_LONG).show();
         } else {
             int dr = Integer.parseInt(delRow);
-            if (dr > holdingStocksList.size()) {
+            if (dr<=0 || dr > holdingStocksList.size()) {
                 Toast.makeText(MainActivity.this, "超出范围", Toast.LENGTH_LONG).show();
             } else {
                 holdingStocksList.remove(dr - 1);
                 Toast.makeText(MainActivity.this, "删除成功", Toast.LENGTH_LONG).show();
+                saveHoldingData();
+                holdingStock.updateTabView();
             }
         }
-        saveHoldingData();
-        holdingStock.updateTabView();
+
+
     }
 
     public void changeGained(double gained) {
@@ -597,7 +643,7 @@ public class MainActivity extends AppCompatActivity {
 
     //  protected void updatDataArray(){
 
-    protected void pullNetworkData() {
+    public void pullNetworkData() {
 
         //new Thread(()->{
         //组建查询队列
@@ -640,7 +686,7 @@ public class MainActivity extends AppCompatActivity {
             //循环填充数据
             double gain = 0;//浮盈
             double allValue = 0.0;
-            double shouXuFeiMai3;
+            double shouXuFeiMai3;//省得循环中不停重新分配变量
             double shouXuFeiMai4;
             for (int i = 0; i < holdingStocksList.size(); i++) {
                 Stock st = holdingStocksList.get(i);
@@ -671,7 +717,8 @@ public class MainActivity extends AppCompatActivity {
                         st.cost = st.cost + (st.cost > 16666.67 ? st.cost * 0.0003 : 5);
                         st.earn = st.nowValue - st.cost;
                         st.earnPercent = st.earn / st.cost * 100;
-                    } else {
+                    }
+                    else {
                         shouXuFeiMai3=Double.parseDouble(st.price) * numInt * 0.0003;
                         shouXuFeiMai3=shouXuFeiMai3>0.1?shouXuFeiMai3:0.1;
                         shouXuFeiMai3=Double.parseDouble(String.format("%.2f",shouXuFeiMai3));
@@ -739,9 +786,10 @@ public class MainActivity extends AppCompatActivity {
             double zuiDiShouYiLv=0.015*tenYears;
             double zuiDaShouyiLv=0.029*tenYears;
             double cangWei=(shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
-            moneyNeedInvest=(haveMoney+gained)>=dongTaiJinE?(haveMoney+gained+dongTaiJinE*(cangWei-1)):(haveMoney+gained)*cangWei;//最大可投金额加上全部账面收益乘上仓位
+            double allIntvestingMoney=haveMoney+gained+gain;
+            moneyNeedInvest=(allIntvestingMoney)>=dongTaiJinE?(allIntvestingMoney+dongTaiJinE*(cangWei-1)):(allIntvestingMoney)*cangWei;//最大可投金额加上全部账面收益乘上仓位
        //     moneyNeedInvest=(haveMoney+gained+this.gain)*cangWei;//最大可投金额加上全部账面收益乘上仓位
-            moneyNeedAdd=moneyNeedInvest-(allValue-gain);
+            moneyNeedAdd=moneyNeedInvest-allValue;
       //      moneyNeedAdd=moneyNeedInvest-this.allValue;
             this.cangWei = String.format("%.2f",cangWei*100);
 
@@ -1177,7 +1225,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    protected void saveHoldingData() {
+    public void saveHoldingData() {
         SharedPreferences.Editor editor;
 
         StringBuilder stockBuilder = new StringBuilder("");
@@ -1202,7 +1250,7 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    protected void saveSoldData() {
+    public void saveSoldData() {
         StringBuilder stringBuilder = new StringBuilder();
         for (Stock stock1 : soldStockList) {
             stringBuilder.append(stock1.name + ",")
