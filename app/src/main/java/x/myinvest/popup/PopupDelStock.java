@@ -7,6 +7,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import x.myinvest.MainActivity;
 import x.myinvest.R;
 
@@ -28,9 +31,28 @@ public class PopupDelStock extends LinearLayout {
         ((Button)findViewById(R.id.layout_delStock_button_ok)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
                ((MainActivity)context).delStock(row.getText().toString());
             }
         });
+    }
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if(visibility == View.VISIBLE){
+
+            ((MainActivity)context).timer.cancel();
+        }
+        else {
+            ((MainActivity)context).timer = new Timer();
+            ((MainActivity)context).timerTask=new TimerTask() {
+                @Override
+                public void run() {
+                    ((MainActivity)context).pullNetworkData();
+                }
+            };
+
+            ((MainActivity)context).timer.schedule(((MainActivity)context).timerTask , 0, 5000);
+        }
     }
 
 }

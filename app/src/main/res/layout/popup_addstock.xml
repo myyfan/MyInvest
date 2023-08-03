@@ -3,7 +3,7 @@
     android:id="@+id/layout_addstock_LinearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#Dfff"
+        android:background="#Bfff"
         android:orientation="vertical"
         android:layout_centerInParent="true">
         <EditText

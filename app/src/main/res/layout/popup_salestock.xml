@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_saleStock_LinearLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#Bfff"
+    android:orientation="vertical"
+    android:layout_centerInParent="true">
+    <EditText
+        android:id="@+id/layout_saleStock_editText_rowNum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:hint="输入要卖出的行号"
+        android:layout_margin="@dimen/layout_addstock_margin">
+    </EditText>
+    <EditText
+        android:id="@+id/layout_saleStock_editText_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:hint="输入卖出的价格"
+        android:layout_margin="@dimen/layout_addstock_margin">
+    </EditText>
+    <Button
+        android:id="@+id/layout_saleStock_button_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="确认"
+        android:layout_margin="@dimen/layout_addstock_margin"/>
+</LinearLayout>
