@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showPopupChangeGaiend() {
-        View popUp = new PopupChangeGained(this);
+        View popUp = new PopupChangeGained(this,Double.parseDouble(perfHoldingStocks.getString("haveGained", "0")));
         showPopupWindows(popUp);
 
     }
@@ -369,9 +369,9 @@ public class MainActivity extends AppCompatActivity {
                 //计算盈利数据
 
                 gained += st.earn;
-                holdingStock.updateTabView();
+             //   holdingStock.updateTabView();
                 soldStocks.updateTableView();
-                saveHoldingData();
+              //  saveHoldingData();
                 saveSoldData();
 
             }
@@ -509,7 +509,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void updataTextView() {
         ++reflashCount;  //  +" ref:"+reflashCount+"|"+getDataCount
-        textView_gain.setText("上证指数:" + shangZheng.nowPrice + "涨幅:" + shangZheng.increase + "动盈率:" + dongTaiShiYingLv[2] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投：" + String.format("%.0f", moneyNeedInvest) + "  追加" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利：" + String.format("%.0f", gained) + " 浮盈：" + String.format("%.0f", gain) + " 总盈利：" + String.format("%.0f", gain + gained) + "现值:" + String.format("%.0f", allValue));
+        textView_gain.setText("上证指数:" + shangZheng.nowPrice + "涨幅:" + shangZheng.increase + "动盈率:" + dongTaiShiYingLv[2] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投:" + String.format("%.0f", moneyNeedInvest) + "  追加:" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利:" + String.format("%.0f", gained) + " 浮盈:" + String.format("%.0f", gain) + " 总盈利：" + String.format("%.0f", gain + gained) + "现值:" + String.format("%.0f", allValue));
         textView_gain.setOnClickListener((view) -> {
             Intent intent=new Intent();//创建Intent对象
             intent.setAction(Intent.ACTION_VIEW);//为Intent设置动作
@@ -551,7 +551,7 @@ public class MainActivity extends AppCompatActivity {
         timer.cancel();
     }
 
-    protected void loadSavedData() {
+    public void loadSavedData() {
         //加载持有中的股票数据
         String buyedStockCodeSaved = null;
         String buyedStockPriceSaved = null;
@@ -560,8 +560,9 @@ public class MainActivity extends AppCompatActivity {
         haveMoney = perfHoldingStocks.getFloat("haveMoney", 0);
         // 加载10年国债收益率
         tenYears = perfHoldingStocks.getString("tenYears", "0");
-        //加载股票代码
+        //加载持有的股票代码
         dongTaiJinE=Double.parseDouble(perfHoldingStocks.getString("dongTaiJinE", "0"));
+        gained=Double.parseDouble(perfHoldingStocks.getString("haveGained", "0"));
         String[] stockArrayStr = perfHoldingStocks.getString("buyedStockCode", "").split(",");
         if (!stockArrayStr[0].isEmpty()) {
             //perfHoldingStocks = new ArrayList<Stock>(stockArrayStr.length);
@@ -637,7 +638,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changeGained(double gained) {
-        this.gained = gained;
+     //   this.gained = gained;
         perfHoldingStocks.edit().putString("haveGained", gained + "").apply();
     }
 
