@@ -52,9 +52,9 @@ public class HoldingStock extends ScrollView {
         DecimalFormat df = new DecimalFormat("#.00");
         TableRow tableRow=new TableRow(context);
         TextView textView=new TextView(context);
-        tableRow=new TableRow(context);
+     //   tableRow=new TableRow(context);
         //股票名称/代码
-        textView=new TextView(context);
+     //   textView=new TextView(context);
         textView.setText((num+1)+"."+stock.name+"\n"+stock.code);
         textViewHandler[num][0]=textView;
         tableRow.addView(textView);

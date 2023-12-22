@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     public HoldingStock holdingStock;//视图
     public SoldStocks soldStocks;//视图
     private LinearLayout mainView;//主视图
-    private Stock shangZheng;//上证指数
+    private Stock shangZhengZhiShu;//上证指数
     private String tenYears;//十年国债利率
     private String[] banKuaiMingCheng = {"上海A股", "深圳A股", "沪深A股", "深市主板", "中小板", "创业板"};
     private String[] jingTaiShiYingLv = new String[6];//市场平均静态市盈率，0上海A股，1深圳A股，2沪深A股，3深市主板，4中小板，5创业板
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        shangZheng = new Stock();
+        shangZhengZhiShu = new Stock();
         //加载保存的数据到holdingStocksList和soldStockList
         loadSavedData();
         //新建两个股票的视图类
@@ -210,6 +210,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.mainMenu_dongTaiJinE:
                 showPopupSetDongTaiJinE();
+                break;
+            case R.id.mainMenu_dianShuCangWeiJiDieFu:
+                showPopupJiSuanDianShuCangWeiJiDieFu();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -497,6 +500,100 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    void showPopupJiSuanDianShuCangWeiJiDieFu() {
+        TableLayout tableLayout = new TableLayout(this);
+        tableLayout.setOrientation(LinearLayout.VERTICAL);
+        tableLayout.setBackgroundColor(0xffffffff);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(10, 30, 10, 30);
+        tableLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        TableRow tableRow=new TableRow(context);
+        TextView textView=new TextView(this);
+        textView.setText("目标仓位    ");
+        tableRow.addView(textView);
+
+        textView=new TextView(this);
+        textView.setText("预估点位    ");
+        tableRow.addView(textView);
+
+        textView=new TextView(this);
+        textView.setText("预计涨跌    ");
+        tableRow.addView(textView);
+
+        textView=new TextView(this);
+        textView.setText("预估PB    ");
+        tableRow.addView(textView);
+
+        textView=new TextView(this);
+        textView.setText("预估PE");
+        tableRow.addView(textView);
+
+        tableLayout.addView(tableRow, layoutParams);
+
+        Double [] yuCeCangWeiTable={0.0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95,1.0,1.05,1.10};
+
+        double tenYears=Double.parseDouble(this.tenYears);
+        double shangZhengKaiPanDianWei=Double.parseDouble(shangZhengZhiShu.nowPrice)/(1+Double.parseDouble(shangZhengZhiShu.increase)/100);
+        float f1=Float.parseFloat(dongTaiShiYingLv[2]);
+        double zuiDiShouYiLv=0.015*tenYears;
+        double zuiDaShouyiLv=0.029*tenYears;
+        Double yuCeDianWei;
+        Double yuJiZhangDie;
+        Double yuJiPB;
+        Double yuJiPE;
+        Double k;
+
+        for(int i=0;i<yuCeCangWeiTable.length;i++){
+            Double  j=((yuCeCangWeiTable[i]*(zuiDaShouyiLv-zuiDiShouYiLv))+zuiDiShouYiLv)*f1;
+            k=yuCeCangWeiTable[i]*100;
+            yuCeDianWei=shangZhengKaiPanDianWei/j;
+            yuJiZhangDie=(yuCeDianWei-shangZhengKaiPanDianWei)/shangZhengKaiPanDianWei*100;
+            yuJiPB=Double.parseDouble(shiJingLv[2])/j;
+            yuJiPE=f1/j;
+
+            tableRow=new TableRow(context);
+
+            //目标仓位
+            textView=new TextView(this);
+            textView.setText(String.format("%.0f",k)+"%");
+            tableRow.addView(textView);
+
+            //目标仓位的点位
+            textView=new TextView(this);
+            textView.setText(String.format("%.0f", yuCeDianWei));
+            tableRow.addView(textView);
+
+            //目标仓位的距当前点位的涨跌幅
+            textView=new TextView(this);
+            textView.setText(String.format("%.2f", yuJiZhangDie)+"%");
+            tableRow.addView(textView);
+
+            //预估目标仓位的PB
+            textView=new TextView(this);
+            textView.setText(String.format("%.2f", yuJiPB));
+            tableRow.addView(textView);
+
+            //预估目标仓位的PE
+            textView=new TextView(this);
+            textView.setText(String.format("%.2f", yuJiPE));
+            tableRow.addView(textView);
+
+            tableLayout.addView(tableRow, layoutParams);
+        }
+    //    EditText textDongTaiJinE = new EditText(this);
+    //    textDongTaiJinE.setHint(dongTaiJinE.toString());
+//
+    //    Button ok = new Button(this);
+    //    ok.setText("确定");
+
+
+
+
+        showPopupWindows(tableLayout);
+
+    }
+
     void showPopupWindows(View popUp) {
         PopupWindow popupWindow = new PopupWindow(popUp, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setOutsideTouchable(true);
@@ -509,7 +606,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void updataTextView() {
         ++reflashCount;  //  +" ref:"+reflashCount+"|"+getDataCount
-        textView_gain.setText("上证指数:" + shangZheng.nowPrice + "涨幅:" + shangZheng.increase + "动盈率:" + dongTaiShiYingLv[2] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投:" + String.format("%.0f", moneyNeedInvest) + "  追加:" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利:" + String.format("%.0f", gained) + " 浮盈:" + String.format("%.0f", gain) + " 总盈利：" + String.format("%.0f", gain + gained) + "现值:" + String.format("%.0f", allValue));
+        textView_gain.setText("上证指数:" + shangZhengZhiShu.nowPrice + "涨幅:" + shangZhengZhiShu.increase + "动盈率:" + dongTaiShiYingLv[2] + " 收益率:" + shangZhengSY + "%\n" + "国债:" + tenYears + "  仓位:" + cangWei + "%" + "  应投:" + String.format("%.0f", moneyNeedInvest) + "  追加:" + String.format("%.0f", moneyNeedAdd) + "*" + getDataCount + "\n实现盈利:" + String.format("%.0f", gained) + " 总盈利：" + String.format("%.0f", gain + gained)+ " 浮盈:" + String.format("%.0f", gain)  + "现值:" + String.format("%.0f", allValue));
         textView_gain.setOnClickListener((view) -> {
             Intent intent=new Intent();//创建Intent对象
             intent.setAction(Intent.ACTION_VIEW);//为Intent设置动作
@@ -746,8 +843,8 @@ public class MainActivity extends AppCompatActivity {
             this.allValue = allValue;
             //填入上证指数数据
             stockData = div[holdingStocksList.size()].split("~");
-            shangZheng.nowPrice = stockData[3];
-            shangZheng.increase = stockData[32];
+            shangZhengZhiShu.nowPrice = stockData[3];
+            shangZhengZhiShu.increase = stockData[32];
             //connection.disconnect();
             //排序
             orderTheList();
@@ -780,7 +877,7 @@ public class MainActivity extends AppCompatActivity {
             //     //不考虑时间因素
             float f1=Float.parseFloat(dongTaiShiYingLv[2]);
             //    f1=(float)11.5;
-            double shangZhengShouYiLv = 1/(f1*(1+Double.parseDouble(shangZheng.increase)/100));
+            double shangZhengShouYiLv = 1/(f1*(1+Double.parseDouble(shangZhengZhiShu.increase)/100));
             shangZhengSY=String.format("%.2f",shangZhengShouYiLv*100);
 
             double tenYears=Double.parseDouble(this.tenYears);
@@ -836,7 +933,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void pullQuanShiChangShuJu() {
         new Thread(() -> {
-            try {//从中证指数公司获取市场平均静态市盈率
+            try {//从中证指数公司获取全市场滚动市盈率
                 URL url = new URL("https://www.csindex.com.cn/csindex-home/dataServer/queryCsiPeIndustryBytradeDate?tradeDate=&classType=3");
                 //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -879,7 +976,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 for(int i=1;i<8;i++){
-                    a1=div[1].charAt(i);
+                    a1=div[3].charAt(i);
                     if (a1==34) {
                         //               lkj = div[3].substring(0, i);
                         shiJingLv[2] = div[3].substring(0, i);
@@ -888,7 +985,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 for(int i=1;i<8;i++){
-                    a1=div[1].charAt(i);
+                    a1=div[4].charAt(i);
                     if (a1==34) {
                         //                lkj = div[4].substring(0, i);
                         guXiLv[2] = div[4].substring(0, i);
