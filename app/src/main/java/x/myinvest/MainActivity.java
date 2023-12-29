@@ -534,8 +534,12 @@ public class MainActivity extends AppCompatActivity {
         Double [] yuCeCangWeiTable={0.0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95,1.0,1.05,1.10};
 
         double tenYears=Double.parseDouble(this.tenYears);
+     //   double shangZhengKaiPanDianWei=Double.parseDouble(shangZhengZhiShu.nowPrice)/(1+Double.parseDouble(shangZhengZhiShu.increase)/100);
+     //   float f1=Float.parseFloat(dongTaiShiYingLv[2]);
+        //开盘点位改为当前点位,PE改为计算当前PE
         double shangZhengKaiPanDianWei=Double.parseDouble(shangZhengZhiShu.nowPrice)/(1+Double.parseDouble(shangZhengZhiShu.increase)/100);
-        float f1=Float.parseFloat(dongTaiShiYingLv[2]);
+        double f1=Float.parseFloat(dongTaiShiYingLv[2])*(1+Double.parseDouble(shangZhengZhiShu.increase)/100);
+
         double zuiDiShouYiLv=0.015*tenYears;
         double zuiDaShouyiLv=0.029*tenYears;
         Double yuCeDianWei;
