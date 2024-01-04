@@ -537,8 +537,9 @@ public class MainActivity extends AppCompatActivity {
      //   double shangZhengKaiPanDianWei=Double.parseDouble(shangZhengZhiShu.nowPrice)/(1+Double.parseDouble(shangZhengZhiShu.increase)/100);
      //   float f1=Float.parseFloat(dongTaiShiYingLv[2]);
         //开盘点位改为当前点位,PE改为计算当前PE
-        double shangZhengKaiPanDianWei=Double.parseDouble(shangZhengZhiShu.nowPrice)/(1+Double.parseDouble(shangZhengZhiShu.increase)/100);
-        double f1=Float.parseFloat(dongTaiShiYingLv[2])*(1+Double.parseDouble(shangZhengZhiShu.increase)/100);
+        double shangZhengKaiPanDianWei=Double.parseDouble(shangZhengZhiShu.nowPrice);
+      //double shangZhengKaiPanDianWei=Double.parseDouble(shangZhengZhiShu.nowPrice)/(1+Double.parseDouble(shangZhengZhiShu.increase)/100);
+        double f1=Float.parseFloat(dongTaiShiYingLv[2])*(1+Double.parseDouble(shangZhengZhiShu.increase)/100); //计算当前市盈率
 
         double zuiDiShouYiLv=0.015*tenYears;
         double zuiDaShouyiLv=0.029*tenYears;
@@ -549,9 +550,10 @@ public class MainActivity extends AppCompatActivity {
         Double k;
 
         for(int i=0;i<yuCeCangWeiTable.length;i++){
-            Double  j=((yuCeCangWeiTable[i]*(zuiDaShouyiLv-zuiDiShouYiLv))+zuiDiShouYiLv)*f1;
-            k=yuCeCangWeiTable[i]*100;
+            Double  j=((yuCeCangWeiTable[i]*(zuiDaShouyiLv-zuiDiShouYiLv))+zuiDiShouYiLv)*f1;//计算目标他们的收益率与当前收益率的比值
+          //  k=yuCeCangWeiTable[i]*100;
             yuCeDianWei=shangZhengKaiPanDianWei/j;
+          //  yuCeDianWei=Double.parseDouble(shangZhengZhiShu.nowPrice)/j;
             yuJiZhangDie=(yuCeDianWei-shangZhengKaiPanDianWei)/shangZhengKaiPanDianWei*100;
             yuJiPB=Double.parseDouble(shiJingLv[2])/j;
             yuJiPE=f1/j;
@@ -560,7 +562,7 @@ public class MainActivity extends AppCompatActivity {
 
             //目标仓位
             textView=new TextView(this);
-            textView.setText(String.format("%.0f",k)+"%");
+            textView.setText(String.format("%.0f",yuCeCangWeiTable[i]*100)+"%");
             tableRow.addView(textView);
 
             //目标仓位的点位
