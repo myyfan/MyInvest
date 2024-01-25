@@ -541,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
       //double shangZhengKaiPanDianWei=Double.parseDouble(shangZhengZhiShu.nowPrice)/(1+Double.parseDouble(shangZhengZhiShu.increase)/100);
         double f1=Float.parseFloat(dongTaiShiYingLv[2])*(1+Double.parseDouble(shangZhengZhiShu.increase)/100); //计算当前市盈率
 
-        double zuiDiShouYiLv=0.015*tenYears;
+        double zuiDiShouYiLv=0.017*tenYears;
         double zuiDaShouyiLv=0.029*tenYears;
         Double yuCeDianWei;
         Double yuJiZhangDie;
@@ -887,7 +887,7 @@ public class MainActivity extends AppCompatActivity {
             shangZhengSY=String.format("%.2f",shangZhengShouYiLv*100);
 
             double tenYears=Double.parseDouble(this.tenYears);
-            double zuiDiShouYiLv=0.015*tenYears;
+            double zuiDiShouYiLv=0.017*tenYears;
             double zuiDaShouyiLv=0.029*tenYears;
             double cangWei=(shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
             double allIntvestingMoney=haveMoney+gained+gain;
