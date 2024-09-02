@@ -292,23 +292,23 @@ public class MainActivity extends AppCompatActivity {
                             int numInt = Integer.parseInt(st.number);
                             if (st.code.startsWith("0") || st.code.startsWith("3") || st.code.startsWith("6")) {
                                 st.nowValue = Double.parseDouble(st.nowPrice) * numInt;
-                                st.nowValue = st.nowValue * (1 - 0.001) - (st.nowValue > 16666.67 ? st.nowValue * 0.0003 : 5);
+                                st.nowValue = st.nowValue * (1 - 0.001) - (st.nowValue > 33333.33 ? st.nowValue * 0.00015 : 5);
                                 st.cost = Double.parseDouble(st.price) * numInt;
-                                st.cost = st.cost + (st.cost > 16666.67 ? st.cost * 0.0003 : 5);
+                                st.cost = st.cost + (st.cost > 33333.33 ? st.cost * 0.00015 : 5);
                                 st.earn = st.nowValue - st.cost;
                                 st.earnPercent = st.earn / st.cost * 100;
                             }
                             else {
-                                st.nowValue = Double.parseDouble(st.nowPrice) * numInt * (1 - 0.0003);
-                                st.cost = Double.parseDouble(st.price) * numInt * (1 + 0.0003);
+                                st.nowValue = Double.parseDouble(st.nowPrice) * numInt * (1 - 0.0001);
+                                st.cost = Double.parseDouble(st.price) * numInt * (1 + 0.0001);
                                 st.earn = st.nowValue - st.cost;
                                 st.earnPercent = st.earn / st.cost * 100;
 
                                 double shouXuFeiMai3,shouXuFeiMai4;
-                                shouXuFeiMai3=Double.parseDouble(st.price) * numInt * 0.0003;
+                                shouXuFeiMai3=Double.parseDouble(st.price) * numInt * 0.0001;
                                 shouXuFeiMai3=shouXuFeiMai3>0.1?shouXuFeiMai3:0.1;
                                 shouXuFeiMai3=Double.parseDouble(String.format("%.2f",shouXuFeiMai3));
-                                shouXuFeiMai4=Double.parseDouble(st.nowPrice) * numInt * 0.0003;
+                                shouXuFeiMai4=Double.parseDouble(st.nowPrice) * numInt * 0.0001;
                                 shouXuFeiMai4=shouXuFeiMai4>0.1?shouXuFeiMai4:0.1;
                                 shouXuFeiMai4=Double.parseDouble(String.format("%.2f",shouXuFeiMai4));
                                 st.nowValue = Double.parseDouble(st.nowPrice) * numInt -shouXuFeiMai4;
@@ -825,17 +825,17 @@ public class MainActivity extends AppCompatActivity {
                     //区分是股票还是基金
                     if (st.code.startsWith("0") || st.code.startsWith("3") || st.code.startsWith("6")) {
                         st.nowValue = Double.parseDouble(st.nowPrice) * numInt;
-                        st.nowValue = st.nowValue * (1 - 0.001) - (st.nowValue > 16666.67 ? st.nowValue * 0.0003 : 5);
+                        st.nowValue = st.nowValue * (1 - 0.001) - (st.nowValue > 33333.33 ? st.nowValue * 0.00015 : 5);
                         st.cost = Double.parseDouble(st.price) * numInt;
-                        st.cost = st.cost + (st.cost > 16666.67 ? st.cost * 0.0003 : 5);
+                        st.cost = st.cost + (st.cost > 33333.33 ? st.cost * 0.00015 : 5);
                         st.earn = st.nowValue - st.cost;
                         st.earnPercent = st.earn / st.cost * 100;
                     }
                     else {
-                        shouXuFeiMai3=Double.parseDouble(st.price) * numInt * 0.0003;
+                        shouXuFeiMai3=Double.parseDouble(st.price) * numInt * 0.0001;
                         shouXuFeiMai3=shouXuFeiMai3>0.1?shouXuFeiMai3:0.1;
                         shouXuFeiMai3=Double.parseDouble(String.format("%.2f",shouXuFeiMai3));
-                        shouXuFeiMai4=Double.parseDouble(st.nowPrice) * numInt * 0.0003;
+                        shouXuFeiMai4=Double.parseDouble(st.nowPrice) * numInt * 0.0001;
                         shouXuFeiMai4=shouXuFeiMai4>0.1?shouXuFeiMai4:0.1;
                         shouXuFeiMai4=Double.parseDouble(String.format("%.2f",shouXuFeiMai4));
                         st.nowValue = Double.parseDouble(st.nowPrice) * numInt -shouXuFeiMai4;
@@ -897,7 +897,7 @@ public class MainActivity extends AppCompatActivity {
 
             double tenYears=Double.parseDouble(this.tenYears);
             double zuiDiShouYiLv=0.017*tenYears;
-            double zuiDaShouyiLv=0.029*tenYears;
+            double zuiDaShouyiLv=0.03*tenYears;
             double cangWei=(shangZhengShouYiLv - zuiDiShouYiLv) / (zuiDaShouyiLv - zuiDiShouYiLv);
             double allIntvestingMoney=haveMoney+gained+gain;
             moneyNeedInvest=(allIntvestingMoney)>=dongTaiJinE?(allIntvestingMoney+dongTaiJinE*(cangWei-1)):(allIntvestingMoney)*cangWei;//最大可投金额加上全部账面收益乘上仓位
