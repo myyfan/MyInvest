@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -48,7 +49,7 @@ public class PopUpModifyHoldingStock extends LinearLayout {
         }
     }
 
-    public PopUpModifyHoldingStock(Context context, ArrayList<Stock> holdingStocksList, HoldingStock holdingStock){
+    public PopUpModifyHoldingStock(Context context, ArrayList<Stock> holdingStocksList, HoldingStock holdingStock,int num){
         super(context);
         this.context=context;
         LayoutInflater.from(context).inflate(R.layout.popup_modify_holding_stock, this);
@@ -59,7 +60,13 @@ public class PopUpModifyHoldingStock extends LinearLayout {
         buyDate =(EditText) findViewById(R.id.layout_modifyHoldingStock_editText_buyDate);
         ok=((Button)findViewById(R.id.layout_modifyHoldingStock_button_ok));
 
-
+        if(num>-1) {
+            row.setText(Integer.toString(num + 1));
+            code.setText(holdingStocksList.get(num).code);
+            price.setText(holdingStocksList.get(num).price);
+            number.setText(holdingStocksList.get(num).number);
+            buyDate.setText(holdingStocksList.get(num).buyDate);
+        }
 
         row.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
@@ -68,12 +75,15 @@ public class PopUpModifyHoldingStock extends LinearLayout {
                 if(!b) {
                     String a =row.getText().toString();
 
-                    if(!a.isEmpty()) {
+                    if(!a.isEmpty() && Integer.parseInt(a) <= holdingStocksList.size()) {
                         stockListNumber = Integer.parseInt(a)-1;
                         code.setText(holdingStocksList.get(stockListNumber).code);
                         price.setText(holdingStocksList.get(stockListNumber).price);
                         number.setText(holdingStocksList.get(stockListNumber).number);
                         buyDate.setText(holdingStocksList.get(stockListNumber).buyDate);
+                    }
+                    else {
+                        Toast.makeText(context, "超出范围", Toast.LENGTH_LONG).show();
                     }
 
                 }
@@ -83,12 +93,19 @@ public class PopUpModifyHoldingStock extends LinearLayout {
         ok.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                holdingStocksList.get(stockListNumber).code=code.getText().toString();
-                holdingStocksList.get(stockListNumber).price=price.getText().toString();
-                holdingStocksList.get(stockListNumber).number=number.getText().toString();
-                holdingStocksList.get(stockListNumber).buyDate=buyDate.getText().toString();
-                ((MainActivity)context).saveHoldingData();
-                holdingStock.refreshText();
+                String a =row.getText().toString();
+                if(!a.isEmpty() && Integer.parseInt(a) <= holdingStocksList.size()) {
+                    holdingStocksList.get(stockListNumber).code = code.getText().toString();
+                    holdingStocksList.get(stockListNumber).price = price.getText().toString();
+                    holdingStocksList.get(stockListNumber).number = number.getText().toString();
+                    holdingStocksList.get(stockListNumber).buyDate = buyDate.getText().toString();
+                    ((MainActivity) context).saveHoldingData();
+                    holdingStock.refreshText();
+                    Toast.makeText(context, "修改成功", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(context, "超出范围", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

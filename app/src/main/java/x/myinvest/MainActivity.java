@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences perfSoldStocks;
     //private SharedPreferences.Editor editor;
     private TextView textView_gain;
-    private ArrayList<Stock> holdingStocksList = new ArrayList<>();
-    private ArrayList<Stock> soldStockList = new ArrayList<>();
+    public ArrayList<Stock> holdingStocksList = new ArrayList<>();
+    public ArrayList<Stock> soldStockList = new ArrayList<>();
     public Timer timer;
     public TimerTask timerTask;
     public HoldingStock holdingStock;//视图
@@ -75,7 +76,9 @@ public class MainActivity extends AppCompatActivity {
 
     private int reflashCount = 0;
     private int getDataCount = 0;//数据更新次数计数
-    private Context context;
+    private MainActivity context;
+
+    View selectedTableRow ;//用来记录被选中的行视图
 
 
 
@@ -157,6 +160,8 @@ public class MainActivity extends AppCompatActivity {
         pullQuanShiChangShuJu();
 
 
+
+
         //holdingStock = (HoldingStock) findViewById(R.id.view_holdingstock);
         //holdingStock.updateTabView();
         // pullNetworkData();
@@ -178,24 +183,24 @@ public class MainActivity extends AppCompatActivity {
                 showPopupChangeGaiend();
                 break;
             case R.id.mainMenu_saleStock:
-                View popUp = new PopUpSaleStock(this,holdingStocksList,soldStockList);
-                showPopupWindows(popUp);
+                showPopUpSaleStock(-1);
+
                 break;
             case R.id.mainMenu_addStock:
-                showPopUpAddStock();
+                showPopUpAddStock(-1);
                 //PopUpAddStock popAddStock = new PopUpAddStock(this);
                 break;
             case R.id.mainMenu_delStock:
                 showPopUpDelStock();
                 break;
             case R.id.mainMenu_modifyStock:
-                showPopUpModifyStock();
+                showPopUpModifyStock(-1);
                 break;
             case R.id.mainMenu_delSoldStock:
                 showPopupDelSoldStock();
                 break;
             case R.id.mainMenu_stockDividend:
-                showPopupDividend();
+                showPopupDividend(-1);
                 break;
             case R.id.mainMenu_haveMoney:
                 showPopupHaveMoney();
@@ -218,122 +223,43 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //@Override
+  /*  public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater menuInflater = new MenuInflater(this);
+        menuInflater.inflate(R.menu.context_menu, menu);
+
+        showPopUpAddStock();
+        if(v == this.selectedTableRow){
+           // View menu = (View) findViewById(R.menu.context_menu);
+        }
+    } */
+
     void showPopupChangeGaiend() {
         View popUp = new PopupChangeGained(this,Double.parseDouble(perfHoldingStocks.getString("haveGained", "0")));
         showPopupWindows(popUp);
 
     }
 
-    void showPopUpAddStock() {
-        View popUp = new PopUpAddStock(this);
+    void showPopUpAddStock(int num) {
+        View popUp = new PopUpAddStock(this,holdingStocksList,num);
         //mainFrameLayout.addView(popUp);
         showPopupWindows(popUp);
     }
 
-    void showPopUpModifyStock(){
-        View popUp = new PopUpModifyHoldingStock(this,holdingStocksList,holdingStock);
+    void showPopUpSaleStock(int num) {
+        View popUp = new PopUpSaleStock(this,holdingStocksList,soldStockList,num);
+        showPopupWindows(popUp);
+    }
+
+    void showPopUpModifyStock(int num){
+        View popUp = new PopUpModifyHoldingStock(this,holdingStocksList,holdingStock,num);
         //mainFrameLayout.addView(popUp);
         showPopupWindows(popUp);
 
     }
 
-    void showPopupSaleStock() {
-        //显示弹出窗口
-        LinearLayout linearLayout = new LinearLayout(this);
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.setBackgroundColor(0xddffffff);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(10, 30, 10, 30);
-        linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
-
-        EditText row = new EditText(this);
-        EditText price = new EditText(this);
-        row.setHint("输入要卖出的股票行号");
-        price.setHint("输入卖出的价格");
-
-        Button ok = new Button(this);
-        ok.setText("确定");
-
-        linearLayout.addView(row, layoutParams);
-        linearLayout.addView(price, layoutParams);
-        linearLayout.addView(ok, layoutParams);
-        showPopupWindows(linearLayout);
-        ok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String a =row.getText().toString();
-                String b =price.getText().toString();
-                if (holdingStocksList.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "没有持股", Toast.LENGTH_LONG).show();
-                }
-                else {
-
-                    if (a.isEmpty() || b.isEmpty()) {
-                        Toast.makeText(MainActivity.this, "输入为空", Toast.LENGTH_LONG).show();
-                    }
-                    else{
-                        int rowNum = Integer.parseInt(a);//攻取行号
-                        if (rowNum <= 0 || rowNum > holdingStocksList.size()) {
-                            Toast.makeText(MainActivity.this, "超出范围", Toast.LENGTH_LONG).show();
-                        }
-                        else {
-
-
-                            Stock st = holdingStocksList.get(rowNum - 1);//取得卖出的股票数据
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");//卖出日期
-
-                            soldStockList.add(st);
-                            holdingStocksList.remove(rowNum - 1);
-                            st.soldDate = dateFormat.format(new Date());
-                            st.nowPrice = price.getText().toString();
-
-
-                            //计算盈利数据
-                            int numInt = Integer.parseInt(st.number);
-                            if (st.code.startsWith("0") || st.code.startsWith("3") || st.code.startsWith("6")) {
-                                st.nowValue = Double.parseDouble(st.nowPrice) * numInt;
-                                st.nowValue = st.nowValue * (1 - 0.001) - (st.nowValue > 33333.33 ? st.nowValue * 0.00015 : 5);
-                                st.cost = Double.parseDouble(st.price) * numInt;
-                                st.cost = st.cost + (st.cost > 33333.33 ? st.cost * 0.00015 : 5);
-                                st.earn = st.nowValue - st.cost;
-                                st.earnPercent = st.earn / st.cost * 100;
-                            }
-                            else {
-                                st.nowValue = Double.parseDouble(st.nowPrice) * numInt * (1 - 0.0001);
-                                st.cost = Double.parseDouble(st.price) * numInt * (1 + 0.0001);
-                                st.earn = st.nowValue - st.cost;
-                                st.earnPercent = st.earn / st.cost * 100;
-
-                                double shouXuFeiMai3,shouXuFeiMai4;
-                                shouXuFeiMai3=Double.parseDouble(st.price) * numInt * 0.0001;
-                                shouXuFeiMai3=shouXuFeiMai3>0.1?shouXuFeiMai3:0.1;
-                                shouXuFeiMai3=Double.parseDouble(String.format("%.2f",shouXuFeiMai3));
-                                shouXuFeiMai4=Double.parseDouble(st.nowPrice) * numInt * 0.0001;
-                                shouXuFeiMai4=shouXuFeiMai4>0.1?shouXuFeiMai4:0.1;
-                                shouXuFeiMai4=Double.parseDouble(String.format("%.2f",shouXuFeiMai4));
-                                st.nowValue = Double.parseDouble(st.nowPrice) * numInt -shouXuFeiMai4;
-                                st.cost = Double.parseDouble(st.price) * numInt +shouXuFeiMai3;
-                                st.earn = st.nowValue - st.cost;
-                                st.earnPercent = st.earn / st.cost * 100;
-                            }
-
-                            gained += st.earn;
-                            holdingStock.updateTabView();
-                            soldStocks.updateTableView();
-                            saveHoldingData();
-                            saveSoldData();
-
-
-                        }
-                    }
-                }
-            }
-        });
-
-
-    }
-
-    void showPopupDividend() {
+    void showPopupDividend(int num) {
         //显示弹出窗口
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -345,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
         EditText name = new EditText(this);
         EditText money = new EditText(this);
         name.setHint("输入分红的股票");
+        name.setText(holdingStocksList.get(num).code);
         money.setHint("输入分红金额");
 
         Button ok = new Button(this);
@@ -727,7 +654,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "添加成功", Toast.LENGTH_LONG).show();
         }
         saveHoldingData();
-        holdingStock.updateTabView();
+        holdingStock.updateTabView(this);
     }
 
 
@@ -738,11 +665,12 @@ public class MainActivity extends AppCompatActivity {
             int dr = Integer.parseInt(delRow);
             if (dr<=0 || dr > holdingStocksList.size()) {
                 Toast.makeText(MainActivity.this, "超出范围", Toast.LENGTH_LONG).show();
-            } else {
+            }
+            else {
                 holdingStocksList.remove(dr - 1);
-                Toast.makeText(MainActivity.this, "删除成功", Toast.LENGTH_LONG).show();
                 saveHoldingData();
-                holdingStock.updateTabView();
+                holdingStock.updateTabView(this);
+                Toast.makeText(MainActivity.this, "删除成功", Toast.LENGTH_LONG).show();
             }
         }
 

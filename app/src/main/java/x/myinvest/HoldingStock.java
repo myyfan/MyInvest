@@ -1,26 +1,19 @@
 package x.myinvest;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.widget.LinearLayout;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-
-import javax.net.ssl.HttpsURLConnection;
 
 public class HoldingStock extends ScrollView {
     Activity context;
@@ -32,28 +25,32 @@ public class HoldingStock extends ScrollView {
 
 
 
-    HoldingStock(Context context,ArrayList<Stock> stockList) {
+    HoldingStock(MainActivity context,ArrayList<Stock> stockList) {
         super(context);
-        this.context=(Activity)context;
+    //    this.context=(MainActivity)context;
         this.stocksList=stockList;
-        this.context.getLayoutInflater().inflate(R.layout.view_holding_stock, this);
+        context.getLayoutInflater().inflate(R.layout.view_holding_stock, this);
         //LayoutInflater.from(context).inflate(R.layout.view_holding_stock, this);
         //tableLayout = new TableLayout(context);
         tableLayout=findViewById(R.id.table_layout_invest);
-        updateTabView();
+        updateTabView(context);
+      //  ((Activity) context).registerForContextMenu(tableLayout);
         //addView(tableLayout);
         //tableLayout = (TableLayout)findViewById(R.id.table_layout_invest);
         //
 
     }
 
-    protected void addTabRow(Stock stock,int num){
+
+
+    protected void addTabRow(MainActivity context,Stock stock,int num){
         //protected void addTabRow(String stock,String nowPrice,String price,String number){
         DecimalFormat df = new DecimalFormat("#.00");
         TableRow tableRow=new TableRow(context);
-        TextView textView=new TextView(context);
-     //   tableRow=new TableRow(context);
+
+
         //股票名称/代码
+        TextView textView=new TextView(context);
      //   textView=new TextView(context);
         textView.setText((num+1)+"."+stock.name+"\n"+stock.code);
         textViewHandler[num][0]=textView;
@@ -84,8 +81,67 @@ public class HoldingStock extends ScrollView {
         textViewHandler[num][5]=textView;
         tableRow.addView(textView);
 
+   /*     tableRow.setOnClickListener(( view) -> {
+                Intent intent=new Intent();//创建Intent对象
+                intent.setAction(Intent.ACTION_VIEW);//为Intent设置动作
+                String st ="" ;
+                if (stock.code.startsWith("0")) st="sz";
+                else if (stock.code.startsWith("6")) st="sh";
+                intent.setData(Uri.parse("https://gu.qq.com/"+st+stock.code));//为Intent设置数据
+                getContext().startActivity(intent);//将Intent传递给Activity
+            });*/
+
+
+        tableRow.setOnLongClickListener(
+                ( view) -> {
+                    PopUpHoldStockPopupMenu(context, view,num);
+                    return true;
+                }
+        );
+
         tableRowList[num]=tableRow;
         tableLayout.addView(tableRow);
+    };
+
+    public void PopUpHoldStockPopupMenu(MainActivity context, View view, int num){
+
+
+        PopupMenu popupMenu = new PopupMenu(context, view);
+        MenuInflater inflater = popupMenu.getMenuInflater();
+        inflater.inflate(R.menu.popup_holdingstocks_menu, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener( (MenuItem item) -> {
+                    switch (item.getItemId()) {
+                        case R.id.popupMenu_re_buy:
+
+                            context.showPopUpAddStock(num);
+                            // 处理选项1的点击事件
+                            return true;
+                        case R.id.popupMenu_sold:
+                            context.showPopUpSaleStock(num);
+                            // 处理选项2的点击事件
+                            return true;
+                        case R.id.popupMenu_modify:
+                            context.showPopUpModifyStock(num);
+                            // 处理选项2的点击事件
+                            return true;
+                        case R.id.popupMenu_stockDividend:
+                            context.showPopupDividend(num);
+                            // 处理选项2的点击事件
+                            return true;
+                        case R.id.popupMenu_delete:
+                            context.delStock(Integer.toString(num+1));
+                            // 处理选项2的点击事件
+                            return true;
+                        default:
+                            return false;
+                    }
+                }
+        );
+        popupMenu.show();
+
+
+
     }
 
     public void refreshText() {
@@ -107,7 +163,7 @@ public class HoldingStock extends ScrollView {
             //购买日期
             textViewHandler[i][5].setText(stock.buyDate);
 
-            tableRowList[i].setOnClickListener(( view) -> {
+    /*        tableRowList[i].setOnClickListener(( view) -> {
                 Intent intent=new Intent();//创建Intent对象
                 intent.setAction(Intent.ACTION_VIEW);//为Intent设置动作
                 String st ="" ;
@@ -115,11 +171,12 @@ public class HoldingStock extends ScrollView {
                 else if (stock.code.startsWith("6")) st="sh";
                 intent.setData(Uri.parse("https://gu.qq.com/"+st+stock.code));//为Intent设置数据
                 getContext().startActivity(intent);//将Intent传递给Activity
-            });
+            });*/
+
         }
     }
 
-    public void updateTabView(){
+    public void updateTabView(MainActivity context){
 
         textViewHandler = new TextView[ stocksList.size() ][6];
         tableRowList = new TableRow[ stocksList.size() ];
@@ -140,7 +197,7 @@ public class HoldingStock extends ScrollView {
         //tableLayout.setDividerDrawable(getResources().getDrawable(R.drawable.bonus_list_item_divider));
         for(int i=0;i<stocksList.size();i++){
             Stock st = stocksList.get(i);
-            addTabRow(st,i);
+            addTabRow(context,st,i);
         }
         refreshText();
 

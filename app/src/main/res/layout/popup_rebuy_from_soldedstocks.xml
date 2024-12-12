@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/popup_rebuy_from_soldedstocks"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#Bfff"
+    android:orientation="vertical"
+    android:layout_centerInParent="true">
+
+    <EditText
+        android:id="@+id/popup_Soldedstocks_rebuy_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="代码"/>
+
+    <EditText
+        android:id="@+id/popup_Soldedstocks_rebuy_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="价格" />
+
+    <EditText
+        android:id="@+id/popup_Soldedstocks_rebuy_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="数量"/>
+    <Button
+        android:id="@+id/popup_Soldedstocks_rebuy_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="购买确认"
+        android:layout_margin="@dimen/layout_addstock_margin"/>
+</LinearLayout>
