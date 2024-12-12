@@ -23,7 +23,7 @@ public class PopUpSaleStock extends LinearLayout {
     EditText price;
     Context context;
     Button ok;
-    public PopUpSaleStock(MainActivity context, ArrayList<Stock> holdingStocksList, ArrayList<Stock> soldStockList){
+    public PopUpSaleStock(MainActivity context, ArrayList<Stock> holdingStocksList, ArrayList<Stock> soldStockList,int num){
         super(context);
         this.context=context;
         LayoutInflater.from(context).inflate(R.layout.popup_salestock,this);
@@ -39,6 +39,10 @@ public class PopUpSaleStock extends LinearLayout {
         row=findViewById(R.id.layout_saleStock_editText_rowNum);
         price=findViewById(R.id.layout_saleStock_editText_price);
         ok=findViewById(R.id.layout_saleStock_button_ok);
+        if(num>-1){
+            row.setText(Integer.toString(num+1));
+            price.setText(holdingStocksList.get(num).nowPrice);
+        }
         row.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -48,7 +52,7 @@ public class PopUpSaleStock extends LinearLayout {
 
                     if(!a.isEmpty()) {
                         int stockListNumber = Integer.parseInt(a)-1;
-                        price.setText(holdingStocksList.get(stockListNumber).nowPrice);
+                        if(stockListNumber<holdingStocksList.size()){price.setText(holdingStocksList.get(stockListNumber).nowPrice);}
                     }
 
                 }
@@ -89,9 +93,9 @@ public class PopUpSaleStock extends LinearLayout {
                             //区分是股票还是基金
                             if (st.code.startsWith("0") || st.code.startsWith("3") || st.code.startsWith("6")) {
                                 st.nowValue = Double.parseDouble(st.nowPrice) * numInt;
-                                st.nowValue = st.nowValue * (1 - 0.001) - (st.nowValue > 16666.67 ? st.nowValue * 0.0003 : 5);
+                                st.nowValue = st.nowValue * (1 - 0.001) - (st.nowValue > 33333.33 ? st.nowValue * 0.00015 : 5);
                                 st.cost = Double.parseDouble(st.price) * numInt;
-                                st.cost = st.cost + (st.cost > 16666.67 ? st.cost * 0.0003 : 5);
+                                st.cost = st.cost + (st.cost > 33333.33 ? st.cost * 0.00015 : 5);
                                 st.earn = st.nowValue - st.cost;
                                 st.earnPercent = st.earn / st.cost * 100;
                             }
@@ -102,10 +106,10 @@ public class PopUpSaleStock extends LinearLayout {
                             //    st.earnPercent = st.earn / st.cost * 100;
 
                                 double shouXuFeiMai3,shouXuFeiMai4;
-                                shouXuFeiMai3=Double.parseDouble(st.price) * numInt * 0.0003;
+                                shouXuFeiMai3=Double.parseDouble(st.price) * numInt * 0.0001;
                                 shouXuFeiMai3=shouXuFeiMai3>0.1?shouXuFeiMai3:0.1;
                                 shouXuFeiMai3=Double.parseDouble(String.format("%.2f",shouXuFeiMai3));
-                                shouXuFeiMai4=Double.parseDouble(st.nowPrice) * numInt * 0.0003;
+                                shouXuFeiMai4=Double.parseDouble(st.nowPrice) * numInt * 0.0001;
                                 shouXuFeiMai4=shouXuFeiMai4>0.1?shouXuFeiMai4:0.1;
                                 shouXuFeiMai4=Double.parseDouble(String.format("%.2f",shouXuFeiMai4));
                                 st.nowValue = Double.parseDouble(st.nowPrice) * numInt -shouXuFeiMai4;
@@ -115,11 +119,12 @@ public class PopUpSaleStock extends LinearLayout {
                             }
 
                             context.gained += st.earn;
-                            context.holdingStock.updateTabView();
+                            context.holdingStock.updateTabView(context);
                             context.soldStocks.updateTableView();
                             context.saveHoldingData();
                             context.saveSoldData();
 
+                            Toast.makeText(context, "卖出成功", Toast.LENGTH_LONG).show();
 
                         }
                     }

@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import x.myinvest.MainActivity;
 import x.myinvest.R;
@@ -28,6 +29,7 @@ public class PopupChangeGained extends LinearLayout {
                 Double gained1 = Double.parseDouble(textViewGained.getText().toString());
                 ((MainActivity)context).changeGained(gained1);
                 context.gained=context.gained-gained+gained1;
+                Toast.makeText(context, "调整历史收益成功", Toast.LENGTH_LONG).show();
            //     context.loadSavedData();
             }
         });
