@@ -115,23 +115,23 @@ public class HoldingStock extends ScrollView {
                         case R.id.popupMenu_re_buy:
 
                             context.showPopUpAddStock(num);
-                            // 处理选项1的点击事件
+                            // 增购
                             return true;
                         case R.id.popupMenu_sold:
                             context.showPopUpSaleStock(num);
-                            // 处理选项2的点击事件
+                            // 出售
                             return true;
                         case R.id.popupMenu_modify:
                             context.showPopUpModifyStock(num);
-                            // 处理选项2的点击事件
+                            // 修改
                             return true;
                         case R.id.popupMenu_stockDividend:
                             context.showPopupDividend(num);
-                            // 处理选项2的点击事件
+                            // 分红
                             return true;
                         case R.id.popupMenu_delete:
                             context.delStock(Integer.toString(num+1));
-                            // 处理选项2的点击事件
+                            // 删除
                             return true;
                         default:
                             return false;
