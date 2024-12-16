@@ -16,6 +16,11 @@
            android:id="@+id/popupMenu_stockDividend"
            android:title="分红" />
        <item
+           android:id="@+id/popupMenu_aa"
+           android:title=" "
+           android:layout_width="match_parent"
+           android:layout_height="5dp"/>
+       <item
            android:id="@+id/popupMenu_delete"
            android:title="删除" />
 
