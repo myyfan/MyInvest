@@ -125,12 +125,12 @@ public class SoldStocks extends ScrollView {
                         case R.id.popupSoldedMenu_re_buy:
 
                             showPopupRebuyFormSoldedStocks(num);
-                            // 处理选项1的点击事件
+                            // 复购
                             return true;
                         case R.id.popupSoldedMenu_modify:
                             showPopupModifySoldedStock(num);
                             //   context.showPopUpSaleStock(num);
-                            // 处理选项2的点击事件
+                            // 修改
                             return true;
                         case R.id.popupSoldedMenu_delete:
                             context.gained -= context.soldStockList.get(num).earn;
@@ -138,7 +138,7 @@ public class SoldStocks extends ScrollView {
                             context.soldStocks.updateTableView();
                             context.saveSoldData();
                             //    context.showPopUpModifyStock(num);
-                            // 处理选项2的点击事件
+                            // 删除
                             return true;
 
                         default:
