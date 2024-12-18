@@ -268,16 +268,20 @@ public class MainActivity extends AppCompatActivity {
         layoutParams.setMargins(10, 30, 10, 30);
         linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        EditText name = new EditText(this);
+        EditText code = new EditText(this);
         EditText money = new EditText(this);
-        name.setHint("输入分红的股票");
-        name.setText(holdingStocksList.get(num).code);
+        code.setHint("输入分红的股票");
+        if(num>-1){
+            code.setText(holdingStocksList.get(num).code);
+
+        }
+
         money.setHint("输入分红金额");
 
         Button ok = new Button(this);
         ok.setText("确定");
 
-        linearLayout.addView(name, layoutParams);
+        linearLayout.addView(code, layoutParams);
         linearLayout.addView(money, layoutParams);
         linearLayout.addView(ok, layoutParams);
         showPopupWindows(linearLayout);
@@ -289,8 +293,9 @@ public class MainActivity extends AppCompatActivity {
                 Stock st = new Stock();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");//卖出日期
 
-                st.name = "分红";
-                st.code = name.getText().toString();
+                st.name = holdingStocksList.get(num).name;
+                st.code = code.getText().toString();
+                st.price="分红";
                 st.soldDate = dateFormat.format(new Date());
                 st.earn = Double.parseDouble(money.getText().toString());
                 soldStockList.add(st);
