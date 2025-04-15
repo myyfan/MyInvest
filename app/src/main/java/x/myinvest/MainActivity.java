@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
                 Stock st = new Stock();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");//卖出日期
 
-                st.name = holdingStocksList.get(num).name;
+              //  st.name = holdingStocksList.get(num).name;
                 st.code = code.getText().toString();
                 st.price="分红";
                 st.soldDate = dateFormat.format(new Date());
@@ -308,6 +308,8 @@ public class MainActivity extends AppCompatActivity {
                 soldStocks.updateTableView();
               //  saveHoldingData();
                 saveSoldData();
+
+                Toast.makeText(context.getApplicationContext(), "添加分红成功", Toast.LENGTH_LONG).show();
 
             }
         });
