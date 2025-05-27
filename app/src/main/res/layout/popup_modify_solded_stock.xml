@@ -24,6 +24,14 @@
         android:layout_margin="0dp">
     </EditText>
     <EditText
+        android:id="@+id/layout_modifySoldedStock_editText_stockName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:hint="输入要修改的股票名称"
+        android:layout_margin="0dp">
+    </EditText>
+    <EditText
         android:id="@+id/layout_modifySoldedStock_editText_stockPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
