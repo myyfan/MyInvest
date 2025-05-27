@@ -3,7 +3,7 @@ package x.myinvest;
 import java.nio.charset.CoderMalfunctionError;
 
 public class Stock {
-     String name = "";
+    public String name = "";
      public String code;
      public String price="";
      public String number="";

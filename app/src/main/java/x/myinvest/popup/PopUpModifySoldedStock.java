@@ -1,8 +1,5 @@
 package x.myinvest.popup;
 
-import android.content.Context;
-import android.graphics.Rect;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import x.myinvest.HoldingStock;
 import x.myinvest.MainActivity;
 import x.myinvest.R;
 import x.myinvest.SoldStocks;
@@ -22,7 +18,8 @@ import x.myinvest.Stock;
 
 public class PopUpModifySoldedStock extends LinearLayout {
     EditText row;
-    EditText code;
+    EditText stockCode;
+    EditText stockName;
     EditText price;
     EditText soldPrice;
     EditText number;
@@ -57,7 +54,8 @@ public class PopUpModifySoldedStock extends LinearLayout {
         this.context=context;
         LayoutInflater.from(context).inflate(R.layout.popup_modify_solded_stock, this);
         row = (EditText) findViewById(R.id.layout_modifySoldedStock_editText_holdingRow);
-        code = (EditText) findViewById(R.id.layout_modifySoldedStock_editText_stockCode);
+        stockName = (EditText) findViewById(R.id.layout_modifySoldedStock_editText_stockName);
+        stockCode = (EditText) findViewById(R.id.layout_modifySoldedStock_editText_stockCode);
         price = (EditText) findViewById(R.id.layout_modifySoldedStock_editText_stockPrice);
         soldPrice =(EditText) findViewById(R.id.layout_modifySoldedStock_editText_stocksoldPrice);
         number = (EditText) findViewById(R.id.layout_modifySoldedStock_editText_stockNumber);
@@ -65,9 +63,10 @@ public class PopUpModifySoldedStock extends LinearLayout {
         soldDate =(EditText) findViewById(R.id.layout_modifySoldedStock_editText_soldDate);
         ok=((Button)findViewById(R.id.layout_modifySoldedStock_button_ok));
 
-        if(num>-1) {
+        if(num>-1) {//等于-1表示从菜单处调用，非1表示长按行调用，给弹出菜单填充数据
             row.setText(Integer.toString(num + 1));
-            code.setText(soldStockList.get(num).code);
+            stockCode.setText(soldStockList.get(num).code);
+            stockName.setText(soldStockList.get(num).name);
             price.setText(soldStockList.get(num).price);
             number.setText(soldStockList.get(num).number);
             buyDate.setText(soldStockList.get(num).buyDate);
@@ -84,7 +83,8 @@ public class PopUpModifySoldedStock extends LinearLayout {
 
                     if(!a.isEmpty() && Integer.parseInt(a) <= soldStockList.size()) {
                         stockListNumber = Integer.parseInt(a)-1;
-                        code.setText(soldStockList.get(stockListNumber).code);
+                        stockCode.setText(soldStockList.get(stockListNumber).code);
+                        stockName.setText(soldStockList.get(stockListNumber).name);
                         price.setText(soldStockList.get(stockListNumber).price);
                         soldPrice.setText(soldStockList.get(stockListNumber).nowPrice);
                         number.setText(soldStockList.get(stockListNumber).number);
@@ -104,7 +104,8 @@ public class PopUpModifySoldedStock extends LinearLayout {
             public void onClick(View v) {
                 String a =row.getText().toString();
                 if(!a.isEmpty() && Integer.parseInt(a) <= soldStockList.size()) {
-                    soldStockList.get(stockListNumber).code = code.getText().toString();
+                    soldStockList.get(stockListNumber).code = stockCode.getText().toString();
+                    soldStockList.get(stockListNumber).name = stockName.getText().toString();
                     soldStockList.get(stockListNumber).price = price.getText().toString();
                     soldStockList.get(stockListNumber).nowPrice = soldPrice.getText().toString();
                     soldStockList.get(stockListNumber).number = number.getText().toString();
