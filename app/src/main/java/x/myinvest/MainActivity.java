@@ -40,6 +40,7 @@ import java.util.TimerTask;
 import x.myinvest.popup.PopUpAddStock;
 import x.myinvest.popup.PopUpModifyHoldingStock;
 import x.myinvest.popup.PopUpSaleStock;
+import x.myinvest.popup.PopUpSplitHoldingStock;
 import x.myinvest.popup.PopupChangeGained;
 import x.myinvest.popup.PopupDelStock;
 
@@ -259,6 +260,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    void showPopUpSplitStock(int num){
+        View popUp = new PopUpSplitHoldingStock(this,holdingStocksList,holdingStock,num);
+        //mainFrameLayout.addView(popUp);
+        showPopupWindows(popUp);
+
+    }
+
     void showPopupDividend(int num) {
         //显示弹出窗口
         LinearLayout linearLayout = new LinearLayout(this);
@@ -269,11 +277,12 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
 
         EditText code = new EditText(this);
+        EditText name = new EditText(this);
         EditText money = new EditText(this);
         code.setHint("输入分红的股票");
         if(num>-1){
             code.setText(holdingStocksList.get(num).code);
-
+            name.setText(holdingStocksList.get(num).name);
         }
 
         money.setHint("输入分红金额");
@@ -282,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
         ok.setText("确定");
 
         linearLayout.addView(code, layoutParams);
+        linearLayout.addView(name, layoutParams);
         linearLayout.addView(money, layoutParams);
         linearLayout.addView(ok, layoutParams);
         showPopupWindows(linearLayout);
@@ -295,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
 
               //  st.name = holdingStocksList.get(num).name;
                 st.code = code.getText().toString();
+                st.name = name.getText().toString();
                 st.price="分红";
                 st.soldDate = dateFormat.format(new Date());
                 st.earn = Double.parseDouble(money.getText().toString());

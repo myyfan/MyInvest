@@ -109,4 +109,5 @@ public class PopUpModifyHoldingStock extends LinearLayout {
             }
         });
     }
+
 }

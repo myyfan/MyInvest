@@ -13,6 +13,9 @@
            android:id="@+id/popupMenu_modify"
            android:title="更改" />
        <item
+           android:id="@+id/popupMenu_split"
+           android:title="拆分" />
+       <item
            android:id="@+id/popupMenu_stockDividend"
            android:title="分红" />
        <item
