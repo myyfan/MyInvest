@@ -825,6 +825,9 @@ public class MainActivity extends AppCompatActivity {
             //  //   rase = rase + (float) d / 30;
             //  //   double shangZhengShouYiLv = (1 + shangZhengJingZiChanShouYiLv * rase / 12) / (f1 * (1 + Double.parseDouble(shangZheng.increase) / 100));
             //     //不考虑时间因素
+    //        float f1 = 0;
+     //       if (dongTaiShiYingLv[2] != null )
+      //          f1=Float.parseFloat(dongTaiShiYingLv[2]);
             float f1=Float.parseFloat(dongTaiShiYingLv[2]);
             //    f1=(float)11.5;
             double shangZhengShouYiLv = 1/(f1*(1+Double.parseDouble(shangZhengZhiShu.increase)/100));

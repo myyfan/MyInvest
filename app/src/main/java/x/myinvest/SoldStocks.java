@@ -132,6 +132,17 @@ public class SoldStocks extends ScrollView {
                             //   context.showPopUpSaleStock(num);
                             // 修改
                             return true;
+                        case R.id.popupSoldedMenu_cancel:
+                            Stock stock2 = new Stock();
+                            stock2.code = context.soldStockList.get(num).code;
+                            stock2.number = context.soldStockList.get(num).number;
+                            stock2.price = context.soldStockList.get(num).price;
+                            stock2.buyDate = context.soldStockList.get(num).buyDate;
+                            context.holdingStocksList.add(stock2);
+                            context.soldStockList.remove(num);
+                            context.holdingStock.updateTabView(context);
+                            context.soldStocks.updateTableView();
+                            return true;
                         case R.id.popupSoldedMenu_delete:
                             context.gained -= context.soldStockList.get(num).earn;
                             context.soldStockList.remove(num);
