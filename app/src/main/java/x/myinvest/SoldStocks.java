@@ -139,7 +139,9 @@ public class SoldStocks extends ScrollView {
                             stock2.price = context.soldStockList.get(num).price;
                             stock2.buyDate = context.soldStockList.get(num).buyDate;
                             context.holdingStocksList.add(stock2);
+                            context.saveHoldingData();
                             context.soldStockList.remove(num);
+                            context.saveSoldData();
                             context.holdingStock.updateTabView(context);
                             context.soldStocks.updateTableView();
                             return true;
