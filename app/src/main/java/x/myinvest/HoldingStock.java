@@ -125,6 +125,10 @@ public class HoldingStock extends ScrollView {
                             context.showPopUpModifyStock(num);
                             // 修改
                             return true;
+                        case R.id.popupMenu_split:
+                            context.showPopUpSplitStock(num);
+                            // 拆分
+                            return true;
                         case R.id.popupMenu_stockDividend:
                             context.showPopupDividend(num);
                             // 分红
