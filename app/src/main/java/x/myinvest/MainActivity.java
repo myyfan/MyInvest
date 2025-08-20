@@ -279,12 +279,15 @@ public class MainActivity extends AppCompatActivity {
         EditText code = new EditText(this);
         EditText name = new EditText(this);
         EditText money = new EditText(this);
+        EditText date = new EditText(this);
         code.setHint("输入分红的股票");
+        name.setHint("输入分红的股票名称");
         if(num>-1){
             code.setText(holdingStocksList.get(num).code);
             name.setText(holdingStocksList.get(num).name);
         }
-
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");//卖出日期
+        date.setText( dateFormat.format(new Date()));
         money.setHint("输入分红金额");
 
         Button ok = new Button(this);
@@ -293,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(code, layoutParams);
         linearLayout.addView(name, layoutParams);
         linearLayout.addView(money, layoutParams);
+        linearLayout.addView(date, layoutParams);
         linearLayout.addView(ok, layoutParams);
         showPopupWindows(linearLayout);
         ok.setOnClickListener(new View.OnClickListener() {
@@ -301,13 +305,13 @@ public class MainActivity extends AppCompatActivity {
 
 
                 Stock st = new Stock();
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");//卖出日期
+              //  SimpleDateFormat dateFormat = new SimpleDateFormat("yy/M/d");//卖出日期
 
               //  st.name = holdingStocksList.get(num).name;
                 st.code = code.getText().toString();
                 st.name = name.getText().toString();
                 st.price="分红";
-                st.soldDate = dateFormat.format(new Date());
+                st.soldDate = date.getText().toString();
                 st.earn = Double.parseDouble(money.getText().toString());
                 soldStockList.add(st);
 
