@@ -712,7 +712,7 @@ public class MainActivity extends AppCompatActivity {
         //组建查询队列
         StringBuilder builder = new StringBuilder();
         //  String requestStockStr="";
-        builder.append("http://qt.gtimg.cn/q=");
+        builder.append("https://qt.gtimg.cn/q=");
         for (int i = 0; i < holdingStocksList.size(); i++) {
             Stock st = holdingStocksList.get(i);
             if (st.code.startsWith("0")) builder.append("s_sz" + st.code + ",");
@@ -729,7 +729,7 @@ public class MainActivity extends AppCompatActivity {
         //网络查询及接收分析数据
         try {
             URL url = new URL(builder.toString());
-            //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+            //URL url=new URL("https://qt.gtimg.cn/q="+requestStockStr);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
@@ -864,7 +864,7 @@ public class MainActivity extends AppCompatActivity {
 
             //in.close();
             //         url=new URL("https://forexdata.wallstreetcn.com/real?en_prod_code=CHINA10YEAR&fields=prod_name,last_px,px_change,px_change_rate,high_px,low_px,open_px,preclose_px,business_amount,business_balance,market_value,turnover_ratio,dyn_pb_rate,amplitude,pe_rate,bps,hq_type_code,trade_status,bid_grp,offer_grp,business_amount_in,business_amount_out,circulation_value,securities_type,update_time,price_precision,week_52_high,week_52_low");
-            //         //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+            //         //URL url=new URL("https://qt.gtimg.cn/q="+requestStockStr);
             //         HttpsURLConnection conn=(HttpsURLConnection) url.openConnection();
             //         conn.setRequestMethod("GET");
             //         conn.setRequestProperty("Referer","https://wallstreetcn.com/markets/bonds/CHINA10YEAR");
@@ -903,7 +903,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(() -> {
             try {//从中证指数公司获取全市场滚动市盈率
                 URL url = new URL("https://www.csindex.com.cn/csindex-home/dataServer/queryCsiPeIndustryBytradeDate?tradeDate=&classType=3");
-                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                //URL url=new URL("https://qt.gtimg.cn/q="+requestStockStr);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.connect();
@@ -985,8 +985,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                 //从中证指数公司获取市场平均动态市盈率
-                url = new URL("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zy2");
-                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                url = new URL("https://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zy2");
+                //URL url=new URL("https://qt.gtimg.cn/q="+requestStockStr);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.connect();
@@ -1021,8 +1021,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 //从中证指数公司获取市场平均市净率
-                url = new URL("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zy3");
-                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                url = new URL("https://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zy3");
+                //URL url=new URL("https://qt.gtimg.cn/q="+requestStockStr);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.connect();
@@ -1060,8 +1060,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                 //从中证指数公司获取市场平均股息率
-                url = new URL("http://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zy4");
-                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                url = new URL("https://www.csindex.com.cn/zh-CN/downloads/industry-price-earnings-ratio?type=zy4");
+                //URL url=new URL("https://qt.gtimg.cn/q="+requestStockStr);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.connect();
@@ -1099,7 +1099,7 @@ public class MainActivity extends AppCompatActivity {
  /*               if (true || jingTaiShiYingLv[0] == null) {
                     //从乐估乐股获取静态市盈率
                     url = new URL("https://www.legulegu.com/stockdata/market_pe");
-                    //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                    //URL url=new URL("https://qt.gtimg.cn/q="+requestStockStr);
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
                     connection.connect();
@@ -1131,7 +1131,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     //从乐估乐股获取市净率
                     url = new URL("https://www.legulegu.com/stockdata/market_pb");
-                    //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                    //URL url=new URL("https://qt.gtimg.cn/q="+requestStockStr);
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
                     connection.connect();
@@ -1165,7 +1165,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //从乐估乐股获取动态市盈率
                     url = new URL("https://legulegu.com/stockdata/weight-pe?marketId=000001.SH");
-                    //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                    //URL url=new URL("https://qt.gtimg.cn/q="+requestStockStr);
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
                     connection.connect();
@@ -1226,8 +1226,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 //从上证公司获取上证市场市盈率
-                url = new URL("http://www.sse.com.cn/market/stockdata/statistic/");
-                //URL url=new URL("http://qt.gtimg.cn/q="+requestStockStr);
+                url = new URL("https://www.sse.com.cn/market/stockdata/statistic/");
+                //URL url=new URL("https://qt.gtimg.cn/q="+requestStockStr);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.connect();

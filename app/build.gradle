@@ -5,11 +5,10 @@ def name = "MyInvest"
 
 android {
     compileSdkVersion 34
-    buildToolsVersion "28.0.3"
     defaultConfig {
         applicationId "x.myinvest"
         minSdkVersion 15
-        targetSdkVersion 28
+        targetSdkVersion 34
         versionCode gitCommits
         versionName "1."+gitCommits
        // testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
