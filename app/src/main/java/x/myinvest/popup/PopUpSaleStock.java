@@ -119,8 +119,8 @@ public class PopUpSaleStock extends LinearLayout {
                             }
 
                             context.gained += st.earn;
-                            context.holdingStock.updateTabView(context);
-                            context.soldStocks.updateTableView();
+                            context.holdingStockView.updateTabView(context);
+                            context.soldStocksView.updateTableView(context);
                             context.saveHoldingData();
                             context.saveSoldData();
 

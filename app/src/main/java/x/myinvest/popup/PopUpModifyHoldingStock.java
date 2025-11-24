@@ -1,8 +1,6 @@
 package x.myinvest.popup;
 
 import android.content.Context;
-import android.graphics.Rect;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import x.myinvest.HoldingStock;
+import x.myinvest.HoldingStockView;
 import x.myinvest.MainActivity;
 import x.myinvest.R;
 import x.myinvest.Stock;
@@ -49,7 +47,7 @@ public class PopUpModifyHoldingStock extends LinearLayout {
         }
     }
 
-    public PopUpModifyHoldingStock(Context context, ArrayList<Stock> holdingStocksList, HoldingStock holdingStock,int num){
+    public PopUpModifyHoldingStock(Context context, ArrayList<Stock> holdingStocksList, HoldingStockView holdingStock, int num){
         super(context);
         this.context=context;
         LayoutInflater.from(context).inflate(R.layout.popup_modify_holding_stock, this);

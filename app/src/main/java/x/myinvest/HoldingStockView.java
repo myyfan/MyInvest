@@ -1,8 +1,6 @@
 package x.myinvest;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,9 +13,9 @@ import android.widget.TextView;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class HoldingStock extends ScrollView {
-    Activity context;
-    private ArrayList<Stock> stocksList;
+public class HoldingStockView extends ScrollView {
+    MainActivity context;
+   // private ArrayList<Stock> stocksList;
     private TableLayout tableLayout;
     private TextView[][] textViewHandler;
     public TableRow[] tableRowList;
@@ -25,15 +23,14 @@ public class HoldingStock extends ScrollView {
 
 
 
-    HoldingStock(MainActivity context,ArrayList<Stock> stockList) {
-        super(context);
-    //    this.context=(MainActivity)context;
-        this.stocksList=stockList;
-        context.getLayoutInflater().inflate(R.layout.view_holding_stock, this);
+    HoldingStockView(MainActivity mainActivity) {
+        super(mainActivity);
+        this.context=mainActivity;
+        mainActivity.getLayoutInflater().inflate(R.layout.view_holding_stock, this);
         //LayoutInflater.from(context).inflate(R.layout.view_holding_stock, this);
         //tableLayout = new TableLayout(context);
         tableLayout=findViewById(R.id.table_layout_invest);
-        updateTabView(context);
+        updateTabView(mainActivity);
       //  ((Activity) context).registerForContextMenu(tableLayout);
         //addView(tableLayout);
         //tableLayout = (TableLayout)findViewById(R.id.table_layout_invest);
@@ -41,7 +38,34 @@ public class HoldingStock extends ScrollView {
 
     }
 
+    public void updateTabView(MainActivity context){
 
+        textViewHandler = new TextView[ context.holdingStocksList.size() ][6];
+        tableRowList = new TableRow[ context.holdingStocksList.size() ];
+        //textView.setText("浮盈："+String.format("%.0f", gain)+" 实现盈利："+String.format("%.0f",gained)+" 总盈利："+String.format("%.0f",gain+gained));
+        tableLayout.removeAllViews();
+        tableLayout.setStretchAllColumns(true);
+        //添加标题
+        TableRow tableRow=new TableRow(context);
+
+        TextView textView=new TextView(context); textView.setText("股票\n代码");  tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("现价\n涨幅");  tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("购价\n数量");  tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("成本\n现值");  tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("盈亏\n比例");  tableRow.addView(textView);
+        textView=new TextView(context);          textView.setText("购入日\n卖出日");   tableRow.addView(textView);
+
+        tableLayout.addView(tableRow);
+        //tableLayout.setDividerDrawable(getResources().getDrawable(R.drawable.bonus_list_item_divider));
+        int c = context.holdingStocksList.size();
+        c=c;
+        for(int i=0;i<context.holdingStocksList.size();i++){
+            Stock st = context.holdingStocksList.get(i);
+            addTabRow(context,st,i);
+        }
+        refreshText();
+
+    }
 
     protected void addTabRow(MainActivity context,Stock stock,int num){
         //protected void addTabRow(String stock,String nowPrice,String price,String number){
@@ -151,9 +175,9 @@ public class HoldingStock extends ScrollView {
     public void refreshText() {
         //
 
-        for (int i = 0; i < stocksList.size(); i++) {
+        for (int i = 0; i < context.holdingStocksList.size(); i++) {
             //  DecimalFormat df = new DecimalFormat("#.00");
-            Stock stock = stocksList.get(i);
+            Stock stock = context.holdingStocksList.get(i);
             //股票名称/代码
             textViewHandler[i][0].setText((i+1)+"."+stock.name+"\n"+stock.code);
             //股票现价/涨幅
@@ -180,32 +204,7 @@ public class HoldingStock extends ScrollView {
         }
     }
 
-    public void updateTabView(MainActivity context){
 
-        textViewHandler = new TextView[ stocksList.size() ][6];
-        tableRowList = new TableRow[ stocksList.size() ];
-        //textView.setText("浮盈："+String.format("%.0f", gain)+" 实现盈利："+String.format("%.0f",gained)+" 总盈利："+String.format("%.0f",gain+gained));
-        tableLayout.removeAllViews();
-        tableLayout.setStretchAllColumns(true);
-        //添加标题
-        TableRow tableRow=new TableRow(context);
-
-        TextView textView=new TextView(context); textView.setText("股票\n代码"); tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("现价\n涨幅");      tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("购价\n数量");  tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("成本\n现值");  tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("盈亏\n比例");       tableRow.addView(textView);
-        textView=new TextView(context);          textView.setText("购入日\n卖出日");   tableRow.addView(textView);
-
-        tableLayout.addView(tableRow);
-        //tableLayout.setDividerDrawable(getResources().getDrawable(R.drawable.bonus_list_item_divider));
-        for(int i=0;i<stocksList.size();i++){
-            Stock st = stocksList.get(i);
-            addTabRow(context,st,i);
-        }
-        refreshText();
-
-    }
 
 
 }

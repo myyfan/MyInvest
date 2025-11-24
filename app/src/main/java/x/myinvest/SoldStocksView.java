@@ -11,27 +11,26 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import x.myinvest.popup.PopUpModifySoldedStock;
 import x.myinvest.popup.PopupRebuyFromSoldedStocks;
 
-public class SoldStocks extends ScrollView {
+public class SoldStocksView extends ScrollView {
     private MainActivity context;
     private TableLayout mTableLayout;
-    private ArrayList<Stock> soldStocksList;
-    public SoldStocks(MainActivity context, ArrayList<Stock> soldStocksList) {
-        super(context);
-        this.context=context;
-        this.soldStocksList=soldStocksList;
-        LayoutInflater.from(context).inflate(R.layout.view_saled_stock, this);
+  //  private ArrayList<Stock> soldStocksList;
+    public SoldStocksView(MainActivity mainActivity) {
+        super(mainActivity);
+        this.context=mainActivity;
+      //  this.soldStocksList=mainActivity.soldStockList;
+        LayoutInflater.from(mainActivity).inflate(R.layout.view_saled_stock, this);
         mTableLayout = (TableLayout) findViewById(R.id.view_saledStock_tableLayout);
         mTableLayout.setStretchAllColumns(true);
-        updateTableView();
+        updateTableView(mainActivity);
     }
 
-    public void updateTableView() {
+    public void updateTableView(MainActivity context) {
         mTableLayout.removeAllViews();
         TableRow tableRow = new TableRow(context);
         TextView textView = new TextView(context);  textView.setText("股票\n"+"代码");  tableRow.addView(textView);
@@ -40,7 +39,7 @@ public class SoldStocks extends ScrollView {
                  textView = new TextView(context);  textView.setText("盈利\n"+"百分比");tableRow.addView(textView);
                  textView = new TextView(context);  textView.setText("购买日期\n"+"售出日期");tableRow.addView(textView);
         mTableLayout.addView(tableRow);
-       int listLenth=soldStocksList.size();
+       int listLenth= context.soldStockList.size();
      /*    for (int i = listLenth-1; i >=((listLenth-1-100)>=0?(listLenth-1-100):0); i--) {
             Stock stock = soldStocksList.get(i);
             tableRow = new TableRow(context);
@@ -91,7 +90,7 @@ public class SoldStocks extends ScrollView {
             mTableLayout.addView(tableRow);
         }*/
         for (int i = listLenth-1; i >=((listLenth-1-100)>=0?(listLenth-1-100):0); i--) {
-            addTabRow(soldStocksList.get(i),i);
+            addTabRow(context.soldStockList.get(i),i);
         }
 
     }
@@ -142,13 +141,13 @@ public class SoldStocks extends ScrollView {
                             context.saveHoldingData();
                             context.soldStockList.remove(num);
                             context.saveSoldData();
-                            context.holdingStock.updateTabView(context);
-                            context.soldStocks.updateTableView();
+                            context.holdingStockView.updateTabView(context);
+                            context.soldStocksView.updateTableView(context);
                             return true;
                         case R.id.popupSoldedMenu_delete:
                             context.gained -= context.soldStockList.get(num).earn;
                             context.soldStockList.remove(num);
-                            context.soldStocks.updateTableView();
+                            context.soldStocksView.updateTableView(context);
                             context.saveSoldData();
                             //    context.showPopUpModifyStock(num);
                             // 删除
@@ -166,11 +165,11 @@ public class SoldStocks extends ScrollView {
 
     };
     public void showPopupRebuyFormSoldedStocks(int num) {
-        View pop = new PopupRebuyFromSoldedStocks(context,soldStocksList,num);
+        View pop = new PopupRebuyFromSoldedStocks(context,context.soldStockList,num);
         context.showPopupWindows(pop);
     }
     public void showPopupModifySoldedStock(int num) {
-        View pop = new PopUpModifySoldedStock(context,soldStocksList, context.soldStocks, num);
+        View pop = new PopUpModifySoldedStock(context,context.soldStockList, context.soldStocksView, num);
         context.showPopupWindows(pop);
     }
 }

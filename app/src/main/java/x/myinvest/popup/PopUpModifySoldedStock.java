@@ -13,7 +13,7 @@ import java.util.TimerTask;
 
 import x.myinvest.MainActivity;
 import x.myinvest.R;
-import x.myinvest.SoldStocks;
+import x.myinvest.SoldStocksView;
 import x.myinvest.Stock;
 
 public class PopUpModifySoldedStock extends LinearLayout {
@@ -49,7 +49,7 @@ public class PopUpModifySoldedStock extends LinearLayout {
         }
     }
 
-    public PopUpModifySoldedStock(MainActivity context, ArrayList<Stock> soldStockList, SoldStocks soldStocks , int num){
+    public PopUpModifySoldedStock(MainActivity context, ArrayList<Stock> soldStockList, SoldStocksView soldStocks , int num){
         super(context);
         this.context=context;
         LayoutInflater.from(context).inflate(R.layout.popup_modify_solded_stock, this);
@@ -103,8 +103,8 @@ public class PopUpModifySoldedStock extends LinearLayout {
             @Override
             public void onClick(View v) {
                 String a =row.getText().toString();
-                stockListNumber = Integer.parseInt(a)-1;
                 if(!a.isEmpty() && Integer.parseInt(a) <= soldStockList.size()) {
+                    stockListNumber = Integer.parseInt(a)-1;
                     soldStockList.get(stockListNumber).code = stockCode.getText().toString();
                     soldStockList.get(stockListNumber).name = stockName.getText().toString();
                     soldStockList.get(stockListNumber).price = price.getText().toString();
@@ -113,7 +113,7 @@ public class PopUpModifySoldedStock extends LinearLayout {
                     soldStockList.get(stockListNumber).buyDate = buyDate.getText().toString();
                     soldStockList.get(stockListNumber).soldDate = soldDate.getText().toString();
                     ((MainActivity) context).saveHoldingData();
-                    soldStocks.updateTableView();
+                    soldStocks.updateTableView(context);
                     context.saveSoldData();
                     Toast.makeText(context, "修改成功", Toast.LENGTH_LONG).show();
                 }

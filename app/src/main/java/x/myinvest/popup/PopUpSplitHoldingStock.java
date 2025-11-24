@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import x.myinvest.HoldingStock;
+import x.myinvest.HoldingStockView;
 import x.myinvest.MainActivity;
 import x.myinvest.R;
 import x.myinvest.Stock;
@@ -49,7 +49,7 @@ public class PopUpSplitHoldingStock extends LinearLayout {
         }
     }
 
-    public PopUpSplitHoldingStock(MainActivity context, ArrayList<Stock> holdingStocksList, HoldingStock holdingStock, int num){
+    public PopUpSplitHoldingStock(MainActivity context, ArrayList<Stock> holdingStocksList, HoldingStockView holdingStock, int num){
         super(context);
         this.context=context;
         LayoutInflater.from(context).inflate(R.layout.popup_split_holding_stock, this);
