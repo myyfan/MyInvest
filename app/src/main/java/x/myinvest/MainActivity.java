@@ -40,6 +40,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -49,6 +50,7 @@ import x.myinvest.popup.PopUpSaleStock;
 import x.myinvest.popup.PopUpSplitHoldingStock;
 import x.myinvest.popup.PopupChangeGained;
 import x.myinvest.popup.PopupDelStock;
+import x.myinvest.popup.PopupTotalHolding;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_OPEN_DOCUMENT = 1001;//定义访问外部文件的代码
@@ -153,6 +155,8 @@ public class MainActivity extends AppCompatActivity {
 
         //加载保存的数据到holdingStocksList和soldStockList
         loadSavedData();
+        //因已在存在的文件不会被覆盖更新，因此暂在此设置运行时自动备份数据
+    //    exportData();
         //新建两个股票的视图类
         holdingStockView = new HoldingStockView(this);
         //holdingStock.updateTabView();
@@ -189,6 +193,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+            case R.id.mainMenu_totalHolding:
+                showPopupTotalHoling();
+                break;
             case R.id.mainMenu_changGained:
                 showPopupChangeGaiend();
                 break;
@@ -570,6 +577,14 @@ public class MainActivity extends AppCompatActivity {
 
 
         showPopupWindows(tableLayout);
+
+    }
+
+    void showPopupTotalHoling() {
+        View popUp = new PopupTotalHolding(this);
+        //mainFrameLayout.addView(popUp);
+        showPopupWindows(popUp);
+
 
     }
 

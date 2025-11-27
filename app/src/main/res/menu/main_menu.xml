@@ -3,6 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:title="查看持仓情况"
+        android:id="@+id/mainMenu_totalHolding" />
+    <item
         android:title="调整历史盈亏"
         android:id="@+id/mainMenu_changGained" />
     <item
