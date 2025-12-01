@@ -3,11 +3,9 @@ package x.myinvest.popup;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,18 +45,16 @@ public class PopupTotalHolding extends LinearLayout {
 
         textViewTotalHolding.setText(stringBuilder.toString());
 
+        //直接复制到剪切板
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("StockSummary", textViewTotalHolding.getText());
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(context, "已复制持仓汇总到剪贴板", Toast.LENGTH_SHORT).show();
+
         bnOk = (Button) findViewById(R.id.layout_changeGained_button_copyBoard);
-
-
-
         bnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 复制到剪贴板
-                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("StockSummary", textViewTotalHolding.getText());
-                clipboard.setPrimaryClip(clip);
-
 
                     try {
                         // 微信的包名

@@ -11,8 +11,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import x.myinvest.popup.PopUpModifySoldedStock;
 import x.myinvest.popup.PopupRebuyFromSoldedStocks;
 

@@ -1,6 +1,5 @@
 package x.myinvest;
 
-import java.nio.charset.CoderMalfunctionError;
 
 public class Stock {
     public String name = "";

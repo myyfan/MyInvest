@@ -40,7 +40,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -654,6 +653,7 @@ public class MainActivity extends AppCompatActivity {
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(a.getBytes(StandardCharsets.UTF_8));
             fos.close();
+            Toast.makeText(context, "已导出", Toast.LENGTH_SHORT).show();
             Log.d("Write", "Success: " + file.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
@@ -745,6 +745,7 @@ public class MainActivity extends AppCompatActivity {
             //更新视图类
             holdingStockView.updateTabView(context);
             soldStocksView.updateTableView(context);
+            Toast.makeText(context, "已导入", Toast.LENGTH_SHORT).show();
             //重启定时器
             ((MainActivity)context).timer = new Timer();
             ((MainActivity)context).timerTask=new TimerTask() {

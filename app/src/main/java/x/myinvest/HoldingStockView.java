@@ -1,6 +1,5 @@
 package x.myinvest;
 
-import android.app.Activity;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 public class HoldingStockView extends ScrollView {
     MainActivity context;
