@@ -195,6 +195,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.mainMenu_totalHolding:
                 showPopupTotalHoling();
                 break;
+            case R.id.mainMenu_dianShuCangWeiJiDieFu:
+                showPopupJiSuanDianShuCangWeiJiDieFu();
+                break;
             case R.id.mainMenu_changGained:
                 showPopupChangeGaiend();
                 break;
@@ -237,9 +240,6 @@ public class MainActivity extends AppCompatActivity {
                  break;
             case R.id.mainMenu_dongTaiJinE:
                 showPopupSetDongTaiJinE();
-                break;
-            case R.id.mainMenu_dianShuCangWeiJiDieFu:
-                showPopupJiSuanDianShuCangWeiJiDieFu();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -516,7 +516,7 @@ public class MainActivity extends AppCompatActivity {
         double f1=Float.parseFloat(dongTaiShiYingLv[2])*(1+Double.parseDouble(shangZhengZhiShu.increase)/100); //计算当前市盈率
 
         double zuiDiShouYiLv=0.017*tenYears;
-        double zuiDaShouyiLv=0.029*tenYears;
+        double zuiDaShouyiLv=0.03*tenYears;
         Double yuCeDianWei;
         Double yuJiZhangDie;
         Double yuJiPB;
@@ -609,7 +609,7 @@ public class MainActivity extends AppCompatActivity {
     }
     protected void exportData() {
         StringBuilder stringBuilder = new StringBuilder("");
-        stringBuilder.append(haveMoney+","+tenYears+","+Double.parseDouble(perfHoldingStocks.getString("haveGained", "0"))+";");
+        stringBuilder.append(haveMoney+","+tenYears+","+Double.parseDouble(perfHoldingStocks.getString("haveGained", "0"))+ ","+dongTaiJinE+";");
 
         for (int i = 0; i < holdingStocksList.size(); i++) {
             Stock st = holdingStocksList.get(i);
@@ -694,11 +694,13 @@ public class MainActivity extends AppCompatActivity {
             haveMoney = Float.parseFloat(c[0]);
             tenYears = c[1];
             gained = Double.parseDouble(c[2]);
+            dongTaiJinE = Double.parseDouble(c[3]);//获取收益率
 
             //保存基础数据
             perfHoldingStocks.edit().putFloat("haveMoney", haveMoney).apply();
             perfHoldingStocks.edit().putString("tenYears", tenYears).apply();
             perfHoldingStocks.edit().putString("haveGained", gained + "").apply();
+            perfHoldingStocks.edit().putString("dongTaiJinE", dongTaiJinE.toString()).apply();
 
             //导入持有股票
             ArrayList<Stock> holdingStocks = new ArrayList<>();
@@ -742,19 +744,21 @@ public class MainActivity extends AppCompatActivity {
             //保存股票数据
             saveHoldingData();
             saveSoldData();
+
+            recreate();
             //更新视图类
-            holdingStockView.updateTabView(context);
-            soldStocksView.updateTableView(context);
-            Toast.makeText(context, "已导入", Toast.LENGTH_SHORT).show();
-            //重启定时器
-            ((MainActivity)context).timer = new Timer();
-            ((MainActivity)context).timerTask=new TimerTask() {
-                @Override
-                public void run() {
-                    ((MainActivity)context).pullNetworkData();
-                }
-            };
-            ((MainActivity)context).timer.schedule(((MainActivity)context).timerTask , 0, 5000);
+    //        holdingStockView.updateTabView(context);
+    //        soldStocksView.updateTableView(context);
+    //        Toast.makeText(context, "已导入", Toast.LENGTH_SHORT).show();
+    //        //重启定时器
+    //        ((MainActivity)context).timer = new Timer();
+    //        ((MainActivity)context).timerTask=new TimerTask() {
+    //            @Override
+    //            public void run() {
+    //                ((MainActivity)context).pullNetworkData();
+    //            }
+    //        };
+    //        ((MainActivity)context).timer.schedule(((MainActivity)context).timerTask , 0, 5000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -801,8 +805,9 @@ public class MainActivity extends AppCompatActivity {
         haveMoney = perfHoldingStocks.getFloat("haveMoney", 0);
         // 加载10年国债收益率
         tenYears = perfHoldingStocks.getString("tenYears", "0");
-        //加载持有的股票代码
+        //加载动态控制仓位的金额
         dongTaiJinE=Double.parseDouble(perfHoldingStocks.getString("dongTaiJinE", "0"));
+        //加载持有的股票代码
         gained=Double.parseDouble(perfHoldingStocks.getString("haveGained", "0"));//历史盈亏数值，注意该值只通过菜单“调整历史盈亏”更改，默认为0
         String[] stockArrayStr = perfHoldingStocks.getString("buyedStockCode", "").split(",");
         if (!stockArrayStr[0].isEmpty()) {
