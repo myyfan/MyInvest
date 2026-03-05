@@ -62,6 +62,7 @@ public class PopUpSplitHoldingStock extends LinearLayout {
 
         if(num>-1) {
             row.setText(Integer.toString(num + 1));
+            stockListNumber = num;
             code.setText(holdingStocksList.get(num).code);
             orginNumber.setText(holdingStocksList.get(num).number);
             secendNumber.setText(holdingStocksList.get(num).number);
@@ -82,7 +83,7 @@ public class PopUpSplitHoldingStock extends LinearLayout {
             @Override
             public void afterTextChanged(Editable editable) {
                 if(!editable.toString().isEmpty()) {
-                    Integer second = Integer.parseInt(holdingStocksList.get(num).number) - Integer.parseInt(editable.toString());
+                    Integer second = Integer.parseInt(holdingStocksList.get(Integer.parseInt(row.getText().toString())-1).number) - Integer.parseInt(editable.toString());
                     secendNumber.setText(second.toString());
                     //secendNumber.setText(Integer.parseInt(orgin) - Integer.parseInt(orginNumber.getText().toString()));
                 }
@@ -101,6 +102,7 @@ public class PopUpSplitHoldingStock extends LinearLayout {
 
                     if(!a.isEmpty() && Integer.parseInt(a) <= holdingStocksList.size()) {
                         stockListNumber = Integer.parseInt(a)-1;
+                        code.setText(holdingStocksList.get(stockListNumber).code);
                         orginNumber.setText(holdingStocksList.get(stockListNumber).number);
                         firstNumber.setText("");
                         secendNumber.setText(holdingStocksList.get(stockListNumber).number);
@@ -127,10 +129,9 @@ public class PopUpSplitHoldingStock extends LinearLayout {
                     Toast.makeText(context, "无需拆分", Toast.LENGTH_LONG).show();
                 }
                 else {
-
+                    holdingStocksList.add(new Stock(holdingStocksList.get(stockListNumber).code,holdingStocksList.get(stockListNumber).price,secendNumber.getText().toString(),holdingStocksList.get(stockListNumber).buyDate));
                     holdingStocksList.get(stockListNumber).number = firstNumber.getText().toString();
 
-                    holdingStocksList.add(new Stock(holdingStocksList.get(stockListNumber).code,holdingStocksList.get(stockListNumber).price,secendNumber.getText().toString(),holdingStocksList.get(stockListNumber).buyDate));
                     ((MainActivity) context).saveHoldingData();
                     holdingStock.updateTabView(context);
                     Toast.makeText(context, "拆分成功", Toast.LENGTH_LONG).show();
