@@ -12,6 +12,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:hint="输入证券代码"
+            android:inputType="numberDecimal"
             android:layout_margin="@dimen/layout_addstock_margin">
         </EditText>
         <EditText
@@ -20,12 +21,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:inputType="numberDecimal"
             android:layout_margin="@dimen/layout_addstock_margin"/>
         <EditText
             android:id="@+id/layout_addstock_editText_stockNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:inputType="numberDecimal"
             android:hint="输入购买数量"
             android:layout_margin="@dimen/layout_addstock_margin"/>
         <Button

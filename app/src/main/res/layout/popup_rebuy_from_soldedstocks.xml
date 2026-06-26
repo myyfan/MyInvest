@@ -11,18 +11,21 @@
         android:id="@+id/popup_Soldedstocks_rebuy_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
         android:hint="代码"/>
 
     <EditText
         android:id="@+id/popup_Soldedstocks_rebuy_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
         android:hint="价格" />
 
     <EditText
         android:id="@+id/popup_Soldedstocks_rebuy_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
         android:hint="数量"/>
     <Button
         android:id="@+id/popup_Soldedstocks_rebuy_ok"

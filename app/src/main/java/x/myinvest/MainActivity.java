@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -297,10 +298,10 @@ public class MainActivity extends AppCompatActivity {
         layoutParams.setMargins(10, 30, 10, 30);
         linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        EditText code = new EditText(this);
+        EditText code = new EditText(this);code.setInputType(InputType.TYPE_CLASS_NUMBER);
         EditText name = new EditText(this);
-        EditText money = new EditText(this);
-        EditText date = new EditText(this);
+        EditText money = new EditText(this);money.setInputType(InputType.TYPE_CLASS_NUMBER);
+        EditText date = new EditText(this);date.setInputType(InputType.TYPE_CLASS_NUMBER);
         code.setHint("输入分红的股票");
         name.setHint("输入分红的股票名称");
         if(num>-1){
@@ -365,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
         layoutParams.setMargins(10, 30, 10, 30);
         linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        EditText row = new EditText(this);
+        EditText row = new EditText(this);row.setInputType(InputType.TYPE_CLASS_NUMBER);
         row.setHint("输入要删除的股票行号");
 
         Button ok = new Button(this);
@@ -397,7 +398,7 @@ public class MainActivity extends AppCompatActivity {
         layoutParams.setMargins(10, 30, 10, 30);
         linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        EditText textHaveMoney = new EditText(this);
+        EditText textHaveMoney = new EditText(this);textHaveMoney.setInputType(InputType.TYPE_CLASS_NUMBER);
         textHaveMoney.setHint(Float.toString(haveMoney));
 
         Button ok = new Button(this);
@@ -424,7 +425,7 @@ public class MainActivity extends AppCompatActivity {
         layoutParams.setMargins(10, 30, 10, 30);
         linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        EditText textHaveMoney = new EditText(this);
+        EditText textHaveMoney = new EditText(this);textHaveMoney.setInputType(InputType.TYPE_CLASS_NUMBER);
         textHaveMoney.setHint(tenYears);
 
         Button ok = new Button(this);
@@ -451,7 +452,7 @@ public class MainActivity extends AppCompatActivity {
         layoutParams.setMargins(10, 30, 10, 30);
         linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        EditText textDongTaiJinE = new EditText(this);
+        EditText textDongTaiJinE = new EditText(this);textDongTaiJinE.setInputType(InputType.TYPE_CLASS_NUMBER);
         textDongTaiJinE.setHint(dongTaiJinE.toString());
 
         Button ok = new Button(this);
@@ -566,7 +567,7 @@ public class MainActivity extends AppCompatActivity {
 
             tableLayout.addView(tableRow, layoutParams);
         }
-    //    EditText textDongTaiJinE = new EditText(this);
+    //    EditText textDongTaiJinE = new EditText(this);textDongTaiJinE.setInputType(InputType.TYPE_CLASS_NUMBER);
     //    textDongTaiJinE.setHint(dongTaiJinE.toString());
 //
     //    Button ok = new Button(this);
