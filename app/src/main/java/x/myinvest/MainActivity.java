@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.method.NumberKeyListener;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -298,12 +299,21 @@ public class MainActivity extends AppCompatActivity {
         layoutParams.setMargins(10, 30, 10, 30);
         linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        EditText code = new EditText(this);code.setInputType(InputType.TYPE_CLASS_NUMBER);
-        EditText name = new EditText(this);
-        EditText money = new EditText(this);money.setInputType(InputType.TYPE_CLASS_NUMBER);
-        EditText date = new EditText(this);date.setInputType(InputType.TYPE_CLASS_NUMBER);
-        code.setHint("输入分红的股票");
-        name.setHint("输入分红的股票名称");
+        EditText code = new EditText(this); code.setInputType(InputType.TYPE_CLASS_NUMBER); code.setHint("输入分红的股票");
+        EditText name = new EditText(this); name.setHint("输入分红的股票名称");
+        EditText money = new EditText(this); money.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        EditText date = new EditText(this); date.setInputType(InputType.TYPE_CLASS_NUMBER);
+        date.setKeyListener(new NumberKeyListener() {
+            @Override
+            protected char[] getAcceptedChars() {
+                return "0123456789/".toCharArray();
+            }
+            @Override
+            public int getInputType() {
+                return InputType.TYPE_CLASS_NUMBER;
+            }
+        });
+
         if(num>-1){
             code.setText(holdingStocksList.get(num).code);
             name.setText(holdingStocksList.get(num).name);

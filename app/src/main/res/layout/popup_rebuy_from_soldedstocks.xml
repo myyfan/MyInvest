@@ -25,7 +25,7 @@
         android:id="@+id/popup_Soldedstocks_rebuy_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
+        android:inputType="number"
         android:hint="数量"/>
     <Button
         android:id="@+id/popup_Soldedstocks_rebuy_ok"
