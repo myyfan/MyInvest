@@ -435,7 +435,7 @@ public class MainActivity extends AppCompatActivity {
         layoutParams.setMargins(10, 30, 10, 30);
         linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        EditText textHaveMoney = new EditText(this);textHaveMoney.setInputType(InputType.TYPE_CLASS_NUMBER);
+        EditText textHaveMoney = new EditText(this);textHaveMoney.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         textHaveMoney.setHint(tenYears);
 
         Button ok = new Button(this);
