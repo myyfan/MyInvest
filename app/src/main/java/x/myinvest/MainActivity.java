@@ -8,8 +8,10 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
@@ -41,6 +43,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -65,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
     public TimerTask timerTask;
     public HoldingStockView holdingStockView;//视图
     public SoldStocksView soldStocksView;//视图
-    private LinearLayout mainView;//主视图
     private Stock shangZhengZhiShu;//上证指数
     private String tenYears;//十年国债利率
     private String[] banKuaiMingCheng = {"上海A股", "深圳A股", "沪深A股", "深市主板", "中小板", "创业板"};
@@ -163,18 +165,16 @@ public class MainActivity extends AppCompatActivity {
         //holdingStock.updateTabView();
         soldStocksView = new SoldStocksView(this);
         //soldStocks.updateTableView();
-        // 两个股票视图之间的分隔符
-        TextView tvSpace = new TextView(this);
-        tvSpace.setHeight(100);
-        //把三个视图添加进去
-        mainView = (LinearLayout) findViewById(R.id.mainview);
-        // 让表格视图横向铺满屏幕，配合 TableLayout#setStretchAllColumns(true) 实现列宽自适应
-        LinearLayout.LayoutParams tableParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        mainView.addView(holdingStockView, tableParams);
-        mainView.addView(tvSpace);
-        mainView.addView(soldStocksView, tableParams);
+        // 用 ViewPager 把“持仓”和“已卖出”分成两页，左右滑动切换
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        MainPagerAdapter pagerAdapter = new MainPagerAdapter(
+                Arrays.asList((View) holdingStockView, (View) soldStocksView),
+                Arrays.asList("持仓", "已卖出"));
+        viewPager.setAdapter(pagerAdapter);
+        // 两页都常驻，保证 Activity 直接更新表格数据时页面视图始终存在
+        viewPager.setOffscreenPageLimit(2);
+        tabLayout.setupWithViewPager(viewPager);
         pullQuanShiChangShuJu();
 
 
