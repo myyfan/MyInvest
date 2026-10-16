@@ -16,7 +16,7 @@
         android:id="@+id/textView_gain"
         />
 
-    <!-- 两个页签：持仓 / 已卖出，可点击页签或左右滑动切换 -->
+    <!-- 两个页签：持仓 / 已卖出，点击页签切换（已禁用左右滑动换页） -->
     <android.support.design.widget.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
@@ -24,8 +24,9 @@
         app:tabMode="fixed"
         app:tabGravity="fill" />
 
-    <!-- 每页是一个可纵向滚动的表格视图，ViewPager 负责左右滑动 -->
-    <android.support.v4.view.ViewPager
+    <!-- NonSwipeableViewPager：只能点 Tab 切换，不响应左右滑动；
+         这样每页内部的表格可以用横向滚动查看超宽内容 -->
+    <x.myinvest.NonSwipeableViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
