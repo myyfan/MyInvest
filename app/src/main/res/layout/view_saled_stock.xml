@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
+<!-- 直接以 TableLayout 作为根：SoldStocksView 本身已是 ScrollView，
+     再套一层 ScrollView 会造成重复嵌套并干扰宽度测量 -->
+<TableLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/view_saledStock_tableLayout"
-        android:divider="@drawable/line_h"
-        android:showDividers="middle|beginning">
-    </TableLayout>
-</ScrollView>
+    android:layout_height="wrap_content"
+    android:id="@+id/view_saledStock_tableLayout"
+    android:divider="@drawable/line_h"
+    android:showDividers="middle|beginning">
+</TableLayout>

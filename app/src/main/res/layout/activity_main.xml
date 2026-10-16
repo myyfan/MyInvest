@@ -15,34 +15,24 @@
         android:layout_height="wrap_content"
         android:id="@+id/textView_gain"
         />
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scrollMainView"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    >
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <!-- 移除 HorizontalScrollView：它会把宽度测量成 UNSPECIFIED，
+         导致内部 TableLayout 的 match_parent 失效、无法自适应屏幕宽度 -->
+    <ScrollView
+        android:id="@+id/scrollMainView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/mainview"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:fillViewport="true">
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/mainview"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
 
-</ScrollView>
         </LinearLayout>
-    </HorizontalScrollView>
+
+    </ScrollView>
 </LinearLayout>

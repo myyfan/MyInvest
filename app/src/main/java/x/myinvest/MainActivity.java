@@ -168,9 +168,13 @@ public class MainActivity extends AppCompatActivity {
         tvSpace.setHeight(100);
         //把三个视图添加进去
         mainView = (LinearLayout) findViewById(R.id.mainview);
-        mainView.addView(holdingStockView);
+        // 让表格视图横向铺满屏幕，配合 TableLayout#setStretchAllColumns(true) 实现列宽自适应
+        LinearLayout.LayoutParams tableParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        mainView.addView(holdingStockView, tableParams);
         mainView.addView(tvSpace);
-        mainView.addView(soldStocksView);
+        mainView.addView(soldStocksView, tableParams);
         pullQuanShiChangShuJu();
 
 
