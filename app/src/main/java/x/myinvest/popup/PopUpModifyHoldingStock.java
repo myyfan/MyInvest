@@ -92,6 +92,7 @@ public class PopUpModifyHoldingStock extends LinearLayout {
             @Override
             public void onClick(View v) {
                 String a =row.getText().toString();
+                stockListNumber = Integer.parseInt(a)-1;
                 if(!a.isEmpty() && Integer.parseInt(a) <= holdingStocksList.size()) {
                     holdingStocksList.get(stockListNumber).code = code.getText().toString();
                     holdingStocksList.get(stockListNumber).price = price.getText().toString();
